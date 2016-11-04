@@ -1,26 +1,15 @@
-%%%%%%%%%% AGDA ALIASES
-
-%\newcommand{\APT}{\AgdaPrimitiveType}
-%\newcommand{\AK}{\AgdaKeyword}
-%\newcommand{\AM}{\AgdaModule}
-%\newcommand{\AS}{\AgdaSymbol}
-%\newcommand{\AStr}{\AgdaString}
-%\newcommand{\AN}{\AgdaNumber}
-%\newcommand{\AD}{\AgdaDatatype}
-%\newcommand{\AF}{\AgdaFunction}
-%\newcommand{\AR}{\AgdaRecord}
-%\newcommand{\ARF}{\AgdaField}
-%\newcommand{\AB}{\AgdaBound}
-%\newcommand{\AIC}{\AgdaInductiveConstructor}
-
 \renewcommand{\textsc}[1]{{\footnotesize \uppercase{#1}}}
-\newcommand{\𝓣}{$\mathcal{T}$}
-\newcommand{\MCT}{$\mathcal{T}$}
-\newcommand{\model}{$\mathit{𝓜}^{Γ}_{σ}$}
-
-\newcommand{\append}{+\!\!+}
-
 \newcommand{\DefinedType}[1]{\text{\textsc{#1}}}
+
+\newcommand{\𝓣}{$\mathcal{T}$}
+
+\newcommand{\append}{+\!\!\!+}
+
+\newcommand{\fresh}[1]{\texttt{f}_{#1}}
+\newcommand{\stale}[1]{\texttt{s}_{#1}}
+
+\newcommand{\Usage}[1]{\DefinedType{Usage}_{#1}}
+\newcommand{\Usages}[1]{\DefinedType{Usage}_{#1}}
 
 \newcommand{\Type}{\DefinedType{Type}}
 \newcommand{\Nat}{\DefinedType{Nat}}
@@ -29,8 +18,6 @@
 \newcommand{\Checkable}{\DefinedType{Check}}
 \newcommand{\Pattern}{\DefinedType{Pattern}}
 \newcommand{\Context}{\DefinedType{Context}}
-\newcommand{\Usage}{\DefinedType{Usage}}
-\newcommand{\Usages}{\DefinedType{Usages}}
 \newcommand{\OPE}{\DefinedType{OPE}}
 \newcommand{\Env}{\DefinedType{Env}}
 

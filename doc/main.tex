@@ -339,37 +339,41 @@ be formally described by the following inference rules:
 
 \begin{definition}
 \label{definition:usage}
-A \Usage{} is a predicate on a type σ describing whether the
+A $\Usage{}$ is a predicate on a type $σ$ describing whether the
 resource associated to it is available or not. We name the
-constructors describing these two states \texttt{fresh} and
-\texttt{stale} respectively. The pointwise lifting of \Usage{}
-to contexts is called \Usages{}. The inference rules are:
+constructors describing these two states $\fresh{}$ (for ``fresh'')
+and $\stale{}$ (for ``stale'') respectively.
+\todo{Overloading}
+ These are naturally
+lifted to contexts in a pointwise manner and we reuse the $\Usage{}$
+name and the $\fresh{}$ and $\stale{}$ constructors.
+
 \begin{mathpar}
 \inferrule
  {σ : \Type{}
-}{\Usage{}_σ : \Set{}
+}{\Usage{σ} : \Set{}
 }
 \and\inferrule
  {
-}{\texttt{fresh}_σ : \Usage{}_σ
+}{\fresh{σ} : \Usage{σ}
 }
 \and\inferrule
  {
-}{\texttt{stale}_σ : \Usage{}_σ
+}{\stale{σ} : \Usage{σ}
 }
 \end{mathpar}
 \begin{mathpar}
 \inferrule
  { γ : \Context{}_n
-}{\Usages{}_γ : \Set{}
+}{\Usages{γ} : \Set{}
 }
 \and\inferrule
  {
-}{[] : \Usages{}_{[]}
+}{[] : \Usages{[]}
 }
 \and\inferrule
- {Γ : \Usages{}_γ \and S : \Usage{}_σ
-}{Γ ∙ S : \Usages{}_{γ ∙ σ}
+ {Γ : \Usages{γ ∙ σ} \and S : \Usage{σ}
+}{Γ ∙ S : \Usages{γ ∙ σ}
 }
 \end{mathpar}
 \end{definition}
@@ -387,7 +391,7 @@ A ``Typing Relation'' for $T$ a \Nat{}-indexed inductive family is
 an indexed relation $\text{\𝓣{}}_n$ such that:
 \begin{mathpar}
 \inferrule
- {n : \Nat{} \and γ : \Context{}_n \and Γ, Δ : \Usages{}_γ \and t : T_n \and σ : \Type{}
+ {n : \Nat{} \and γ : \Context{}_n \and Γ, Δ : \Usages{γ} \and t : T_n \and σ : \Type{}
 }{\text{\𝓣{}}_n(Γ, t, σ, Δ) : \Set{}
 }
 \end{mathpar}
@@ -403,10 +407,9 @@ expressed as properties a Typing Relation might have.
 
 The simplest instance of a Typing Relation is the one for de Bruijn
 indices: given an index $k$ and a usage annotation, it successfully
-associates a type to that index if and only if the $k$th resource
-in context is \texttt{fresh}. In the resulting leftovers, the resource
-will have turned \texttt{stale}:
-
+associates a type $σ$ to that index if and only if the $k$th resource
+in context is of type $σ$ and fresh (i.e. its $\Usage{}$ is $\fresh{σ}$).
+In the resulting leftovers, this resource will have turned stale ($\stale{σ}$):
 \begin{definition}
 \label{typing:deBruijn}
 The typing relation is presented in a sequent-style: Γ ⊢ $k$ ∈ σ ⊠ Δ
@@ -448,15 +451,15 @@ the same names:
 \subsubsection{Typing Terms}
 
 The key idea appearing in all the typing rules for compound
-expressions is to use the input \Usages{} to type one of the
+expressions is to use the input $\Usages{}$ to type one of the
 sub-expressions, collect the leftovers from that typing
-derivation and use them as the new input \Usages{} when typing
+derivation and use them as the new input $\Usages{}$ when typing
 the next sub-expression.
 
 Another common pattern can be seen across all the rules involving
 binders, be they λ-abstractions, let-bindings or branches of a
 case. Typechecking the body of a binder involves extending the
-input \Usages{} with fresh variables and observing that they have
+input $\Usages{}$ with fresh variables and observing that they have
 become stale in the output one. This guarantees that these bound
 variables cannot escape their scope as well as that they have indeed
 been used. Relaxing the staleness restriction would lead to an affine
@@ -465,12 +468,12 @@ type system which would be interesting in its own right.
 \begin{definition}The Typing Relation for \Inferable{} is typeset
 in a fashion similar to the one for \Var{}. Indeed, in both cases
 the type is inferred. $Γ ⊢ t ∈ σ ⊠ Δ$ means that given Γ a
-$\Usages{}_γ$, and $t$ an \Inferable{}, the type σ is inferred
-together with leftovers Δ, another $\Usages{}_γ$. The rules are
+$\Usages{γ}$, and $t$ an \Inferable{}, the type σ is inferred
+together with leftovers Δ, another $\Usages{γ}$. The rules are
 listed in Figure~\ref{figure:infer}.
 
 For \Checkable{}, the type σ comes first: $Γ ⊢ σ ∋ t ⊠ Δ$ means
-that given Γ a $\Usages{}_γ$, a type σ, the \Checkable{} $t$ can
+that given Γ a $\Usages{γ}$, a type σ, the \Checkable{} $t$ can
 be checked to have type σ with leftovers Δ. The rules can be found
 in Figure~\ref{figure:check}.
 
@@ -540,7 +543,7 @@ definition of $Γ - Δ ≡ Θ - ξ$):
 
 \begin{definition}A Typing Relation \𝓣{} for a \Nat{}-indexed
 family $T$ has the Framing Property if for all $k$ a \Nat{},
-γ a $\Context{}_k$, Γ, Δ, Θ, ξ four $\Usages{}_γ$, $t$ an element
+γ a $\Context{}_k$, Γ, Δ, Θ, ξ four $\Usages{γ}$, $t$ an element
 of $T_k$ and σ a Type, if $Γ - Δ ≡ Θ - ξ$ and \𝓣{}$(Γ, t, σ, Δ)$
 then \𝓣{}$(Θ, t, σ, ξ)$ also holds.
 \end{definition}
@@ -550,7 +553,7 @@ then \𝓣{}$(Θ, t, σ, ξ)$ also holds.
 \begin{definition}
 \label{definition:differences}
 The ``consumption equivalence'' characterises the pairs of an input and
-an output \Usages{} which have the same consumption pattern. The
+an output $\Usages{}$ which have the same consumption pattern. The
 usages annotations for the empty context are trivially related.
 If the context is not empty, then there are two cases: if the
 resource is left untouched on one side, then so should it on the other
@@ -559,7 +562,7 @@ respectively). On the other hand, if the resource has been consumed
 on one side then it has to be on the other side too.
 \begin{mathpar}
 \inferrule
- {Γ, Δ, Θ, ξ : \Usages{}_γ
+ {Γ, Δ, Θ, ξ : \Usages{γ}
 }{Γ ─ Δ ≡ Θ ─ ξ : \Set{}
 }
 \and \inferrule
@@ -638,7 +641,7 @@ is crucial in a linear setting. In this development, three variations
 on OPEs are actually needed: one for \Nat{}s to describe the embedding
 of a scope into a larger one, one for \Context{} describing what types
 the extra variables in scope are assigned and finally one for their
-\Usages{} mentioning whether these variables are fresh or stale.
+$\Usages{}$ mentioning whether these variables are fresh or stale.
 
 \begin{definition}
 An Order Preserving Embedding is an inductive family. Its constructors
@@ -650,7 +653,7 @@ The first column lists the names of the constructors associated to each
 one of the moves. The second column describes the OPE for \Nat{}s
 and it follows closely the traditional definition of OPEs. The two
 remaining columns are a bit different: they respectively define the
-OPE for \Context{}s and the one for \Usages{}. However they do not
+OPE for \Context{}s and the one for $\Usages{}$. However they do not
 mention the source and target sets in their indices; they are in
 fact generic enough to be applied to any context / usages of the
 right size. If a value of $k ≤ l$ is seen as a \emph{diff} between
@@ -667,7 +670,7 @@ a set into itself by the identity function. It serves as a base case.
 The second row corresponds to the \texttt{copy} move which extends
 an existing embedding by copying the current $0$th variable from
 source to target. The corresponding cases for \Context{}s and
-\Usages{} are purely structural: no additional content is required
+$\Usages{}$ are purely structural: no additional content is required
 to be able to perform a \texttt{copy} move.
 
 Last but not least, the third row describes the move \texttt{insert}
@@ -675,7 +678,7 @@ which introduces an extra variable in the target set. This is the
 move used to extend an existing context, i.e. to weaken it. In this
 case, it is paramount that the OPE for \Context{}s should take a
 type σ as an extra argument (it will be the type of the newly introduced
-variable) whilst the OPE for \Usages{} takes a $\Usage{}_σ$ (it will
+variable) whilst the OPE for $\Usages{}$ takes a $\Usage{σ}$ (it will
 be the usage associated to that newly introduced variable of type σ).
 
 \begin{figure}\centering
@@ -728,11 +731,11 @@ be the usage associated to that newly introduced variable of type σ).
 }{\OPE{}(\texttt{insert}(o))
 }
 & \inferrule
- {{\begin{array}{l}o : k ≤ l \\ O : \OPE{}(o) \\ σ : \Type{}\end{array}} \and \OPE{}(O) \and S : \Usage{}_σ
+ {{\begin{array}{l}o : k ≤ l \\ O : \OPE{}(o) \\ σ : \Type{}\end{array}} \and \OPE{}(O) \and S : \Usage{σ}
 }{\OPE{}(\texttt{insert}(O, σ))
 }
 \end{tabular}
-\caption{Order Preserving Embeddings for \Nat{}, \Context{} and \Usages{}\label{figure:ope}}
+\caption{Order Preserving Embeddings for \Nat{}, \Context{} and $\Usages{}$\label{figure:ope}}
 \end{figure}
 \end{definition}
 
@@ -769,7 +772,7 @@ such that we have a function $\texttt{weak}_T$ transporting proofs that
 $k ≤ l$ to functions $T_k → T_l$ is said to have the Weakening Property
 if for all $k, l$ in \Nat{}, $o$ a proof that $k ≤ l$, $O$ a proof that
 $\OPE{}(o)$ and $𝓞$ a proof that $\OPE{}(O)$ then for all γ a $\Context{}_k$,
-Γ and Δ two $\Usages{}_γ$, $t$ an element of $T_k$ and σ a \Type{}, if
+Γ and Δ two $\Usages{γ}$, $t$ an element of $T_k$ and σ a \Type{}, if
 \𝓣{}$(Γ, t, σ, Δ)$ holds true then we also have
 \𝓣{}$(\texttt{patch}(𝓞, Γ), \texttt{weak}_T(o, t), σ, \texttt{patch}(𝓞, Δ))$.
 \end{definition}
@@ -857,8 +860,8 @@ the typing for the empty environment has the same input and output
 usages annotation. Formally:
 \begin{mathpar}
 \inferrule
- {{\begin{array}{l}θ : \Context{}_l \\ Θ₁, Θ₂ : \Usages_θ\end{array}} \and ρ : \Env{}(k,l)
-  \and {\begin{array}{l}γ : Context{}_k \\ Γ : \Usages{}_γ\end{array}}
+ {{\begin{array}{l}θ : \Context{}_l \\ Θ₁, Θ₂ : \Usages{θ}\end{array}} \and ρ : \Env{}(k,l)
+  \and {\begin{array}{l}γ : Context{}_k \\ Γ : \Usages{γ}\end{array}}
 }{\Env{}(Θ₁, ρ, Θ₂, Γ) : \Set{}
 }
 \and \inferrule
@@ -905,10 +908,10 @@ A Typing Relation \𝓣{} for a \Nat{}-indexed family $T$ equipped with
 a function \texttt{subst} which for all \Nat{}s $k, l$, given an
 element $T_k$ and an $\Env{}(k,l)$ returns an element $T_l$ is said to
 be stable under substitution if for all \Nat{}s $k$ and $l$, γ a $\Context{}_k$,
-Γ and Δ two $\Usages{}_γ$, $t$ an element of $T_k$, σ a Type, ρ an $\Env{}(k,l)$,
-$θ$ a $\Context{}_l$ and $Θ₁$ and $Θ₃$ two $\Usages_θ$ such that
+Γ and Δ two $\Usages{γ}$, $t$ an element of $T_k$, σ a Type, ρ an $\Env{}(k,l)$,
+$θ$ a $\Context{}_l$ and $Θ₁$ and $Θ₃$ two $\Usages{θ}$ such that
 \𝓣{}$(Γ, t, σ, Δ)$ and $\Env{}(Θ₁, ρ, Θ₃, Γ)$ holds then there exists a $Θ₂$
-of type $\Usages{}_θ$ such that \𝓣{}$(Θ₁, \texttt{subst}(t, ρ), σ, Θ₂)$ and
+of type $\Usages{θ}$ such that \𝓣{}$(Θ₁, \texttt{subst}(t, ρ), σ, Θ₂)$ and
 $\Env{}(Θ₂, ρ, Θ₃, Δ)$.
 \end{definition}
 
@@ -944,15 +947,15 @@ and $R(\mathit{ri}, \mathit{ii₂}, o₂)$ hold then $o₁ ≡ o₂$.
 
 \begin{lemma}The Typing Relations for \Var{} and \Inferable{} are functional
 when seen as relations with relevant inputs the context and the scrutinee
-(either a \Var{} or an \Inferable{}), irrelevant inputs their \Usages{}
+(either a \Var{} or an \Inferable{}), irrelevant inputs their $\Usages{}$
 annotation and outputs the inferred \Type{}s.
 \end{lemma}
 
 \begin{lemma}The Typing Relations for \Var{}, \Inferable{}, \Checkable{}
 and \Env{} are functional when seen as relations with relevant inputs all
-of their arguments except for one of the \Usages{} annotation or the other.
-This means that given a \Usages{} annotation (whether the input one or the
-output one) and the rest of the arguments, the other \Usages{} annotation
+of their arguments except for one of the $\Usages{}$ annotation or the other.
+This means that given a $\Usages{}$ annotation (whether the input one or the
+output one) and the rest of the arguments, the other $\Usages{}$ annotation
 is uniquely determined.
 \end{lemma}
 
@@ -966,12 +969,12 @@ is uniquely determined.
 \label{theorem:typechecking}
 Type-inference for \Inferable{} and Type-checking for \Checkable{} are
 decidable. In other words, given a \Nat{} $k$, γ a $\Context{}_k$ and
-Γ a $\Usages{}_γ$,
+Γ a $\Usages{γ}$,
 \begin{enumerate}
   \item for all $\Inferable{}_k$ $t$, it is decidable whether there is
-        a \Type{} $σ$ and Δ a $\Usages{}_γ$ such that $Γ ⊢ t ∈ σ ⊠ Δ$
+        a \Type{} $σ$ and Δ a $\Usages{γ}$ such that $Γ ⊢ t ∈ σ ⊠ Δ$
   \item for all \Type{} σ and $\Checkable{}_k$, it is decidable whether
-        there is Δ a $\Usages{}_γ$ such that $Γ ⊢ σ ∋ t ⊠ Δ$.
+        there is Δ a $\Usages{γ}$ such that $Γ ⊢ σ ∋ t ⊠ Δ$.
 \end{enumerate}
 \end{theorem}
 \begin{proof}
@@ -997,6 +1000,45 @@ situation:
   swapChecked 'σ' 'τ' rewrite eq-diag 'τ' | eq-diag 'σ' = refl
 \end{lstlisting}
 \end{example}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+%% EQUIVALENCE TO ILL %%
+%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Equivalence to ILL}
+
+We have now demonstrated that the $\Usages{}$-based formulation of
+linear logic as a type system is amenable to mechanisation without
+putting an unreasonable burden on the user. Indeed, the system's
+important properties can all be dealt with by structural induction
+and the user still retains the ability to write simple $λ$-terms
+which are not cluttered with structural rules.
+
+However this presentation departs quite a lot from more traditional
+formulations of intuitionistic linear logic. This naturally raises
+the question of its correction. In this section we recall a typical
+presentation of Intuitionistic Linear Logic using a Sequent Calculus.
+
+\subsection{A Sequent Calculus for Intuitionistic Linear Logic}
+
+\subsection{Soundness}
+
+
+\subsection{Completeness}
+
+Completeness is a trickier thing to prove: given a derivation in
+the traditional sequent calculus, we need to build a corresponding
+term and its typing derivation.
+
+The hardest rule to handle is the \texttt{mix} rule which reorganises
+the context. Indeed, its use means that both the term and the
+corresponding derivation built by the induction hypothesis need to
+be altered in a radical manner.
+
+
+
+
 %%%%%%%%%%%%%%%%%%
 %% RELATED WORK %%
 %%%%%%%%%%%%%%%%%%
@@ -1017,7 +1059,7 @@ subterms and consumption annotations ensuring that the linear
 resources are never used more than once.
 
 We can find a very concrete motivation for a predicate similar to
-our \Usage{} in Robbert Krebbers' thesis~\cite{krebbers2015thesis}.
+our $\Usage{}$ in Robbert Krebbers' thesis~\cite{krebbers2015thesis}.
 In section 2.5.9, he describes one source of undefined behaviours
 in the C standard: the execution order of expressions is unspecified
 thus leaving the implementers with absolute freedom to pick any order
@@ -1075,9 +1117,6 @@ currently an open question.
 %% .. or use the thebibliography environment explicitely
 
 \appendix
-
-\begin{landscape}
 \input{typing-swap}
-\end{landscape}
 
 \end{document}

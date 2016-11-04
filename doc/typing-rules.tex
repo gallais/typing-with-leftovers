@@ -1,8 +1,50 @@
 \begin{figure}[p]
 \begin{mathpar}
 \inferrule
+ {{\begin{array}{l}
+    γ : \Context{}_n \\
+    Γ : \Usages{γ}
+  \end{array}}
+  \and k : \Var{}_n
+  \and {\begin{array}{l}
+    σ : \Type{}    \\
+    Δ : \Usages{γ}
+  \end{array}}
+}{Γ ⊢ t ∈ \fresh{σ} ⊠ Δ : \Set{}
+}
+\and \inferrule
+ {{\begin{array}{l}
+    γ : \Context{}_n \\
+    Γ : \Usages{γ}
+  \end{array}}
+  \and t : \Inferable{}_n
+  \and {\begin{array}{l}
+    σ : \Type{}    \\
+    Δ : \Usages{γ}
+  \end{array}}
+}{Γ ⊢ t ∈ σ ⊠ Δ : \Set{}
+}
+\and \inferrule
+ {{\begin{array}{l}
+    γ : \Context{}_n \\
+    Γ : \Usages{γ}
+  \end{array}}
+  \and {\begin{array}{l}
+    σ : \Type{}    \\
+    t : \Inferable{}_n
+  \end{array}}
+  \and Δ : \Usages{γ}
+}{Γ ⊢ σ  ∋ t ⊠ Δ : \Set{}
+}
+\end{mathpar}
+\caption{Typing relations for \Var{}, \Inferable{}, \Checkable{} and \Pattern{}}
+\end{figure}
+
+\begin{figure}[p]
+\begin{mathpar}
+\inferrule
  {
-}{Γ ∙ \texttt{fresh}_σ ⊢ \texttt{zero} ∈ σ ⊠ Γ ∙ \texttt{stale}_σ
+}{Γ ∙ \fresh{σ} ⊢ \texttt{zero} ∈ σ ⊠ Γ ∙ \stale{σ}
 }
 \and \inferrule
  {Γ ⊢ k ∈ σ ⊠ Δ
@@ -23,8 +65,8 @@
 \and \inferrule
  {Γ ⊢ t ∈ σ ⊕ τ ⊠ Δ \and
   {\begin{array}{l}
-    Δ ∙ \texttt{fresh}_σ ⊢ ν ∋ l ⊠ Θ ∙ \texttt{stale}_σ \\
-    Δ ∙ \texttt{fresh}_τ ⊢ ν ∋ r ⊠ Θ ∙ \texttt{stale}_τ
+    Δ ∙ \fresh{σ} ⊢ ν ∋ l ⊠ Θ ∙ \stale{σ} \\
+    Δ ∙ \fresh{τ} ⊢ ν ∋ r ⊠ Θ ∙ \stale{τ}
   \end{array}}
 }{Γ ⊢ \texttt{case}~t~\texttt{return}~ν~\texttt{of}~l~\texttt{\%\!\%}~r ∈ ν ⊠ Θ
 }
@@ -37,12 +79,12 @@
 
 \begin{mathpar}
 \inferrule
- {Γ ∙ \texttt{fresh}_σ ⊢ τ ∋ b ⊠ Δ ∙ \texttt{stale}_σ
+ {Γ ∙ \fresh{σ} ⊢ τ ∋ b ⊠ Δ ∙ \stale{σ}
 }{Γ ⊢ σ ⊸ τ ∋ \texttt{lam}(b) ⊠ Δ
 }
 \and \inferrule
  {Γ ⊢ t ∈ σ ⊠ Δ \and σ ∋ p \leadsto{} δ
-  \\\\ Δ \append{} \texttt{fresh}_δ ⊢ τ ∋ u ⊠ Θ \append{} \texttt{stale}_δ
+  \\\\ Δ \append{} \fresh{δ} ⊢ τ ∋ u ⊠ Θ \append{} \stale{δ}
 }{Γ ⊢ τ ∋ \texttt{let}~p~\texttt{∷=}~t~\texttt{in}~u ⊠ Θ
 }
 \and \inferrule
