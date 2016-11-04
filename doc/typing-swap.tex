@@ -10,10 +10,10 @@
       \inferrule
        { % premise 4
       }{ % conclusion 4
-        [] ∙ \fresh{σ ⊗ τ} ⊢ \texttt{zero} ∈ σ ⊗ τ ⊠ [] ∙ \stale{σ ⊗ τ}
+        [] ∙ \fresh{σ ⊗ τ} ⊢ \texttt{0} ∈ σ ⊗ τ ⊠ [] ∙ \stale{σ ⊗ τ}
       }
     }{ % conclusion 3
-       [] ∙ \fresh{σ ⊗ τ} ⊢ \texttt{var}(\texttt{zero}) ∈ σ ⊗ τ ⊠ [] ∙ \stale{σ ⊗ τ}
+       [] ∙ \fresh{σ ⊗ τ} ⊢ \texttt{var}(\texttt{0}) ∈ σ ⊗ τ ⊠ [] ∙ \stale{σ ⊗ τ}
      }
    \and % premise 2
     \inferrule
@@ -37,8 +37,8 @@
   }{ % conslusion 2
     [] ∙ \fresh{σ ⊗ τ} ⊢ τ ⊗ σ ∋
     {\begin{array}{l}
-      \texttt{let}~(\texttt{v, v})~∷=~\texttt{var}~\texttt{zero}~\texttt{in} \\
-      \texttt{prd}(\texttt{neu}(\texttt{var}(1)),~\texttt{neu}(\texttt{var}(0)))
+      \texttt{let}~(\texttt{v, v})~∷=~\texttt{var}~\texttt{0}~\texttt{in} \\
+      \texttt{prd}(\texttt{neu}(\texttt{var}(\texttt{1})),~\texttt{neu}(\texttt{var}(\texttt{0})))
     \end{array}}
     ⊠ [] ∙ \stale{σ ⊗ τ}
   }
@@ -59,36 +59,46 @@
          \inferrule
           { % premise 5
          }{ % conclusion 5
-           [] ∙ \fresh{τ} ⊢ 0 ∈ τ ⊠ [] ∙ \stale{τ}
+           [] ∙ \stale{σ ⊗ τ} ∙ \fresh{τ} ⊢ \texttt{0} ∈ τ ⊠ [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ}
          } 
        }{ % conclusion 4
-         [] ∙ \fresh{τ} ∙ \fresh{σ} ⊢ 1 ∈ τ
-          ⊠ [] ∙ \stale{τ} ∙ \fresh{σ}
+         [] ∙ \stale{σ ⊗ τ} ∙ \fresh{τ} ∙ \fresh{σ} ⊢ \texttt{1} ∈ τ
+          ⊠ [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \fresh{σ}
        } 
      }{ % conclusion 3
-       [] ∙ \fresh{τ} ∙ \fresh{σ} ⊢ \texttt{var}(1) ∈ τ
-       ⊠ [] ∙ \stale{τ} ∙ \fresh{σ}
+       [] ∙ \stale{σ ⊗ τ} ∙ \fresh{τ} ∙ \fresh{σ} ⊢ \texttt{var}(\texttt{1}) ∈ τ
+       ⊠ [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \fresh{σ}
      } 
    }{ % conclusion 2
-     [] ∙ \fresh{τ} ∙ \fresh{σ} ⊢ τ ∋ \texttt{neu}(\texttt{var}(1))
-     ⊠ [] ∙ \stale{τ} ∙ \fresh{σ}
+     [] ∙ \stale{σ ⊗ τ} ∙ \fresh{τ} ∙ \fresh{σ} ⊢ τ ∋ \texttt{neu}(\texttt{var}(\texttt{1}))
+     ⊠ [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \fresh{σ}
    }
-  \and % premise 1
+  \and Π'
+ }{ % conclusion 3
+   [] ∙ \stale{σ ⊗ τ} ∙ \fresh{τ} ∙ \fresh{σ} ⊢ τ ⊗ σ ∋
+   \texttt{prd}(\texttt{neu}(\texttt{var}(\texttt{1})),~\texttt{neu}(\texttt{var}(\texttt{0}))
+   ⊠ [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \stale{σ}
+ }
+
+\and
+
+Π' =  \inferrule
+  { % premise 1
    \inferrule
     { % premise 2
      \inferrule
       { % premise 3
      }{ % conclusion 3
-       [] ∙ \stale{τ} ∙ \fresh{σ} ⊢ 0 ∈ σ
-       ⊠ [] ∙ \stale{τ} ∙ \stale{σ}
+       [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \fresh{σ} ⊢ \texttt{0} ∈ σ
+       ⊠ [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \stale{σ}
      }
    }{ % conclusion 2
-     [] ∙ \stale{τ} ∙ \fresh{σ} ⊢ \texttt{var}(0) ∈ σ
-     ⊠ [] ∙ \stale{τ} ∙ \stale{σ}
+     [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \fresh{σ} ⊢ \texttt{var}(\texttt{0}) ∈ σ
+     ⊠ [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \stale{σ}
    }
  }{ % conclusion 1
-   [] ∙ \fresh{τ} ∙ \fresh{σ} ⊢ τ ⊗ σ ∋
-   \texttt{prd}(\texttt{neu}(\texttt{var}(1)),~\texttt{neu}(\texttt{var}(0))
-   ⊠ [] ∙ \stale{τ} ∙ \stale{σ}
+   [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \fresh{σ} ⊢ σ ∋ \texttt{neu}(\texttt{var}(\texttt{0}))
+   ⊠ [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \stale{σ}     
  }
+
 \end{mathpar}
