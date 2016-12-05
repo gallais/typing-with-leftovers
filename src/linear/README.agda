@@ -26,3 +26,6 @@ open import linear.Typecheck
 open import linear.Language.Examples
 open import linear.Typing.Examples
 open import linear.Typecheck.Examples
+
+-- A surface language with named variables (using String)
+open import linear.Surface
