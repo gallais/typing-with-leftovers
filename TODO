@@ -1,0 +1,7 @@
+* import code from potpourri (handling &)
+* add support for `1 (and `0?)
+* study properties of `(1 + 1) (neg involutive, etc.)
+* add support for a v b when a <= neg b (cf. effect algebra)
+* correctness section
+* managing resources during proof search references
+* pretty print of derivations
