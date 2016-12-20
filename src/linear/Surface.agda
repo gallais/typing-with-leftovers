@@ -121,6 +121,5 @@ linear σ c with scopeCheck [] c
               }
 
 -- example:
-`swap-ok : let σ = κ 0 ; τ = κ 1
-           in Is-just (linear ((σ ⊗ τ) ─o (τ ⊗ σ)) `swap)
-`swap-ok = just _
+`swap-ok : ∀ σ τ → Is-just (linear ((σ ⊗ τ) ─o (τ ⊗ σ)) `swap)
+`swap-ok σ τ rewrite eq-diag τ | eq-diag σ = just _
