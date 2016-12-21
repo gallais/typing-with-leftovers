@@ -1,4 +1,4 @@
-module linear.Surface where
+module linear.Surface.Surface where
 
 open import Data.Maybe
 open import Data.String using (String)
@@ -14,26 +14,47 @@ open import Relation.Binary.PropositionalEquality hiding ([_])
 
 open import linear.Type
 
-mutual
+{-# IMPORT Surface.Parser #-}
 
-  data Check : Set where
-    `lam_↦_      : String → Check → Check
-    `let_∷=_`in_ : Pattern → Infer → Check → Check
-    `prd         : Check → Check → Check
-    `inl_        : Check → Check
-    `inr_        : Check → Check
-    `neu_        : Infer → Check
+data Pattern : Set where
+  `v   : String → Pattern
+  _,,_ : (p q : Pattern) → Pattern
+{-# COMPILED_DATA Pattern Surface.Parser.Pattern Surface.Parser.All Surface.Parser.And #-}
 
-  data Infer : Set where
-    `var                    : String → Infer
-    `app                    : Infer → Check → Infer
-    `case_return_of_↦_%%_↦_ : Infer → Type → String → Check → String → Check → Infer
-    `cut                    : Check → Type → Infer
+data Check : Set
+{-# COMPILED_DECLARE_DATA Check Surface.Parser.Check #-}
+data Infer : Set
+{-# COMPILED_DECLARE_DATA Infer Surface.Parser.Infer #-}
 
-  data Pattern : Set where
-    `v   : String → Pattern
-    _,,_ : (p q : Pattern) → Pattern
+data Check where
+  `lam_↦_      : String → Check → Check
+  `let_∷=_`in_ : Pattern → Infer → Check → Check
+  `prd         : Check → Check → Check
+  `inl_        : Check → Check
+  `inr_        : Check → Check
+  `neu_        : Infer → Check
+{-# COMPILED_DATA
+    Check Surface.Parser.Check
+    Surface.Parser.Lam
+    Surface.Parser.Let
+    Surface.Parser.Prd
+    Surface.Parser.Inl
+    Surface.Parser.Inr
+    Surface.Parser.Neu
+ #-}
 
+data Infer where
+  `var                    : String → Infer
+  `app                    : Infer → Check → Infer
+  `case_return_of_↦_%%_↦_ : Infer → Type → String → Check → String → Check → Infer
+  `cut                    : Check → Type → Infer
+{-# COMPILED_DATA
+    Infer Surface.Parser.Infer
+    Surface.Parser.Var
+    Surface.Parser.App
+    Surface.Parser.Cas
+    Surface.Parser.Cut
+#-}
 
 -- example:
 

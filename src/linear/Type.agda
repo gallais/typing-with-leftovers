@@ -17,6 +17,14 @@ data Type : Set where
   _⊕_  : (σ τ : Type) → Type
   _─o_ : (σ τ : Type) → Type
 
+{-# IMPORT Type.Parser #-}
+{-# COMPILED_DATA
+    Type Type.Parser.Type
+    Type.Parser.Base
+    Type.Parser.Tensor
+    Type.Parser.Plus
+    Type.Parser.Lolli
+#-}
 
 -- Equality of types is decidable
 κ-inj : {x y : ℕ} → κ x ≡ κ y → x ≡ y

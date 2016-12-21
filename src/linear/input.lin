@@ -1,0 +1,6 @@
+(1 * 2) -o (2 * 1) : \ pair. let (left , right) = pair
+                             in (right , left)
+
+(1 + 2) -o (2 + 1) : \ sum. case sum return 2 + 1
+                            of left  -> inr left
+                            |  right -> inl right
