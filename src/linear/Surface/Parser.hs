@@ -5,15 +5,23 @@ import Type.Parser
 import Data.Text
 
 import Control.Applicative
-import Data.ByteString
+import Control.Monad
+import Data.ByteString (ByteString)
 import Data.Attoparsec.ByteString
 import Data.Attoparsec.Combinator
 import Data.Attoparsec.ByteString.Char8
 
 type Identifier = Text
 
+reservedKeywords :: [String]
+reservedKeywords =
+  [ "let", "in", "case", "return", "of", "inl", "inr" ]
+
 pIdentifier :: Parser Identifier
-pIdentifier = Data.Text.pack <$> many1' letter_ascii
+pIdentifier = do
+  id <- many1' letter_ascii
+  guard (id `notElem` reservedKeywords)
+  return $ Data.Text.pack id
 
 data Check =
     Lam Identifier Check
@@ -44,18 +52,23 @@ data Infer =
   | Cut Check Type 
   deriving Show
 
+chainl1 :: Parser a -> Parser b -> Parser (a -> b -> a) -> Parser a
+chainl1 p q op = p >>= rest
+  where rest x = (op <*> return x <*> q >>= rest) <|> return x
+
 pInfer :: Parser Infer
-pInfer = App <$> (string "(" *> betweenSpace pInfer)
-             <*> (string ")" *> skipSpace *> pCheck)
-     <|> Cut <$> (string "(" *> betweenSpace pCheck)
-             <*> (string ":" *> betweenSpace pType <* string ")")
-     <|> Cas <$> (string "case"   *> betweenSpace pInfer)
-             <*> (string "return" *> betweenSpace pType)
-             <*> (string "of"     *> betweenSpace pIdentifier)
-             <*> (string "->"     *> betweenSpace pCheck)
-             <*> (string "|"      *> betweenSpace pIdentifier)
-             <*> (string "->"     *> skipSpace *> pCheck)
-     <|> Var <$> pIdentifier
+pInfer = chainl1 pInfer2 pCheck $ App <$ string " " <* skipSpace
+
+pInfer2 :: Parser Infer
+pInfer2 = Cut <$> (string "(" *> betweenSpace pCheck)
+              <*> (string ":" *> betweenSpace pType <* string ")")
+      <|> Cas <$> (string "case"   *> betweenSpace pInfer)
+              <*> (string "return" *> betweenSpace pType)
+              <*> (string "of"     *> betweenSpace pIdentifier)
+              <*> (string "->"     *> betweenSpace pCheck)
+              <*> (string "|"      *> betweenSpace pIdentifier)
+              <*> (string "->"     *> skipSpace *> pCheck)
+      <|> Var <$> pIdentifier
 
 
 data Pattern =
