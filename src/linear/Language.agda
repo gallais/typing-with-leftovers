@@ -13,6 +13,7 @@ mutual
   data Check (n : ℕ) : Set where
     `lam_        : (b : Check (suc n)) → Check n
     `let_∷=_`in_ : {o : ℕ} (p : Pattern o) (t : Infer n) (u : Check (o ℕ.+ n)) → Check n
+    `unit        : Check n
     `prd         : (a b : Check n) → Check n
     `inl_        : (t : Check n) → Check n
     `inr_        : (t : Check n) → Check n
@@ -21,6 +22,7 @@ mutual
   data Infer (n : ℕ) : Set where
     `var_               : (k : Fin n) → Infer n
     `app                : (t : Infer n) (u : Check n) → Infer n
+    `skip               : (t : Check n) (u : Infer n) → Infer n
     `fst_               : (t : Infer n) → Infer n
     `snd_               : (t : Infer n) → Infer n
     `case_return_of_%%_ : (i : Infer n) (σ : Type) (l r : Check (suc n)) → Infer n
@@ -39,6 +41,7 @@ mutual
   weakCheck : Weakening Check
   weakCheck inc (`lam b)            = `lam weakCheck (copy inc) b
   weakCheck inc (`let p ∷= t `in u) = `let p ∷= weakInfer inc t `in weakCheck (copys (patternSize p) inc) u
+  weakCheck inc `unit               = `unit
   weakCheck inc (`prd a b)          = `prd (weakCheck inc a) (weakCheck inc b)
   weakCheck inc (`inl t)            = `inl weakCheck inc t
   weakCheck inc (`inr t)            = `inr weakCheck inc t
@@ -47,6 +50,7 @@ mutual
   weakInfer : Weakening Infer
   weakInfer inc (`var k)                     = `var (weakFin inc k)
   weakInfer inc (`app i u)                   = `app (weakInfer inc i) (weakCheck inc u)
+  weakInfer inc (`skip u t)                  = `skip (weakCheck inc u) (weakInfer inc t)
   weakInfer inc (`fst t)                     = `fst (weakInfer inc t)
   weakInfer inc (`snd t)                     = `snd (weakInfer inc t)
   weakInfer inc (`case i return σ of l %% r) =
@@ -66,6 +70,7 @@ mutual
   substCheck : Substituting Infer Check
   substCheck ρ (`lam b)            = `lam substCheck (v∷ ρ) b
   substCheck ρ (`let p ∷= t `in u) = `let p ∷= substInfer ρ t `in substCheck (withFreshVars (patternSize p) ρ) u
+  substCheck ρ `unit               = `unit
   substCheck ρ (`prd a b)          = `prd (substCheck ρ a) (substCheck ρ b)
   substCheck ρ (`inl t)            = `inl substCheck ρ t
   substCheck ρ (`inr t)            = `inr substCheck ρ t
@@ -74,6 +79,7 @@ mutual
   substInfer : Substituting Infer Infer
   substInfer ρ (`var k)                     = substFin fresheyInfer ρ k
   substInfer ρ (`app i u)                   = `app (substInfer ρ i) (substCheck ρ u)
+  substInfer ρ (`skip u t)                  = `skip (substCheck ρ u) (substInfer ρ t)
   substInfer ρ (`fst t)                     = `fst (substInfer ρ t)
   substInfer ρ (`snd t)                     = `snd (substInfer ρ t)
   substInfer ρ (`case i return σ of l %% r) =

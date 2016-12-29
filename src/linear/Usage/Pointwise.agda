@@ -40,6 +40,10 @@ refl : {k : ℕ} {γ : Context k} {Γ : Usages γ} → Usages[ _≡_ , UsageEq ]
 refl {Γ = []}    = []
 refl {Γ = S ∷ Γ} = PEq.refl ∷ refl
 
+fromEq : {k : ℕ} {γ : Context k} {Γ Δ : Usages γ} (pr : Γ ≡ Δ) → 
+         Usages[ _≡_ , UsageEq ] CP.refl Γ Δ
+fromEq PEq.refl = refl
+
 sym : {k : ℕ} {γ δ : Context k} {eq : Context[ _≡_ ] γ δ} {Γ : Usages γ} {Δ : Usages δ} →
       Usages[ _≡_ , UsageEq ] eq Γ Δ → Usages[ _≡_ , UsageEq ] (CP.sym eq) Δ Γ
 sym                     []         = []

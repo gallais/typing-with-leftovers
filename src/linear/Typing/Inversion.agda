@@ -16,6 +16,11 @@ app-inv :
   Γ ⊢ `app t u ∈ τ ⊠ Δ → Σ[ θ ∈ Usages γ ] Σ[ σ ∈ Type ] Γ ⊢ t ∈ σ ─o τ ⊠ θ × θ ⊢ σ ∋ u ⊠ Δ
 app-inv (`app t u) = , , t , u
 
+skip-inv : 
+  {n : ℕ} {γ : Context n} {t : Infer n} {u : Check n} {Γ Δ : Usages γ} {σ : Type} →
+  Γ ⊢ `skip u t ∈ σ ⊠ Δ → Σ[ θ ∈ Usages γ ] Γ ⊢ 𝟙 ∋ u ⊠ θ × θ ⊢ t ∈ σ ⊠ Δ
+skip-inv (`skip U T) = , U , T
+
 fst-inv :
   {n : ℕ} {γ : Context n} {t : Infer n} {Γ Δ : Usages γ} {σ : Type} →
   Γ ⊢ `fst t ∈ σ ⊠ Δ → Σ[ τ ∈ Type ] Γ ⊢ t ∈ σ & τ ⊠ Δ

@@ -34,6 +34,9 @@ mutual
             -----------------------------------------------------------------
                  Γ ⊢ τ ∋ `let p ∷= t `in u ⊠ θ
 
+    `unit : --------------------
+             Γ ⊢ 𝟙 ∋ `unit ⊠ Γ
+
     `prd⊗ : {σ τ : Type} {a b : Check n} {Δ θ : Usages γ} →
 
              Γ ⊢ σ ∋ a ⊠ Δ → Δ ⊢ τ ∋ b ⊠ θ →
@@ -80,6 +83,12 @@ mutual
           ---------------------------------------
              Γ ⊢ `app t u ∈ τ ⊠ θ            
 
+    `skip : {σ : Type} {Δ Θ : Usages γ} {u : Check n} {t : Infer n} →
+            
+            Γ ⊢ 𝟙 ∋ u ⊠ Δ → Δ ⊢ t ∈ σ ⊠ Θ →
+          ----------------------------------
+                 Γ ⊢ `skip u t ∈ σ ⊠ Θ
+
     `fst_ : {σ τ : Type} {Δ : Usages γ} {t : Infer n} →
 
             Γ ⊢ t ∈ σ & τ ⊠ Δ →
@@ -98,7 +107,7 @@ mutual
             (ν : Type) →
             [ σ ] ∷ Δ ⊢ ν ∋ l ⊠ ] σ [ ∷ θ →
             [ τ ] ∷ Δ ⊢ ν ∋ r ⊠ ] τ [ ∷ θ →
-          -------------------------------------------------------------------------------------
+          ---------------------------------------------
              Γ ⊢ `case t return ν of l %% r ∈ ν ⊠ θ            
 
     `cut  : {σ : Type} {Δ : Usages γ} {t : Check n} →
@@ -118,8 +127,17 @@ mutual
 patternSize : {o : ℕ} {p : Pattern o} {σ : Type} {γ : Context o} (p : σ ∋ p ↝ γ) → ℕ
 patternSize {o} _ = o
 
-patternContext : {o : ℕ} {p : Pattern o} {σ : Type} {γ : Context o} (p : σ ∋ p ↝ γ) → Context o
+patternContext : {o : ℕ} {p : Pattern o} {σ : Type} {γ : Context o}
+                 (p : σ ∋ p ↝ γ) → Context o
 patternContext {γ = γ} _ = γ
+
+checkOutput : {n : ℕ} {γ : Context n} {Γ Δ : Usages γ} {σ : Type} {t : Check n} →
+              Γ ⊢ σ ∋ t ⊠ Δ → Usages γ
+checkOutput {Δ = Δ} _ = Δ
+
+inferOutput : {n : ℕ} {γ : Context n} {Γ Δ : Usages γ} {σ : Type} {t : Infer n} →
+              Γ ⊢ t ∈ σ ⊠ Δ → Usages γ
+inferOutput {Δ = Δ} _ = Δ
 
 TCheck : Typing Check
 TCheck = λ Γ t A Δ → Γ ⊢ A ∋ t ⊠ Δ

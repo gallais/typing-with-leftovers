@@ -55,7 +55,8 @@ toList-++ : {k l : ℕ} (xs : Context k) (ys : Context l) →
 toList-++ []       ys = PEq.refl
 toList-++ (x ∷ xs) ys = PEq.cong (x ∷_) (toList-++ xs ys)
 
-infix 1 _++_≅_
+infix  1  _++_≅_
+infixr 20 _∷ˡ_ _∷ʳ_
 data _++_≅_ {A : Set} : (xs ys zs : List A) → Set where
   []   : [] ++ [] ≅ []
   _∷ˡ_ : (a : A) {xs ys zs : List A} (as : xs ++ ys ≅ zs) → a ∷ xs ++ ys ≅ a ∷ zs
@@ -74,10 +75,17 @@ divide (─∷ p)  (─∷ q)  (─∷ pq)   = divide p q pq
 divide (─∷ p)  (a ∷ q) (.a ∷ pq) = a ∷ʳ divide p q pq
 divide (a ∷ p) (─∷ q)  (.a ∷ pq) = a ∷ˡ divide p q pq
 
+infixr 10 _++ʳ_ _++ˡ_
+
 _++ʳ_ : {A : Set} {xs ys zs : List A} (ts : List A) (eq : xs ++ ys ≅ zs) →
         xs ++ ts List.++ ys ≅ ts List.++ zs
 []       ++ʳ eq = eq
 (t ∷ ts) ++ʳ eq = t ∷ʳ (ts ++ʳ eq)
+
+_++ˡ_ : {A : Set} {xs ys zs : List A} (ts : List A) (eq : xs ++ ys ≅ zs) →
+        ts List.++ xs ++ ys ≅ ts List.++ zs
+[]       ++ˡ eq = eq
+(t ∷ ts) ++ˡ eq = t ∷ˡ (ts ++ˡ eq)
 
 trivial : {A : Set} {xs ys : List A} → xs ++ ys ≅ xs List.++ ys
 trivial {xs = []}     {[]}     = []

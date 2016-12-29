@@ -40,6 +40,10 @@ mutual
     let f′ = extensionalInfer eqs₁ eqs₂ EQs₁ (coerceʳ eqs₂) f
         t′ = extensionalCheck (CP.sym eqs₂) eqs₂ (coerceˡ eqs₂) EQs₂ t
     in `app f′ t′
+  extensionalInfer eqs₁ eqs₂ EQs₁ EQs₂ (`skip u t) =
+    let u′ = extensionalCheck eqs₁ eqs₂ EQs₁ (coerceʳ eqs₂) u
+        t′ = extensionalInfer (CP.sym eqs₂) eqs₂ (coerceˡ eqs₂) EQs₂ t
+    in `skip u′ t′
   extensionalInfer eqs₁ eqs₂ EQs₁ EQs₂ (`fst t) =
     `fst (extensionalInfer eqs₁ eqs₂ EQs₁ EQs₂ t)
   extensionalInfer eqs₁ eqs₂ EQs₁ EQs₂ (`snd t) =
@@ -66,6 +70,8 @@ mutual
                (UP.refl {Γ = [[ δ ]]} UP.++ coerceˡ eqs₂) (UP.refl {Γ = ]] δ [[} UP.++ EQs₂)
                u
     in `let p ∷= t′ `in u′
+  extensionalCheck eqs₁ eqs₂ EQs₁ EQs₂ `unit =
+    subst (TCheck _ _ _) (pointwiseEq′ (UP.trans EQs₁ EQs₂)) `unit
   extensionalCheck eqs₁ eqs₂ EQs₁ EQs₂ (`prd⊗ a b) =
     let a′ = extensionalCheck eqs₁ eqs₂ EQs₁ (coerceʳ eqs₂) a
         b′ = extensionalCheck (CP.sym eqs₂) eqs₂ (coerceˡ eqs₂) EQs₂ b

@@ -1,4 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DeriveFunctor     #-}
+{-# LANGUAGE DeriveFoldable    #-}
+{-# LANGUAGE DeriveTraversable #-}
+
 module Surface.Parser where
 
 import Type.Parser
@@ -15,7 +19,7 @@ type Identifier = Text
 
 reservedKeywords :: [String]
 reservedKeywords =
-  [ "let", "in", "case", "return", "of", "inl", "inr" , "fst" , "snd" ]
+  [ "let", "in", "case", "return", "of", "inl", "inr" , "fst" , "snd" , ";", "unit" ]
 
 pIdentifier :: Parser Identifier
 pIdentifier = do
@@ -23,56 +27,73 @@ pIdentifier = do
   guard (id `notElem` reservedKeywords)
   return $ Data.Text.pack id
 
-data Check =
-    Lam Identifier Check
-  | Let Pattern Infer Check
-  | Prd Check Check
-  | Inl Check
-  | Inr Check
-  | Neu Infer
-  deriving Show
+data CheckF b =
+    Lam Identifier (CheckF b)
+  | Let Pattern (InferF b) (CheckF b)
+  | One
+  | Prd (CheckF b) (CheckF b)
+  | Inl (CheckF b)
+  | Inr (CheckF b)
+  | Neu (InferF b)
+  deriving (Show, Functor, Foldable, Traversable)
 
-pCheck :: Parser Check
-pCheck = Lam <$> (string "\\" *> skipSpace
-              *> pIdentifier <* betweenSpace (string "."))
-             <*> pCheck
-     <|> Let <$> (string "let" *> betweenSpace pPattern)
-             <*> (string "="   *> betweenSpace pInfer)
-             <*> (string "in"  *> skipSpace *> pCheck)
-     <|> Prd <$> (string "(" *> betweenSpace pCheck)
-             <*> (string "," *> betweenSpace pCheck <* string ")")
-     <|> Inl <$> (string "inl" *> skipSpace *> pCheck)
-     <|> Inr <$> (string "inr" *> skipSpace *> pCheck)
-     <|> Neu <$> pInfer
+type RCheck = CheckF String
+type Check  = CheckF Integer
 
-data Infer =
+pRCheck :: Parser RCheck
+pRCheck = Lam <$> (string "\\" *> skipSpace
+               *> pIdentifier <* betweenSpace (string "."))
+              <*> pRCheck
+      <|> Let <$> (string "let" *> betweenSpace pPattern)
+              <*> (string "="   *> betweenSpace pRInfer)
+              <*> (string "in"  *> skipSpace *> pRCheck)
+      <|> One <$  string "unit"
+      <|> Prd <$> (string "(" *> betweenSpace pRCheck)
+              <*> (string "," *> betweenSpace pRCheck <* string ")")
+      <|> Inl <$> (string "inl" *> skipSpace *> pRCheck)
+      <|> Inr <$> (string "inr" *> skipSpace *> pRCheck)
+      <|> Neu <$> pRInfer2
+
+data InferF b =
     Var Identifier
-  | App Infer Check
-  | Fst Infer
-  | Snd Infer
-  | Cas Infer Type Identifier Check Identifier Check
-  | Cut Check Type 
-  deriving Show
+  | App (InferF b) (CheckF b)
+  | Skp (CheckF b) (InferF b)
+  | Fst (InferF b)
+  | Snd (InferF b)
+  | Cas (InferF b) (TypeF b) Identifier (CheckF b) Identifier (CheckF b)
+  | Cut (CheckF b) (TypeF b) 
+  deriving (Show, Functor, Foldable, Traversable)
+
+type RInfer = InferF String
+type Infer  = InferF Integer
+
+pRInfer :: Parser RInfer
+pRInfer = Skp <$> pRCheck <* betweenSpace (string ";")
+              <*> pRInfer
+      <|> pRInfer2
+
 
 chainl1 :: Parser a -> Parser b -> Parser (a -> b -> a) -> Parser a
 chainl1 p q op = p >>= rest
   where rest x = (op <*> return x <*> q >>= rest) <|> return x
 
-pInfer :: Parser Infer
-pInfer = chainl1 pInfer2 pCheck $ App <$ string " " <* skipSpace
+pRInfer2 :: Parser RInfer
+pRInfer2 = (chainl1 pRInfer3 pRCheck $ App <$ string " " <* skipSpace)
+       <|> pRInfer3
 
-pInfer2 :: Parser Infer
-pInfer2 = Fst <$> (string "fst" *> skipSpace *> pInfer)
-      <|> Snd <$> (string "snd" *> skipSpace *> pInfer)
-      <|> Cut <$> (string "(" *> betweenSpace pCheck)
-              <*> (string ":" *> betweenSpace pType <* string ")")
-      <|> Cas <$> (string "case"   *> betweenSpace pInfer)
-              <*> (string "return" *> betweenSpace pType)
-              <*> (string "of"     *> betweenSpace pIdentifier)
-              <*> (string "->"     *> betweenSpace pCheck)
-              <*> (string "|"      *> betweenSpace pIdentifier)
-              <*> (string "->"     *> skipSpace *> pCheck)
-      <|> Var <$> pIdentifier
+pRInfer3 :: Parser RInfer
+pRInfer3 = Fst <$> (string "fst" *> skipSpace *> pRInfer)
+       <|> Snd <$> (string "snd" *> skipSpace *> pRInfer)
+       <|> Cut <$> (string "(" *> betweenSpace pRCheck)
+               <*> (string ":" *> betweenSpace pRType <* string ")")
+       <|> Cas <$> (string "case"   *> betweenSpace pRInfer)
+               <*> (string "return" *> betweenSpace pRType)
+               <*> (string "of"     *> betweenSpace pIdentifier)
+               <*> (string "->"     *> betweenSpace pRCheck)
+               <*> (string "|"      *> betweenSpace pIdentifier)
+               <*> (string "->"     *> skipSpace *> pRCheck)
+       <|> Var <$> pIdentifier
+       <|> string "(" *> skipSpace *> pRInfer <* skipSpace <* string ")"
 
 data Pattern =
     All Identifier
@@ -87,11 +108,17 @@ pPattern2 = And <$> pPattern  <* skipSpace
 
 pPattern :: Parser Pattern
 pPattern = All <$> pIdentifier
-        <|> string "(" *> pPattern2 <* string ")"
+       <|> string "(" *> pPattern2 <* string ")"
+
+pRProblem :: Parser (RType, RCheck)
+pRProblem = (,) <$> (pRType <* betweenSpace (string ":"))
+               <*> pRCheck
+
+newtype IPair f g a = IPair { runIPair :: (f a, g a) }
+  deriving (Functor, Foldable, Traversable)
 
 pProblem :: Parser (Type , Check)
-pProblem = (,) <$> (pType <* betweenSpace (string ":"))
-               <*> pCheck
+pProblem = fmap runIPair $ reifyNames $ fmap IPair pRProblem
 
 fromRight :: Either a b -> Maybe b
 fromRight = either (const Nothing) Just

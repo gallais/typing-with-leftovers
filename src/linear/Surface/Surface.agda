@@ -29,6 +29,7 @@ data Infer : Set
 data Check where
   `lam_↦_      : String → Check → Check
   `let_∷=_`in_ : Pattern → Infer → Check → Check
+  `unit        : Check
   `prd         : Check → Check → Check
   `inl_        : Check → Check
   `inr_        : Check → Check
@@ -37,6 +38,7 @@ data Check where
     Check Surface.Parser.Check
     Surface.Parser.Lam
     Surface.Parser.Let
+    Surface.Parser.One
     Surface.Parser.Prd
     Surface.Parser.Inl
     Surface.Parser.Inr
@@ -46,6 +48,7 @@ data Check where
 data Infer where
   `var                    : String → Infer
   `app                    : Infer → Check → Infer
+  `skip                   : Check → Infer → Infer
   `fst `snd               : Infer → Infer
   `case_return_of_↦_%%_↦_ : Infer → Type → String → Check → String → Check → Infer
   `cut                    : Check → Type → Infer
@@ -53,6 +56,7 @@ data Infer where
     Infer Surface.Parser.Infer
     Surface.Parser.Var
     Surface.Parser.App
+    Surface.Parser.Skp
     Surface.Parser.Fst
     Surface.Parser.Snd
     Surface.Parser.Cas
@@ -66,9 +70,18 @@ data Infer where
          `let `v "left" ,, `v "right" ∷= `var "pair"
          `in `prd (`neu `var "right") (`neu `var "left")
 
+`swap⊕ : (σ τ : Type) → Check
+`swap⊕ σ τ = `lam "sum" ↦ `neu
+             `case (`var "sum") return τ ⊕ σ
+             of "left"  ↦ `inr (`neu `var "left")
+             %% "right" ↦ `inl (`neu `var "right")
+
+
 `swap& : Check
 `swap& = `lam "pair" ↦
          `prd (`neu (`snd (`var "pair"))) (`neu (`fst (`var "pair")))
+
+
 
 -----------------------------------------------
 -- Scope Checking
@@ -114,6 +127,7 @@ mutual
   scopeCheck nms (`let p ∷= t `in u) =
     let (m , nms′ , p′) = scopePattern p
     in L.`let p′ ∷=_`in_ <$> scopeInfer nms t ⊛ scopeCheck (nms′ ++ nms) u
+  scopeCheck nms `unit      = return L.`unit
   scopeCheck nms (`prd a b) = L.`prd <$> scopeCheck nms a ⊛ scopeCheck nms b
   scopeCheck nms (`inl t) = L.`inl_ <$> scopeCheck nms t
   scopeCheck nms (`inr t) = L.`inr_ <$> scopeCheck nms t
@@ -123,9 +137,10 @@ mutual
   scopeInfer nms (`var nm) with resolve nm nms
   ... | yes (k , _) = just (L.`var k)
   ... | no ¬p = nothing
-  scopeInfer nms (`app f t) = L.`app <$> scopeInfer nms f ⊛ scopeCheck nms t
-  scopeInfer nms (`fst t)   = L.`fst_ <$> scopeInfer nms t
-  scopeInfer nms (`snd t)   = L.`snd_ <$> scopeInfer nms t
+  scopeInfer nms (`app f t)  = L.`app  <$> scopeInfer nms f ⊛ scopeCheck nms t
+  scopeInfer nms (`skip u t) = L.`skip <$> scopeCheck nms u ⊛ scopeInfer nms t
+  scopeInfer nms (`fst t)    = L.`fst_ <$> scopeInfer nms t
+  scopeInfer nms (`snd t)    = L.`snd_ <$> scopeInfer nms t
   scopeInfer nms (`case i return σ of nml ↦ l %% nmr ↦ r) =
     L.`case_return σ of_%%_ <$> scopeInfer nms i ⊛ scopeCheck (nml ∷ nms) l ⊛ scopeCheck (nmr ∷ nms) r
   scopeInfer nms (`cut t σ) = (λ t → L.`cut t σ) <$> scopeCheck nms t
@@ -153,6 +168,10 @@ linear σ c with scopeCheck [] c
 -- example:
 `swap⊗-ok : ∀ σ τ → Is-just (linear ((σ ⊗ τ) ─o (τ ⊗ σ)) `swap⊗)
 `swap⊗-ok σ τ rewrite eq-diag τ | eq-diag σ = just _
+
+-- example:
+`swap⊕-ok : ∀ σ τ → Is-just (linear ((σ ⊕ τ) ─o (τ ⊕ σ)) (`swap⊕ σ τ))
+`swap⊕-ok σ τ rewrite eq-diag τ | eq-diag σ | eq-diag (τ ⊕ σ) = just _
 
 -- example:
 `swap&-ok : ∀ σ τ → Is-just (linear ((σ & τ) ─o (τ & σ)) `swap&)

@@ -9,8 +9,10 @@ open import linear.Context
 open import linear.Context.Mix as CM hiding (_++ˡ_)
 open import linear.Usage as U hiding ([_])
 import linear.Usage.Erasure as UE
+open import linear.Relation.Functional
 
-infix 2 [_]_++_≅_ 
+infix 2 [_]_++_≅_
+infixr 4 _∷ˡ_ _∷ʳ_
 data [_]_++_≅_ : ∀ {m n p} {γ : Context m} {δ : Context n} {θ : Context p} →
                  γ ++ δ ≅ θ → Usages γ → Usages δ → Usages θ → Set where
   []   : [ [] ] [] ++ [] ≅ []
@@ -47,3 +49,20 @@ _++ˡ_ : ∀ {m n p} {γ : Context m} {δ : Context n} {θ : Context p}
 ]]fromList[[ UE.[]       = []
 ]]fromList[[ (a UE.∷ˡ p) = ] a [ ∷ˡ ]]fromList[[ p
 ]]fromList[[ (a UE.∷ʳ p) = ] a [ ∷ʳ ]]fromList[[ p
+
+open import Data.Nat
+open import Data.Unit
+
+MixSplit :
+  (ri : Σ[ γδθ ∈ ∃ Context × ∃ Context × ∃ Context ]
+        let ((_ , γ) , (_ , δ) , (_ , θ)) = γδθ in
+        (γ ++ δ ≅ θ) × Usages γ × Usages δ) →
+  let ((_ , _ , (_ , θ)) , eq , Γ , Δ) = ri in Usages θ → Set
+MixSplit (_ , eq , Γ , Δ) Θ = [ eq ] Γ ++ Δ ≅ Θ
+
+functionalMix : Functional′ MixSplit
+functionalMix (_ , []        , _) [] [] = refl
+functionalMix (_ , (σ ∷ˡ eq) , _) (_ ∷ˡ o₁) (_ ∷ˡ o₂) =
+   cong _ (functionalMix (_ , eq , _) o₁ o₂)
+functionalMix (_ , (σ ∷ʳ eq) , _) (_ ∷ʳ o₁) (_ ∷ʳ o₂) =
+ cong _ (functionalMix (_ , eq , _) o₁ o₂)

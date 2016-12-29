@@ -26,12 +26,14 @@ ILL = let open Monoid (monoid Type) in record
   ; app   = λ f t inc →
             let F = cut f (─oL t ax)
             in mix F (subst (_ ++_≅ _) (PEq.sym $ proj₂ identity _) inc)
+  ; skip  = λ u t → mix (cut u (1L t))
   ; fst   = λ t → subst (_⊢ _) (proj₂ identity _) (cut t (&₁L ax))
   ; snd   = λ t → subst (_⊢ _) (proj₂ identity _) (cut t (&₂L ax))
   ; case  = λ t l r → mix (cut t (⊕L l r))
   ; cut   = id
   ; lam   = ─oR
   ; let'  = λ t u → mix (cut t (⊗L u))
+  ; unit  = 1R
   ; prd⊗  = λ a b → mix (⊗R a b)
   ; prd&  = &R
   ; inl   = ⊕₁R

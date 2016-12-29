@@ -23,6 +23,7 @@ mutual
   weakInfer : Weakening Infer L.weakInfer TInfer
   weakInfer 𝓜 (`var k)                     = `var (weakFin 𝓜 k)
   weakInfer 𝓜 (`app t u)                   = `app (weakInfer 𝓜 t) (weakCheck 𝓜 u)
+  weakInfer 𝓜 (`skip u t)                  = `skip (weakCheck 𝓜 u) (weakInfer 𝓜 t)
   weakInfer 𝓜 (`fst t)                     = `fst (weakInfer 𝓜 t)
   weakInfer 𝓜 (`snd t)                     = `snd (weakInfer 𝓜 t)
   weakInfer 𝓜 (`case t return σ of l %% r) = `case weakInfer 𝓜 t return σ
@@ -37,6 +38,7 @@ mutual
         ih   = weakCheck (copys o 𝓜) u
         cast = ++copys-elim₂ P [[ δ ]] ]] δ [[ Δ θ 𝓜
     in `let p ∷= weakInfer 𝓜 t `in cast ih
+  weakCheck 𝓜 `unit               = `unit
   weakCheck 𝓜 (`prd⊗ t u)         = `prd⊗ (weakCheck 𝓜 t) (weakCheck 𝓜 u)
   weakCheck 𝓜 (`prd& t u)         = `prd& (weakCheck 𝓜 t) (weakCheck 𝓜 u)
   weakCheck 𝓜 (`inl t)            = `inl weakCheck 𝓜 t
@@ -99,6 +101,10 @@ mutual
     let (θ₁ , tρ , ρ₁) = substInfer ρ t
         (θ₂ , uρ , ρ₂) = substCheck ρ₁ u
     in θ₂ , `app tρ uρ , ρ₂
+  substInfer ρ (`skip u t)                  =
+    let (θ₁ , uρ , ρ₁) = substCheck ρ u
+        (θ₂ , tρ , ρ₂) = substInfer ρ₁ t
+    in θ₂ , `skip uρ tρ , ρ₂
   substInfer ρ (`fst t)                     =
     let (θ₁ , tρ , ρ₁) = substInfer ρ t
     in θ₁ , `fst tρ , ρ₁
@@ -121,6 +127,7 @@ mutual
         (θ₃ , ρ)       = substLet δ (θ₂ , ρ₂)
         eq             = functionalEnvPre functionalInferPre _ ρ₂ (withStaleVars (patternContext p) ρ)
     in , `let p ∷= tρ `in subst (TCheck _ _ _) eq uρ , ρ
+  substCheck ρ `unit   = , `unit , ρ
   substCheck ρ (`prd⊗ a b) =
     let (θ₁ , aρ , ρ₁) = substCheck ρ a
         (θ₂ , bρ , ρ₂) = substCheck ρ₁ b

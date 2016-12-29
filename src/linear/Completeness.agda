@@ -187,6 +187,10 @@ complete (⊗L t)     =
       T′       = T.weakCheck (copy (copy (U.inserts (_ ∷ _ ∷ _ ∷ []) finish))) T
   in , `let `v ,, `v ∷= `var z
        `in `neu `app (`app (`cut (`lam (`lam T′))) (`neu `var z)) (`neu (`var (s z)))
+complete 1R         = , `unit
+complete (1L t)     =
+  let (rt , T) = complete t
+  in , (`neu `skip (`neu (`var z)) (T.weakInfer (insert ] 𝟙 [ finish) (`cut T)))
 complete (─oR t)    = , `lam (proj₂ $ complete t)
 complete (─oL {γ} {δ} {σ} {τ} {ν} t u)  =
   let (rT , T) = complete t

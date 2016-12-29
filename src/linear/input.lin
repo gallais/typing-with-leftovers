@@ -1,16 +1,21 @@
-(1 * 2) -o (2 * 1) : \ pair. let (left , right) = pair
+('a * 'b) -o ('b * 'a) : \ pair. let (left , right) = pair
                              in (right , left)
 
-(1 + 2) -o (2 + 1) : \ sum. case sum return 2 + 1
+('a + 'b) -o ('b + 'a) : \ sum. case sum return 'b + 'a
                             of left  -> inr left
                             |  right -> inl right
 
-(1 -o 2) -o 1 -o 2 : \ fun. \ arg. fun arg
+('a -o 'b) -o 'a -o 'b : \ fun. \ arg. fun arg
 
-(1 + 1) -o 1 : \ sum. case sum return 1
-                      of left  -> (\ x. x : 1 -o 1) left
+('a + 'a) -o 'a : \ sum. case sum return 'a
+                      of left  -> (\ x. x : 'a -o 'a) left
                        | right -> right
 
-(1 & 2) -o (2 & 1) : \ pair. (snd pair, fst pair)
+('a & 'b) -o ('b & 'a) : \ pair. (snd pair, fst pair)
 
-1 -o 2 : \x. x
+1 -o 'b : \x. x
+
+(1 -o ('a + 1)) * (1 & ('a -o 1)) -o 1 : \ pair. let (fun , sink) = pair
+          in case fun unit return 1
+             of a   -> (snd sink) a
+              | one -> (one; fst sink)

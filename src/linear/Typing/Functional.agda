@@ -24,6 +24,7 @@ functionalInfer : Functional (InferTyping TInfer)
 functionalInfer _ (`var k₁)    (`var k₂)    = functionalFin _ k₁ k₂
 functionalInfer _ (`app t₁ u₁) (`app t₂ u₂) = cong (λ { (_ ─o τ) → τ; σ → σ })
                                             $ functionalInfer _ t₁ t₂
+functionalInfer _ (`skip _ t₁) (`skip _ t₂) = functionalInfer _ t₁ t₂
 functionalInfer _ (`fst t₁)    (`fst t₂)    = cong (λ { (σ & _) → σ; σ → σ})
                                             $ functionalInfer _ t₁ t₂
 functionalInfer _ (`snd t₁)    (`snd t₂)    = cong (λ { (_ & τ) → τ; σ → σ})
@@ -39,6 +40,9 @@ mutual
   functionalInferPost _ (`app t₁ u₁) (`app t₂ u₂)
     with functionalInferPost _ t₁ t₂
   ... | refl = cong _ $ functionalCheckPost _ u₁ u₂
+  functionalInferPost _ (`skip u₁ t₁) (`skip u₂ t₂)
+    with functionalCheckPost _ u₁ u₂
+  ... | refl = functionalInferPost _ t₁ t₂
   functionalInferPost _ (`fst t₁) (`fst t₂)
     with functionalInferPost _ t₁ t₂
   ... | refl = refl
@@ -60,6 +64,7 @@ mutual
     with functionalInferPost _ t₁ t₂
   ... | refl with functionalPattern _ p₁ p₂
   ... | refl = functional++ ]] δ [[ refl (functionalCheckPost _ u₁ u₂)
+  functionalCheckPost _ `unit `unit = refl
   functionalCheckPost _ (`prd⊗ a₁ b₁) (`prd⊗ a₂ b₂)
     with functionalCheckPost _ a₁ a₂
   ... | refl = functionalCheckPost _ b₁ b₂
@@ -76,6 +81,10 @@ mutual
     with functionalInfer _ t₁ t₂
   ... | refl with functionalCheckPre _ u₁ u₂
   ... | refl with functionalInferPre _ t₁ t₂
+  ... | refl = refl
+  functionalInferPre _ (`skip u₁ t₁) (`skip u₂ t₂)
+    with functionalInferPre _ t₁ t₂
+  ... | refl with functionalCheckPre _ u₁ u₂
   ... | refl = refl
   functionalInferPre _ (`fst t₁) (`fst t₂)
     with functionalInfer _ t₁ t₂
@@ -100,6 +109,7 @@ mutual
   ... | refl with functionalPattern _ p₁ p₂
   ... | refl with functional++ [[ patternContext p₁ ]] refl (functionalCheckPre _ u₁ u₂)
   ... | refl = cong proj₂ $ functionalInferPre _ t₁ t₂
+  functionalCheckPre _ `unit `unit = refl
   functionalCheckPre _ (`prd⊗ a₁ b₁) (`prd⊗ a₂ b₂)
     rewrite functionalCheckPre _ b₁ b₂ = functionalCheckPre _ a₁ a₂
   functionalCheckPre _ (`prd& a₁ b₁) (`prd& a₂ b₂) = functionalCheckPre _ a₁ a₂

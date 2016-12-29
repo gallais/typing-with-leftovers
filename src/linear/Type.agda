@@ -14,6 +14,7 @@ infixr 6 _⊗_
 infixr 5 _─o_
 data Type : Set where
   κ    : ℕ → Type
+  𝟙   : Type
   _⊗_  : (σ τ : Type) → Type
   _─o_ : (σ τ : Type) → Type
   _&_  : (σ τ : Type) → Type
@@ -23,6 +24,7 @@ data Type : Set where
 {-# COMPILED_DATA
     Type Type.Parser.Type
     Type.Parser.Base
+    Type.Parser.Unit
     Type.Parser.Tensor
     Type.Parser.Lolli
     Type.Parser.With
@@ -62,30 +64,41 @@ eq─o = mkRawIso (uncurry (cong₂ _─o_)) ─o-inj
 
 eq : (σ τ : Type) → Dec (σ ≡ τ)
 eq (κ x)      (κ y)      = eqκ  <$> x ≟ y
+eq 𝟙          𝟙          = yes refl
 eq (σ₁ ⊗ τ₁)  (σ₂ ⊗ τ₂)  = eq⊗  <$> eq σ₁ σ₂ <*> eq τ₁ τ₂
 eq (σ₁ ─o τ₁) (σ₂ ─o τ₂) = eq─o <$> eq σ₁ σ₂ <*> eq τ₁ τ₂
 eq (σ₁ & τ₁)  (σ₂ & τ₂)  = eq&  <$> eq σ₁ σ₂ <*> eq τ₁ τ₂
 eq (σ₁ ⊕ τ₁)  (σ₂ ⊕ τ₂)  = eq⊕  <$> eq σ₁ σ₂ <*> eq τ₁ τ₂
+eq (κ _)      𝟙          = no (λ ())
 eq (κ _)      (_ ⊗ _)    = no (λ ())
 eq (κ _)      (_ ─o _)   = no (λ ())
 eq (κ _)      (_ & _)    = no (λ ())
 eq (κ _)      (_ ⊕ _)    = no (λ ())
 eq (_ ⊗ _)    (κ _)      = no (λ ())
+eq (_ ⊗ _)    𝟙          = no (λ ())
 eq (_ ⊗ _)    (_ ─o _)   = no (λ ())
 eq (_ ⊗ _)    (_ & _)    = no (λ ())
 eq (_ ⊗ _)    (_ ⊕ _)    = no (λ ())
 eq (_ ─o _)   (κ _)      = no (λ ())
+eq (_ ─o _)   𝟙          = no (λ ())
 eq (_ ─o _)   (_ ⊗ _)    = no (λ ())
 eq (_ ─o _)   (_ & _)    = no (λ ())
 eq (_ ─o _)   (_ ⊕ _)    = no (λ ())
 eq (_ ⊕ _)    (κ _)      = no (λ ())
+eq (_ ⊕ _)    𝟙          = no (λ ())
 eq (_ ⊕ _)    (_ ─o _)   = no (λ ())
 eq (_ ⊕ _)    (_ & _)    = no (λ ())
 eq (_ ⊕ _)    (_ ⊗ _)    = no (λ ())
-eq (_ & _)   (κ _)       = no (λ ())
-eq (_ & _)   (_ ⊗ _)     = no (λ ())
-eq (_ & _)   (_ ─o _)    = no (λ ())
-eq (_ & _)   (_ ⊕ _)     = no (λ ())
+eq (_ & _)    (κ _)      = no (λ ())
+eq (_ & _)    𝟙          = no (λ ())
+eq (_ & _)    (_ ⊗ _)    = no (λ ())
+eq (_ & _)    (_ ─o _)   = no (λ ())
+eq (_ & _)    (_ ⊕ _)    = no (λ ())
+eq 𝟙          (κ _)      = no (λ ())
+eq 𝟙          (_ ⊗ _)    = no (λ ())
+eq 𝟙          (_ ─o _)   = no (λ ())
+eq 𝟙          (_ & _)    = no (λ ())
+eq 𝟙          (_ ⊕ _)    = no (λ ())
 
 ≟-diag : (n : ℕ) → (n ≟ n) ≡ yes refl
 ≟-diag zero = refl
@@ -93,6 +106,7 @@ eq (_ & _)   (_ ⊕ _)     = no (λ ())
 
 eq-diag : (σ : Type) → eq σ σ ≡ yes refl
 eq-diag (κ n)    rewrite ≟-diag n = refl
+eq-diag 𝟙 = refl
 eq-diag (σ ⊗ τ)  rewrite eq-diag σ | eq-diag τ = refl
 eq-diag (σ ─o τ) rewrite eq-diag σ | eq-diag τ = refl
 eq-diag (σ & τ)  rewrite eq-diag σ | eq-diag τ = refl
