@@ -13,6 +13,7 @@ data Type =
     Base   !Integer
   | Tensor Type Type
   | Plus   Type Type
+  | With   Type Type
   | Lolli  Type Type
   deriving Show
 
@@ -41,7 +42,12 @@ pType7 = Plus <$> pType8
      <|> pType8
 
 pType8 :: Parser Type
-pType8 = Base <$> pBase
+pType8 = With <$> pType9
+              <*> (betweenSpace (string "&") *> pType8)
+     <|> pType9
+
+pType9 :: Parser Type
+pType9 = Base <$> pBase
      <|> string "(" *> pType <* string ")"
 
 pType :: Parser Type

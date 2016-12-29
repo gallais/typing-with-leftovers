@@ -46,22 +46,29 @@ data Check where
 data Infer where
   `var                    : String → Infer
   `app                    : Infer → Check → Infer
+  `fst `snd               : Infer → Infer
   `case_return_of_↦_%%_↦_ : Infer → Type → String → Check → String → Check → Infer
   `cut                    : Check → Type → Infer
 {-# COMPILED_DATA
     Infer Surface.Parser.Infer
     Surface.Parser.Var
     Surface.Parser.App
+    Surface.Parser.Fst
+    Surface.Parser.Snd
     Surface.Parser.Cas
     Surface.Parser.Cut
 #-}
 
 -- example:
 
-`swap : Check
-`swap = `lam "pair" ↦
-        `let `v "left" ,, `v "right" ∷= `var "pair"
-        `in `prd (`neu `var "right") (`neu `var "left")
+`swap⊗ : Check
+`swap⊗ = `lam "pair" ↦
+         `let `v "left" ,, `v "right" ∷= `var "pair"
+         `in `prd (`neu `var "right") (`neu `var "left")
+
+`swap& : Check
+`swap& = `lam "pair" ↦
+         `prd (`neu (`snd (`var "pair"))) (`neu (`fst (`var "pair")))
 
 -----------------------------------------------
 -- Scope Checking
@@ -117,6 +124,8 @@ mutual
   ... | yes (k , _) = just (L.`var k)
   ... | no ¬p = nothing
   scopeInfer nms (`app f t) = L.`app <$> scopeInfer nms f ⊛ scopeCheck nms t
+  scopeInfer nms (`fst t)   = L.`fst_ <$> scopeInfer nms t
+  scopeInfer nms (`snd t)   = L.`snd_ <$> scopeInfer nms t
   scopeInfer nms (`case i return σ of nml ↦ l %% nmr ↦ r) =
     L.`case_return σ of_%%_ <$> scopeInfer nms i ⊛ scopeCheck (nml ∷ nms) l ⊛ scopeCheck (nmr ∷ nms) r
   scopeInfer nms (`cut t σ) = (λ t → L.`cut t σ) <$> scopeCheck nms t
@@ -142,5 +151,9 @@ linear σ c with scopeCheck [] c
               }
 
 -- example:
-`swap-ok : ∀ σ τ → Is-just (linear ((σ ⊗ τ) ─o (τ ⊗ σ)) `swap)
-`swap-ok σ τ rewrite eq-diag τ | eq-diag σ = just _
+`swap⊗-ok : ∀ σ τ → Is-just (linear ((σ ⊗ τ) ─o (τ ⊗ σ)) `swap⊗)
+`swap⊗-ok σ τ rewrite eq-diag τ | eq-diag σ = just _
+
+-- example:
+`swap&-ok : ∀ σ τ → Is-just (linear ((σ & τ) ─o (τ & σ)) `swap&)
+`swap&-ok σ τ rewrite eq-diag τ | eq-diag σ = just _

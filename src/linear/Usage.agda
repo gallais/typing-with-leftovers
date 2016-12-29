@@ -1,30 +1,36 @@
 module linear.Usage where
 
+open import Data.Unit
 open import Data.Nat as ℕ
 open import Data.Fin
 open import Data.Product
-open import Data.Vec hiding ([_] ; _++_ ; map ; tail)
+open import Data.Vec hiding ([_] ; _++_ ; map ; head ; tail)
 open import Function
 open import linear.Relation.Functional
 
 open import linear.Type
 open import linear.Scope as Sc
-  hiding (Mergey ; copys
+  hiding (Mergey ; copys ; inserts
         ; Extending
         ; Weakening ; weakFin
         ; Env ; Substituting
         ; Freshey ; withFreshVars)
-open import linear.Context as C hiding (Mergey ; _⋈_ ; copys ; _++_ ; ++copys-elim)
+open import linear.Context as C
+  hiding (Mergey ; _⋈_ ; copys ; inserts
+         ; _++_ ; ++copys-elim)
 open import Relation.Binary.PropositionalEquality
 
 data Usage : (a : Type) → Set where
   [_] : (a : Type) → Usage a
   ]_[ : (a : Type) → Usage a
 
-infixl 5 _∷_ -- _∙_
+infixr 5 _∷_ -- _∙_
 data Usages : {n : ℕ} (γ : Context n) → Set where
   []  : Usages []
   _∷_ : {n : ℕ} {γ : Context n} {a : Type} → Usage a → Usages γ → Usages (a ∷ γ)
+
+head : {n : ℕ} {γ : Context n} {a : Type} → Usages (a ∷ γ) → Usage a
+head (S ∷ _) = S
 
 tail : {n : ℕ} {γ : Context n} {a : Type} → Usages (a ∷ γ) → Usages γ
 tail (_ ∷ Γ) = Γ
@@ -35,7 +41,7 @@ _++_ : {m n : ℕ} {γ : Context m} {δ : Context n}
 []    ++ Δ = Δ
 x ∷ Γ ++ Δ = x ∷ (Γ ++ Δ)
 
-infix 1 _⊢_∈[_]⊠_
+infix 3 _⊢_∈[_]⊠_
 data _⊢_∈[_]⊠_ : {n : ℕ} {γ : Context n} (Γ : Usages γ) (k : Fin n) (a : Type) (Δ : Usages γ) → Set where
   z : {n : ℕ} {γ : Context n} {Γ : Usages γ} {a : Type} → [ a ] ∷ Γ ⊢ zero ∈[ a ]⊠ ] a [ ∷ Γ
   s_ : {n : ℕ} {γ : Context n} {k : Fin n} {Γ Δ : Usages γ} {a b : Type} {u : Usage b} →
@@ -53,9 +59,15 @@ data Mergey : {k l : ℕ} {m : Sc.Mergey k l} (M : C.Mergey m) → Set where
   insert : {k l : ℕ} {m : Sc.Mergey k l} {M : C.Mergey m} {a : Type}
            (A : Usage a) (𝓜 : Mergey M) → Mergey (insert a M)
 
-copys : (o : ℕ) {k l : ℕ} {m : Sc.Mergey k l} {M : C.Mergey m} → Mergey M → Mergey (C.copys o M)
+copys : (o : ℕ) {k l : ℕ} {m : Sc.Mergey k l} {M : C.Mergey m} →
+        Mergey M → Mergey (C.copys o M)
 copys zero    M = M
 copys (suc o) M = copy (copys o M)
+
+inserts : {o k l : ℕ} {O : Context o} (𝓞 : Usages O) {m : Sc.Mergey k l} {M : C.Mergey m} →
+          Mergey M → Mergey (C.inserts O M)
+inserts []      𝓜 = 𝓜
+inserts (S ∷ 𝓞) 𝓜 = insert S (inserts 𝓞 𝓜)
 
 infixl 4 _⋈_
 _⋈_ : {k l : ℕ} {γ : Context k} {m : Sc.Mergey k l} {M : C.Mergey m}
@@ -63,6 +75,20 @@ _⋈_ : {k l : ℕ} {γ : Context k} {m : Sc.Mergey k l} {M : C.Mergey m}
 Γ     ⋈ finish     = Γ
 A ∷ Γ ⋈ copy M     = A ∷ (Γ ⋈ M)
 Γ     ⋈ insert A M = A ∷ (Γ ⋈ M)
+
+⋈ˡ : (ri : Σ[ k ∈ ℕ ] Σ[ l ∈ ℕ ] Σ[ γ ∈ Context k ] Σ[ m ∈ Sc.Mergey k l ]
+           Σ[ M ∈ C.Mergey m ] Mergey M × Usages (γ C.⋈ M))
+     (ii : ⊤) (o : let (_ , _ , γ , _) = ri in Usages γ) → Set
+⋈ˡ (_ , _ , _ , _ , _ , 𝓜 , Γ) ii Γ′ = Γ ≡ (Γ′ ⋈ 𝓜)
+
+⋈ˡ-injective : Functional ⋈ˡ
+⋈ˡ-injective (l , .l , γ , .finish , .finish , finish , Γ) eq₁ eq₂ = trans (sym eq₁) eq₂
+⋈ˡ-injective (_ , _ , _ ∷ γ , _ , _ , copy 𝓜 , S ∷ Γ) {_} {_} {σ ∷ o₁} {τ ∷ o₂} eq₁ eq₂ =
+  cong₂ _∷_ (cong head $ trans (sym eq₁) eq₂)
+            (⋈ˡ-injective (_ , _ , _ , _ , _ , 𝓜 , Γ) (cong tail eq₁) (cong tail eq₂))
+⋈ˡ-injective (k , _ , γ , _ , _ , insert A 𝓜 , S ∷ Γ) eq₁ eq₂ =
+  ⋈ˡ-injective (_ , _ , _ , _ , _ , 𝓜 , Γ) (cong tail eq₁) (cong tail eq₂)
+
 
 ++copys-elim₂ :
   {k l o : ℕ} {m : Sc.Mergey k l} {M : C.Mergey m} {δ : Context o} {γ : Context k}

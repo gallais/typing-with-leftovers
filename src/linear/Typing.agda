@@ -34,11 +34,19 @@ mutual
             -----------------------------------------------------------------
                  Γ ⊢ τ ∋ `let p ∷= t `in u ⊠ θ
 
-    `prd : {σ τ : Type} {a b : Check n} {Δ θ : Usages γ} →
+    `prd⊗ : {σ τ : Type} {a b : Check n} {Δ θ : Usages γ} →
 
              Γ ⊢ σ ∋ a ⊠ Δ → Δ ⊢ τ ∋ b ⊠ θ →
            ---------------------------------
              Γ ⊢ σ ⊗ τ ∋ `prd a b ⊠ θ
+
+
+    `prd& : {σ τ : Type} {a b : Check n} {Δ : Usages γ} →
+
+             Γ ⊢ σ ∋ a ⊠ Δ → Γ ⊢ τ ∋ b ⊠ Δ →
+           ---------------------------------
+             Γ ⊢ σ & τ ∋ `prd a b ⊠ Δ
+
 
     `inl_ : {σ τ : Type} {t : Check n} {Δ : Usages γ} →
 
@@ -60,7 +68,7 @@ mutual
     
   data _⊢_∈_⊠_ {n : ℕ} {γ : Context n} (Γ : Usages γ) : (t : Infer n) (A : Type) (Δ : Usages γ) → Set where
 
-    `var : {σ : Type} {Δ : Usages γ} {k : Fin n} →
+    `var_ : {σ : Type} {Δ : Usages γ} {k : Fin n} →
 
              Γ ⊢ k ∈[ σ ]⊠ Δ →
           ----------------------
@@ -71,6 +79,18 @@ mutual
             Γ ⊢ t ∈ σ ─o τ ⊠ Δ → Δ ⊢ σ ∋ u ⊠ θ →
           ---------------------------------------
              Γ ⊢ `app t u ∈ τ ⊠ θ            
+
+    `fst_ : {σ τ : Type} {Δ : Usages γ} {t : Infer n} →
+
+            Γ ⊢ t ∈ σ & τ ⊠ Δ →
+          -----------------------
+            Γ ⊢ `fst t ∈ σ ⊠ Δ
+
+    `snd_ : {σ τ : Type} {Δ : Usages γ} {t : Infer n} →
+
+            Γ ⊢ t ∈ σ & τ ⊠ Δ →
+          -----------------------
+            Γ ⊢ `snd t ∈ τ ⊠ Δ
 
     `case_return_of_%%_ : {σ τ : Type} {Δ θ : Usages γ} {t : Infer n} {l r : Check (suc n)} →
 

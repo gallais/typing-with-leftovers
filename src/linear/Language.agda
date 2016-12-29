@@ -19,8 +19,10 @@ mutual
     `neu_        : (t : Infer n) → Check n
 
   data Infer (n : ℕ) : Set where
-    `var                : (k : Fin n) → Infer n
+    `var_               : (k : Fin n) → Infer n
     `app                : (t : Infer n) (u : Check n) → Infer n
+    `fst_               : (t : Infer n) → Infer n
+    `snd_               : (t : Infer n) → Infer n
     `case_return_of_%%_ : (i : Infer n) (σ : Type) (l r : Check (suc n)) → Infer n
     `cut                : (t : Check n) (σ : Type) → Infer n
 
@@ -45,8 +47,12 @@ mutual
   weakInfer : Weakening Infer
   weakInfer inc (`var k)                     = `var (weakFin inc k)
   weakInfer inc (`app i u)                   = `app (weakInfer inc i) (weakCheck inc u)
-  weakInfer inc (`case i return σ of l %% r) = `case weakInfer inc i return σ of weakCheck (copy inc) l
-                                                                              %% weakCheck (copy inc) r
+  weakInfer inc (`fst t)                     = `fst (weakInfer inc t)
+  weakInfer inc (`snd t)                     = `snd (weakInfer inc t)
+  weakInfer inc (`case i return σ of l %% r) =
+    `case weakInfer inc i return σ
+    of weakCheck (copy inc) l
+    %% weakCheck (copy inc) r
   weakInfer inc (`cut t σ)                   = `cut (weakCheck inc t) σ
 
 
@@ -68,7 +74,10 @@ mutual
   substInfer : Substituting Infer Infer
   substInfer ρ (`var k)                     = substFin fresheyInfer ρ k
   substInfer ρ (`app i u)                   = `app (substInfer ρ i) (substCheck ρ u)
-  substInfer ρ (`case i return σ of l %% r) = `case substInfer ρ i return σ
-                                                 of substCheck (v∷ ρ) l
-                                                 %% substCheck (v∷ ρ) r
+  substInfer ρ (`fst t)                     = `fst (substInfer ρ t)
+  substInfer ρ (`snd t)                     = `snd (substInfer ρ t)
+  substInfer ρ (`case i return σ of l %% r) =
+    `case substInfer ρ i return σ
+    of substCheck (v∷ ρ) l
+    %% substCheck (v∷ ρ) r
   substInfer ρ (`cut t σ)                   = `cut (substCheck ρ t) σ

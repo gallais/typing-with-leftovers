@@ -11,4 +11,6 @@
                       of left  -> (\ x. x : 1 -o 1) left
                        | right -> right
 
+(1 & 2) -o (2 & 1) : \ pair. (snd pair, fst pair)
+
 1 -o 2 : \x. x

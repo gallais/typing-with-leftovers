@@ -15,7 +15,7 @@ type Identifier = Text
 
 reservedKeywords :: [String]
 reservedKeywords =
-  [ "let", "in", "case", "return", "of", "inl", "inr" ]
+  [ "let", "in", "case", "return", "of", "inl", "inr" , "fst" , "snd" ]
 
 pIdentifier :: Parser Identifier
 pIdentifier = do
@@ -48,6 +48,8 @@ pCheck = Lam <$> (string "\\" *> skipSpace
 data Infer =
     Var Identifier
   | App Infer Check
+  | Fst Infer
+  | Snd Infer
   | Cas Infer Type Identifier Check Identifier Check
   | Cut Check Type 
   deriving Show
@@ -60,7 +62,9 @@ pInfer :: Parser Infer
 pInfer = chainl1 pInfer2 pCheck $ App <$ string " " <* skipSpace
 
 pInfer2 :: Parser Infer
-pInfer2 = Cut <$> (string "(" *> betweenSpace pCheck)
+pInfer2 = Fst <$> (string "fst" *> skipSpace *> pInfer)
+      <|> Snd <$> (string "snd" *> skipSpace *> pInfer)
+      <|> Cut <$> (string "(" *> betweenSpace pCheck)
               <*> (string ":" *> betweenSpace pType <* string ")")
       <|> Cas <$> (string "case"   *> betweenSpace pInfer)
               <*> (string "return" *> betweenSpace pType)
@@ -69,7 +73,6 @@ pInfer2 = Cut <$> (string "(" *> betweenSpace pCheck)
               <*> (string "|"      *> betweenSpace pIdentifier)
               <*> (string "->"     *> skipSpace *> pCheck)
       <|> Var <$> pIdentifier
-
 
 data Pattern =
     All Identifier
