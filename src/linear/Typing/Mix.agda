@@ -93,4 +93,6 @@ mutual
         (l , L)             = mixCheck (_ ∷ˡ eqΔ₁₂) (_ ∷ˡ eqΔ) (_ ∷ˡ eqΔ′₁₂) (_ ∷ˡ eqΔ′) l
         (r , R)             = mixCheck (_ ∷ˡ eqΔ₁₂) (_ ∷ˡ eqΔ) (_ ∷ˡ eqΔ′₁₂) (_ ∷ˡ eqΔ′) r
     in , `case T return σ of L %% R
+  mixInfer eqΓ eqΔ eqΓ′ eqΔ′ (`exfalso σ t) =
+   Prod.map (`exfalso σ) (`exfalso σ) $ mixInfer eqΓ eqΔ eqΓ′ eqΔ′ t
   mixInfer eqΓ eqΔ eqΓ′ eqΔ′ (`cut t) = Prod.map _ `cut $ mixCheck eqΓ eqΔ eqΓ′ eqΔ′ t

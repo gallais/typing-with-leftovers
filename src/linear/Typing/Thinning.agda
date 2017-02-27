@@ -125,6 +125,9 @@ thinning′Infer 𝓜 eq₁ eq₂ (`case t return σ of l %% r) =
       (r′ , eqr , R) = thinning′Check (copy 𝓜) (refl ∷ eq) (refl ∷ eq₂) r
   in , cong₂ (λ t → uncurry (`case t return σ of_%%_)) eqt (cong₂ _,_ eql eqr)
      , `case T return σ of L %% R
+thinning′Infer 𝓜 eq₁ eq₂ (`exfalso σ t) =
+  let (t′ , eqt , T) = thinning′Infer 𝓜 eq₁ eq₂ t
+  in , cong (`exfalso σ) eqt , `exfalso σ T
 thinning′Infer 𝓜 eq₁ eq₂ (`cut t) = 
   let (t′ , eqt , T) = thinning′Check 𝓜 eq₁ eq₂ t
   in , cong (λ t → `cut t _) eqt , `cut T

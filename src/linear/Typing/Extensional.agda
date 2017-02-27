@@ -55,6 +55,8 @@ mutual
         r′ = extensionalCheck (PEq.refl ∷ CP.sym eqs₂) (PEq.refl ∷ eqs₂)
                               (PEq.refl ∷ coerceˡ eqs₂) (PEq.refl ∷ EQs₂) r
     in `case t′ return σ of l′ %% r′
+  extensionalInfer eqs₁ eqs₂ EQs₁ EQs₂ (`exfalso σ t) =
+    `exfalso σ (extensionalInfer eqs₁ eqs₂ EQs₁ EQs₂ t)
   extensionalInfer eqs₁ eqs₂ EQs₁ EQs₂ (`cut t) =
     `cut $ extensionalCheck eqs₁ eqs₂ EQs₁ EQs₂ t
 

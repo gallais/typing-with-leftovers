@@ -30,6 +30,7 @@ functionalInfer _ (`fst t₁)    (`fst t₂)    = cong (λ { (σ & _) → σ; σ
 functionalInfer _ (`snd t₁)    (`snd t₂)    = cong (λ { (_ & τ) → τ; σ → σ})
                                             $ functionalInfer _ t₁ t₂
 functionalInfer _ (`case t₁ return σ₁ of l₁ %% r₁) (`case t₂ return .σ₁ of l₂ %% r₂) = refl
+functionalInfer _ (`exfalso σ₁ t₁) (`exfalso σ₂ t₂) = refl
 functionalInfer _ (`cut t₁) (`cut t₂) = refl
 
 
@@ -52,6 +53,9 @@ mutual
   functionalInferPost _ (`case t₁ return σ₁ of l₁ %% r₁) (`case t₂ return .σ₁ of l₂ %% r₂)
     with functionalInferPost _ t₁ t₂
   ... | refl with functionalCheckPost _ l₁ l₂
+  ... | refl = refl
+  functionalInferPost _ (`exfalso σ₁ t₁) (`exfalso σ₂ t₂)
+    with functionalInferPost _ t₁ t₂
   ... | refl = refl
   functionalInferPost _ (`cut t₁) (`cut t₂) = cong _ $ functionalCheckPost _ t₁ t₂
 
@@ -98,6 +102,9 @@ mutual
     with functionalInfer _ t₁ t₂
   ... | refl with functionalCheckPre _ r₁ r₂
   ... | refl with functionalInferPre _ t₁ t₂
+  ... | refl = refl
+  functionalInferPre _ (`exfalso σ₁ t₁) (`exfalso σ₂ t₂)
+    with functionalInferPre _ t₁ t₂
   ... | refl = refl
   functionalInferPre _ (`cut t₁) (`cut t₂) = cong _ $ functionalCheckPre _ t₁ t₂
 

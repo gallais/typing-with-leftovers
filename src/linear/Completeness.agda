@@ -125,6 +125,12 @@ Lemma₂₁-eq γ δ = CP.trans (CP.sym (Lemma₂-eq γ δ)) (Lemma₁-eq δ γ)
 𝓛emma₂₁-]]eq[[ []      (σ ∷ δ) = Eq.refl ∷ 𝓛emma₂₁-]]eq[[ [] δ
 
 
+`0L : (γ : List Type) (σ : Type) →  ∃ λ t → U.[ 𝟘 ] ∷ [[ V.fromList γ ]] ⊢ t ∈ σ ⊠ ] 𝟘 [ ∷ ]] V.fromList γ [[
+`0L []      τ = , `exfalso τ (`var z)
+`0L (σ ∷ γ) τ =
+  let (t , T) = `0L γ (σ ─o τ)
+   in , `app (T.weakInfer (copy (insert U.[ σ ] finish)) T) (`neu (`var (s z)))
+
 complete : {γ : List Type} {σ : Type} → γ ⊢ σ →
            ∃ λ t → [[ V.fromList γ ]] ⊢ σ ∋ t ⊠ ]] V.fromList γ [[
 complete ax         = , `neu (`var z)
@@ -191,6 +197,7 @@ complete 1R         = , `unit
 complete (1L t)     =
   let (rt , T) = complete t
   in , (`neu `skip (`neu (`var z)) (T.weakInfer (insert ] 𝟙 [ finish) (`cut T)))
+complete 0L = , `neu (`exfalso _ (proj₂ (`0L _ _)))
 complete (─oR t)    = , `lam (proj₂ $ complete t)
 complete (─oL {γ} {δ} {σ} {τ} {ν} t u)  =
   let (rT , T) = complete t

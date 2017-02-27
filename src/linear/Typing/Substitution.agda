@@ -29,6 +29,7 @@ mutual
   weakInfer 𝓜 (`case t return σ of l %% r) = `case weakInfer 𝓜 t return σ
                                                 of weakCheck (copy 𝓜) l
                                                 %% weakCheck (copy 𝓜) r
+  weakInfer 𝓜 (`exfalso σ t)               = `exfalso σ (weakInfer 𝓜 t)
   weakInfer 𝓜 (`cut t)                     = `cut (weakCheck 𝓜 t)
 
   weakCheck : Weakening Check L.weakCheck TCheck
@@ -114,6 +115,9 @@ mutual
   substInfer {t = `case rt return .σ of rl %% rr} ρ (`case t return σ of l %% r) =
     let (θ₁ , tρ , ρ₁) = substInfer ρ t
     in substCase rt tρ (substCheck ([v]∷ ρ₁) l) (substCheck ([v]∷ ρ₁) r)
+  substInfer ρ (`exfalso σ t) =
+    let (Θ₁ , tρ , ρ₁) = substInfer ρ t
+    in Θ₁ , `exfalso σ tρ , ρ₁
   substInfer ρ (`cut t)                     =
     let (θ₁ , tρ , ρ₁) = substCheck ρ t
     in θ₁ , `cut tρ , ρ₁

@@ -29,6 +29,7 @@ consume (σ ∷ Γ)     (suc k) = consumeSuc Γ σ k <$> consume Γ k
 checkPattern : {n : ℕ} (σ : Type) (p : Pattern n) → Dec $ PATTERN σ p
 checkPattern σ `v              = yes (σ ∷ [] , `v)
 checkPattern 𝟙        (p ,, q) = no (λ { (_ , ()) })
+checkPattern 𝟘        (p ,, q) = no (λ { (_ , ()) })
 checkPattern (σ ⊗ τ)  (p ,, q) = patternTensor <$> checkPattern σ p <*> checkPattern τ q
 checkPattern (σ ─o τ) (p ,, q) = no (λ { (_ , ()) })
 checkPattern (σ & τ)  (p ,, q) = no (λ { (_ , ()) })
@@ -53,6 +54,7 @@ mutual
     with infer Γ t
   ... | no ¬p = no $ λ p → ¬p (_ , _ , app-inv-function (INFER.proof p))
   ... | yes (𝟙 , _ , T)     = no $ λ p → case functionalInfer _ T (app-inv-function $ INFER.proof p) of λ ()
+  ... | yes (𝟘 , _ , T)     = no $ λ p → case functionalInfer _ T (app-inv-function $ INFER.proof p) of λ ()
   ... | yes (σ ⊗ τ , _ , T) = no $ λ p → case functionalInfer _ T (app-inv-function $ INFER.proof p) of λ ()
   ... | yes (σ ⊕ τ , _ , T) = no $ λ p → case functionalInfer _ T (app-inv-function $ INFER.proof p) of λ ()
   ... | yes (σ & τ , _ , T) = no $ λ p → case functionalInfer _ T (app-inv-function $ INFER.proof p) of λ ()
@@ -82,6 +84,7 @@ mutual
     with infer Γ t
   ... | no ¬p = no $ λ p → ¬p (_ , _ , proj₂ (fst-inv (INFER.proof p)))
   ... | yes (𝟙 , _ , T)      = no $ λ p → case functionalInfer _ T (proj₂ $ fst-inv $ INFER.proof p) of λ ()
+  ... | yes (𝟘 , _ , T)      = no $ λ p → case functionalInfer _ T (proj₂ $ fst-inv $ INFER.proof p) of λ ()
   ... | yes (σ ⊗ τ , _ , T)  = no $ λ p → case functionalInfer _ T (proj₂ $ fst-inv $ INFER.proof p) of λ ()
   ... | yes (σ ⊕ τ , _ , T)  = no $ λ p → case functionalInfer _ T (proj₂ $ fst-inv $ INFER.proof p) of λ ()
   ... | yes (σ ─o τ , _ , T) = no $ λ p → case functionalInfer _ T (proj₂ $ fst-inv $ INFER.proof p) of λ ()
@@ -93,6 +96,7 @@ mutual
     with infer Γ t
   ... | no ¬p = no $ λ p → ¬p (_ , _ , proj₂ (snd-inv (INFER.proof p)))
   ... | yes (𝟙 , _ , T)      = no $ λ p → case functionalInfer _ T (proj₂ $ snd-inv $ INFER.proof p) of λ ()
+  ... | yes (𝟘 , _ , T)      = no $ λ p → case functionalInfer _ T (proj₂ $ snd-inv $ INFER.proof p) of λ ()
   ... | yes (σ ⊗ τ , _ , T)  = no $ λ p → case functionalInfer _ T (proj₂ $ snd-inv $ INFER.proof p) of λ ()
   ... | yes (σ ⊕ τ , _ , T)  = no $ λ p → case functionalInfer _ T (proj₂ $ snd-inv $ INFER.proof p) of λ ()
   ... | yes (σ ─o τ , _ , T) = no $ λ p → case functionalInfer _ T (proj₂ $ snd-inv $ INFER.proof p) of λ ()
@@ -105,6 +109,7 @@ mutual
     with infer Γ t
   ... | no ¬p = no $ λ p → ¬p (_ , _ , case-inv-scrutinee (INFER.proof p))
   ... | yes (𝟙  , _ , T)     = no $ λ p → case functionalInfer _ T (case-inv-scrutinee $ INFER.proof p) of λ ()
+  ... | yes (𝟘  , _ , T)     = no $ λ p → case functionalInfer _ T (case-inv-scrutinee $ INFER.proof p) of λ ()
   ... | yes (σ ⊗ τ  , _ , T) = no $ λ p → case functionalInfer _ T (case-inv-scrutinee $ INFER.proof p) of λ ()
   ... | yes (σ & τ  , _ , T) = no $ λ p → case functionalInfer _ T (case-inv-scrutinee $ INFER.proof p) of λ ()
   ... | yes (σ ─o τ , _ , T) = no $ λ p → case functionalInfer _ T (case-inv-scrutinee $ INFER.proof p) of λ ()
@@ -137,6 +142,18 @@ mutual
         eq₂     = functionalCheckPost _ (coerceʳ (case-inv-right (INFER.proof p))) R
     in ¬eq $ trans (sym $ cong tail eq₁) (cong tail eq₂)
   ... | yes eq rewrite eq = yes (ν , _ , `case T return ν of L %% R)
+
+  -- EX FALSO
+  infer Γ (`exfalso σ t) with infer Γ t
+  ... | no ¬p = no $ λ p → case ¬p (_ , _ , exfalso-inv (INFER.proof p)) of λ ()
+  ... | yes (𝟘 , Δ , p) = yes (σ , Δ , `exfalso σ p)
+
+  ... | yes (κ _    , Δ , p) = no $ λ q → case functionalInferPost _ (exfalso-inv $ INFER.proof q) p of λ ()
+  ... | yes (𝟙      , Δ , p) = no $ λ q → case functionalInferPost _ (exfalso-inv $ INFER.proof q) p of λ ()
+  ... | yes (_ ⊗ _  , Δ , p) = no $ λ q → case functionalInferPost _ (exfalso-inv $ INFER.proof q) p of λ ()
+  ... | yes (_ ─o _ , Δ , p) = no $ λ q → case functionalInferPost _ (exfalso-inv $ INFER.proof q) p of λ ()
+  ... | yes (_ & _  , Δ , p) = no $ λ q → case functionalInferPost _ (exfalso-inv $ INFER.proof q) p of λ ()
+  ... | yes (_ ⊕ _  , Δ , p) = no $ λ q → case functionalInferPost _ (exfalso-inv $ INFER.proof q) p of λ ()
 
   -- CUT
   infer Γ (`cut t σ)                   = inferCut Γ t σ <$> check Γ σ t
@@ -182,6 +199,7 @@ mutual
   -- UNIT
   check Γ 𝟙        `unit = yes (Γ , `unit)
   check Γ (κ k)    `unit = no (λ { (_ , ()) })
+  check Γ 𝟘        `unit = no (λ { (_ , ()) })
   check Γ (σ ⊗ τ)  `unit = no (λ { (_ , ()) })
   check Γ (σ ─o τ) `unit = no (λ { (_ , ()) })
   check Γ (σ & τ)  `unit = no (λ { (_ , ()) })
@@ -194,6 +212,7 @@ mutual
   ... | yes ([ .σ ] ∷ Δ , p) = no λ q → case functionalCheckPost _ p (lam-inv $ CHECK.proof q) of λ ()
   ... | yes (] .σ [ ∷ Δ , p) = yes (Δ , `lam p)
   check Γ 𝟙       (`lam b) = no $ λ p → case CHECK.proof p of λ ()
+  check Γ 𝟘       (`lam b) = no $ λ p → case CHECK.proof p of λ ()
   check Γ (σ & τ) (`lam b) = no $ λ p → case CHECK.proof p of λ ()
   check Γ (σ ⊕ τ) (`lam b) = no $ λ p → case CHECK.proof p of λ ()
   check Γ (σ ⊗ τ) (`lam b) = no $ λ p → case CHECK.proof p of λ ()
@@ -223,6 +242,7 @@ mutual
   ... | yes eq rewrite eq = yes (Θ₂ , `prd& p q)
 
   check Γ 𝟙        (`prd t u) = no $ λ p → case CHECK.proof p of λ ()
+  check Γ 𝟘        (`prd t u) = no $ λ p → case CHECK.proof p of λ ()
   check Γ (σ ⊕ τ)  (`prd t u) = no $ λ p → case CHECK.proof p of λ ()
   check Γ (σ ─o τ) (`prd t u) = no $ λ p → case CHECK.proof p of λ ()
   check Γ (κ n)    (`prd t u) = no $ λ p → case CHECK.proof p of λ ()
@@ -230,6 +250,7 @@ mutual
   -- INL
   check Γ (σ ⊕ τ)  (`inl t) = checkInl Γ t σ τ <$> check Γ σ t
   check Γ 𝟙        (`inl t) = no $ λ p → case CHECK.proof p of λ ()
+  check Γ 𝟘        (`inl t) = no $ λ p → case CHECK.proof p of λ ()
   check Γ (σ ⊗ τ)  (`inl t) = no $ λ p → case CHECK.proof p of λ ()
   check Γ (σ ─o τ) (`inl t) = no $ λ p → case CHECK.proof p of λ ()
   check Γ (σ & τ)  (`inl t) = no $ λ p → case CHECK.proof p of λ ()
@@ -238,6 +259,7 @@ mutual
   -- INR
   check Γ (σ ⊕ τ)  (`inr t) = checkInr Γ t σ τ <$> check Γ τ t
   check Γ 𝟙        (`inr t) = no $ λ p → case CHECK.proof p of λ ()
+  check Γ 𝟘        (`inr t) = no $ λ p → case CHECK.proof p of λ ()
   check Γ (σ ⊗ τ)  (`inr t) = no $ λ p → case CHECK.proof p of λ ()
   check Γ (σ ─o τ) (`inr t) = no $ λ p → case CHECK.proof p of λ ()
   check Γ (σ & τ)  (`inr t) = no $ λ p → case CHECK.proof p of λ ()

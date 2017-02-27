@@ -26,6 +26,7 @@ mutual
     `fst_               : (t : Infer n) → Infer n
     `snd_               : (t : Infer n) → Infer n
     `case_return_of_%%_ : (i : Infer n) (σ : Type) (l r : Check (suc n)) → Infer n
+    `exfalso            : (σ : Type) (i : Infer n) → Infer n
     `cut                : (t : Check n) (σ : Type) → Infer n
 
   data Pattern : (m : ℕ) → Set where
@@ -57,6 +58,7 @@ mutual
     `case weakInfer inc i return σ
     of weakCheck (copy inc) l
     %% weakCheck (copy inc) r
+  weakInfer inc (`exfalso σ t)               = `exfalso σ (weakInfer inc t)
   weakInfer inc (`cut t σ)                   = `cut (weakCheck inc t) σ
 
 
@@ -86,4 +88,5 @@ mutual
     `case substInfer ρ i return σ
     of substCheck (v∷ ρ) l
     %% substCheck (v∷ ρ) r
+  substInfer ρ (`exfalso σ t)               = `exfalso σ (substInfer ρ t)
   substInfer ρ (`cut t σ)                   = `cut (substCheck ρ t) σ

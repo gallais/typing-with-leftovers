@@ -31,6 +31,11 @@ snd-inv :
   Γ ⊢ `snd t ∈ τ ⊠ Δ → Σ[ σ ∈ Type ] Γ ⊢ t ∈ σ & τ ⊠ Δ
 snd-inv (`snd t) = , t
 
+exfalso-inv :
+  {n : ℕ} {γ : Context n} {t : Infer n} {Γ Δ : Usages γ} {σ τ : Type} →
+  Γ ⊢ `exfalso σ t ∈ τ ⊠ Δ → Γ ⊢ t ∈ 𝟘 ⊠ Δ
+exfalso-inv (`exfalso σ t) = t
+
 case-inv : 
   {n : ℕ} {γ : Context n} {t : Infer n} {l r : Check (suc n)} {Γ Δ : Usages γ} {ν₁ ν₂ : Type} →
   Γ ⊢ `case t return ν₁ of l %% r ∈ ν₂ ⊠ Δ →

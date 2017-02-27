@@ -34,29 +34,30 @@ record Linear (𝓜^C 𝓜^I : Model)
   : Set where
   field
     -- Infer
-    var   : {σ : Type} → 𝓜^I (σ ∷ []) σ
-    app   : {γ δ θ : List Type} {σ τ : Type} →
-            𝓜^I γ (σ ─o τ) → 𝓜^C δ σ → γ ++ δ ≅ θ → 𝓜^I θ τ
-    skip  : {γ δ θ : List Type} {σ : Type} → 𝓜^C γ 𝟙 → 𝓜^I δ σ → γ ++ δ ≅ θ → 𝓜^I θ σ
-    fst   : {γ : List Type} {σ τ : Type} → 𝓜^I γ (σ & τ) → 𝓜^I γ σ
-    snd   : {γ : List Type} {σ τ : Type} → 𝓜^I γ (σ & τ) → 𝓜^I γ τ
-    case  : {γ δ θ : List Type} {σ τ ν : Type} →
-            𝓜^I γ (σ ⊕ τ)  → 𝓜^C (σ ∷ δ) ν → 𝓜^C (τ ∷ δ) ν → γ ++ δ ≅ θ → 𝓜^I θ ν
-    cut   : {γ : List Type} {σ : Type} → 𝓜^C γ σ → 𝓜^I γ σ
+    var     : {σ : Type} → 𝓜^I (σ ∷ []) σ
+    app     : {γ δ θ : List Type} {σ τ : Type} →
+              𝓜^I γ (σ ─o τ) → 𝓜^C δ σ → γ ++ δ ≅ θ → 𝓜^I θ τ
+    skip    : {γ δ θ : List Type} {σ : Type} → 𝓜^C γ 𝟙 → 𝓜^I δ σ → γ ++ δ ≅ θ → 𝓜^I θ σ
+    fst     : {γ : List Type} {σ τ : Type} → 𝓜^I γ (σ & τ) → 𝓜^I γ σ
+    snd     : {γ : List Type} {σ τ : Type} → 𝓜^I γ (σ & τ) → 𝓜^I γ τ
+    case    : {γ δ θ : List Type} {σ τ ν : Type} →
+              𝓜^I γ (σ ⊕ τ)  → 𝓜^C (σ ∷ δ) ν → 𝓜^C (τ ∷ δ) ν → γ ++ δ ≅ θ → 𝓜^I θ ν
+    exfalso : {γ : List Type} {σ : Type} → 𝓜^I γ 𝟘 → 𝓜^I γ σ
+    cut     : {γ : List Type} {σ : Type} → 𝓜^C γ σ → 𝓜^I γ σ
     -- Check
-    lam   : {γ : List Type} {σ τ : Type} → 𝓜^C (σ ∷ γ) τ → 𝓜^C γ (σ ─o τ)
-    let'  : {γ δ θ : List Type} {σ τ ν : Type} →
-            𝓜^I γ (σ ⊗ τ) → 𝓜^C (τ ∷ σ ∷ δ) ν → γ ++ δ ≅ θ → 𝓜^C θ ν
-    unit  : 𝓜^C [] 𝟙
-    prd⊗  : {γ δ θ : List Type} {σ τ : Type} →
-            𝓜^C γ σ → 𝓜^C δ τ → γ ++ δ ≅ θ → 𝓜^C θ (σ ⊗ τ)
-    prd&  : {γ : List Type} {σ τ : Type} → 𝓜^C γ σ → 𝓜^C γ τ → 𝓜^C γ (σ & τ)
-    inl   : {γ : List Type} {σ τ : Type} → 𝓜^C γ σ → 𝓜^C γ (σ ⊕ τ)
-    inr   : {γ : List Type} {σ τ : Type} → 𝓜^C γ τ → 𝓜^C γ (σ ⊕ τ)
-    neu   : {γ : List Type} {σ : Type} → 𝓜^I γ σ → 𝓜^C γ σ
+    lam     : {γ : List Type} {σ τ : Type} → 𝓜^C (σ ∷ γ) τ → 𝓜^C γ (σ ─o τ)
+    let'    : {γ δ θ : List Type} {σ τ ν : Type} →
+              𝓜^I γ (σ ⊗ τ) → 𝓜^C (τ ∷ σ ∷ δ) ν → γ ++ δ ≅ θ → 𝓜^C θ ν
+    unit    : 𝓜^C [] 𝟙
+    prd⊗    : {γ δ θ : List Type} {σ τ : Type} →
+              𝓜^C γ σ → 𝓜^C δ τ → γ ++ δ ≅ θ → 𝓜^C θ (σ ⊗ τ)
+    prd&    : {γ : List Type} {σ τ : Type} → 𝓜^C γ σ → 𝓜^C γ τ → 𝓜^C γ (σ & τ)
+    inl     : {γ : List Type} {σ τ : Type} → 𝓜^C γ σ → 𝓜^C γ (σ ⊕ τ)
+    inr     : {γ : List Type} {σ τ : Type} → 𝓜^C γ τ → 𝓜^C γ (σ ⊕ τ)
+    neu     : {γ : List Type} {σ : Type} → 𝓜^I γ σ → 𝓜^C γ σ
     -- Structural
-    mix^I : {γ δ θ : List Type} {σ : Type} → 𝓜^I (γ L.++ δ) σ → γ ++ δ ≅ θ → 𝓜^I θ σ
-    mix^C : {γ δ θ : List Type} {σ : Type} → 𝓜^C (γ L.++ δ) σ → γ ++ δ ≅ θ → 𝓜^C θ σ
+    mix^I   : {γ δ θ : List Type} {σ : Type} → 𝓜^I (γ L.++ δ) σ → γ ++ δ ≅ θ → 𝓜^I θ σ
+    mix^C   : {γ δ θ : List Type} {σ : Type} → 𝓜^C (γ L.++ δ) σ → γ ++ δ ≅ θ → 𝓜^C θ σ
 
 module LINEAR {𝓜^C 𝓜^I : Model} (𝓜 : Linear 𝓜^C 𝓜^I) where
 
@@ -118,7 +119,8 @@ module LINEAR {𝓜^C 𝓜^I : Model} (𝓜 : Linear 𝓜^C 𝓜^I) where
         δ   = UC.tail δl
         INC = UE.divide γ δ inc
     in case T (coerce 𝓜^C δl (_ ∷ δ) L) (coerce 𝓜^C δr (_ ∷ δ) R) INC
-  linearInfer (`cut t) inc = cut (linearCheck t inc)
+  linearInfer (`exfalso σ t) inc = exfalso (linearInfer t inc)
+  linearInfer (`cut t)       inc = cut (linearCheck t inc)
 
   
   linearCheck (`lam t) inc = lam (linearCheck t (_ ∷ inc))
