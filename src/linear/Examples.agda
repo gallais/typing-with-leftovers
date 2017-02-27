@@ -13,11 +13,11 @@ open import linear.Language.SmartConstructors
 ⊢swap⊗ : {σ τ : Type} → [] ⊢ (σ ⊗ τ) ─o (τ ⊗ σ) ∋ _ ⊠ []
 ⊢swap⊗ =
   `lam `let (`v ,, `v) ∷= [ 0 ] `in
-       `prd (`neu [ 1 ]) (`neu [ 0 ])
+       `prd⊗ (`neu [ 1 ]) (`neu [ 0 ])
 
 ⊗⊕-distr : (σ τ ν : Type) → [] ⊢ (σ ⊗ (τ ⊕ ν)) ─o (σ ⊗ τ) ⊕ (σ ⊗ ν) ∋ _ ⊠ []
 ⊗⊕-distr σ τ ν =
   `lam `let (`v ,, `v) ∷= [ 0 ] `in
        `neu `case `var (s z) return (σ ⊗ τ) ⊕ (σ ⊗ ν)
-            of `inl (`prd [ 1 ] [ 0 ])
-            %% `inr (`prd [ 1 ] [ 0 ])
+            of `inl (`prd⊗ [ 1 ] [ 0 ])
+            %% `inr (`prd⊗ [ 1 ] [ 0 ])

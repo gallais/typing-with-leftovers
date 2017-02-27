@@ -37,8 +37,8 @@ instance
   VAR.mkVar𝓣 VARFin = id
 
   VARInfer : VAR Infer TInfer
-  VAR.mkVarT  VARInfer = `var
-  VAR.mkVar𝓣 VARInfer = `var
+  VAR.mkVarT  VARInfer = `var_
+  VAR.mkVar𝓣 VARInfer = `var_
 
   VARCheck : VAR Check TCheck
   VAR.mkVarT  VARCheck k = `neu `var k
