@@ -19,7 +19,7 @@ type Identifier = Text
 
 reservedKeywords :: [String]
 reservedKeywords =
-  [ "let", "in", "case", "return", "of", "inl", "inr" , "fst" , "snd" , ";", "unit" ]
+  [ "let", "in", "case", "return", "of", "inl", "inr" , "fst" , "snd" , ";", "unit", "exfalso" ]
 
 pIdentifier :: Parser Identifier
 pIdentifier = do
@@ -61,6 +61,7 @@ data InferF b =
   | Fst (InferF b)
   | Snd (InferF b)
   | Cas (InferF b) (TypeF b) Identifier (CheckF b) Identifier (CheckF b)
+  | ExF (TypeF b) (InferF b)
   | Cut (CheckF b) (TypeF b) 
   deriving (Show, Functor, Foldable, Traversable)
 
@@ -92,6 +93,8 @@ pRInfer3 = Fst <$> (string "fst" *> skipSpace *> pRInfer)
                <*> (string "->"     *> betweenSpace pRCheck)
                <*> (string "|"      *> betweenSpace pIdentifier)
                <*> (string "->"     *> skipSpace *> pRCheck)
+       <|> ExF <$> (string "exfalso" *> betweenSpace pRType)
+               <*> (betweenSpace pRInfer)
        <|> Var <$> pIdentifier
        <|> string "(" *> skipSpace *> pRInfer <* skipSpace <* string ")"
 

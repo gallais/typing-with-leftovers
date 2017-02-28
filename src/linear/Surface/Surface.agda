@@ -51,6 +51,7 @@ data Infer where
   `skip                   : Check → Infer → Infer
   `fst `snd               : Infer → Infer
   `case_return_of_↦_%%_↦_ : Infer → Type → String → Check → String → Check → Infer
+  `exfalso                : Type → Infer → Infer
   `cut                    : Check → Type → Infer
 {-# COMPILED_DATA
     Infer Surface.Parser.Infer
@@ -60,6 +61,7 @@ data Infer where
     Surface.Parser.Fst
     Surface.Parser.Snd
     Surface.Parser.Cas
+    Surface.Parser.ExF
     Surface.Parser.Cut
 #-}
 
@@ -143,7 +145,8 @@ mutual
   scopeInfer nms (`snd t)    = L.`snd_ <$> scopeInfer nms t
   scopeInfer nms (`case i return σ of nml ↦ l %% nmr ↦ r) =
     L.`case_return σ of_%%_ <$> scopeInfer nms i ⊛ scopeCheck (nml ∷ nms) l ⊛ scopeCheck (nmr ∷ nms) r
-  scopeInfer nms (`cut t σ) = (λ t → L.`cut t σ) <$> scopeCheck nms t
+  scopeInfer nms (`exfalso σ t) = L.`exfalso σ <$> scopeInfer nms t
+  scopeInfer nms (`cut t σ)     = (λ t → L.`cut t σ) <$> scopeCheck nms t
 
 
 

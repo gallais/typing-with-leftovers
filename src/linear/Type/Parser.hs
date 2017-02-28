@@ -16,6 +16,7 @@ import Data.Attoparsec.ByteString.Char8 as AC (char, satisfy, skipSpace)
 data TypeF b =
     Base   b
   | Unit
+  | Zero
   | Tensor (TypeF b) (TypeF b)
   | Plus   (TypeF b) (TypeF b)
   | With   (TypeF b) (TypeF b)
@@ -59,6 +60,7 @@ pRType8 = With <$> pRType9
 
 pRType9 :: Parser RType
 pRType9 = Base <$> pBase
+     <|> Zero <$ string "0"
      <|> Unit <$ string "1"
      <|> two  <$ string "2"
      <|> string "(" *> pRType <* string ")"
