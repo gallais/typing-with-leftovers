@@ -20,17 +20,31 @@ data Type : Set where
   _&_  : (σ τ : Type) → Type
   _⊕_  : (σ τ : Type) → Type
 
-{-# IMPORT Type.Parser #-}
-{-# COMPILED_DATA
-    Type Type.Parser.Type
-    Type.Parser.Base
-    Type.Parser.Unit
-    Type.Parser.Zero
-    Type.Parser.Tensor
-    Type.Parser.Lolli
-    Type.Parser.With
-    Type.Parser.Plus
+data RType : Set where
+  Base      : ℕ → RType
+  Unit Zero : RType
+  Tensor Lolli With Plus : (σ τ : RType) → RType
+
+{-# FOREIGN GHC import Type.Parser #-}
+{-# COMPILE GHC RType
+    = data Type.Parser.Type
+    (Type.Parser.Base
+    | Type.Parser.Unit
+    | Type.Parser.Zero
+    | Type.Parser.Tensor
+    | Type.Parser.Lolli
+    | Type.Parser.With
+    | Type.Parser.Plus)
 #-}
+
+embed^RType : RType → Type
+embed^RType (Base x) = κ x
+embed^RType Unit = 𝟙
+embed^RType Zero = 𝟘
+embed^RType (Tensor x x₁) = embed^RType x ⊗ embed^RType x₁
+embed^RType (Lolli x x₁) = embed^RType x ─o embed^RType x₁
+embed^RType (With x x₁) = embed^RType x & embed^RType x₁
+embed^RType (Plus x x₁) = embed^RType x ⊕ embed^RType x₁
 
 -- Equality of types is decidable
 κ-inj : {x y : ℕ} → κ x ≡ κ y → x ≡ y

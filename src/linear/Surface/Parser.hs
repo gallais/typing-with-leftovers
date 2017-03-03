@@ -93,8 +93,8 @@ pRInfer3 = Fst <$> (string "fst" *> skipSpace *> pRInfer)
                <*> (string "->"     *> betweenSpace pRCheck)
                <*> (string "|"      *> betweenSpace pIdentifier)
                <*> (string "->"     *> skipSpace *> pRCheck)
-       <|> ExF <$> (string "exfalso" *> betweenSpace pRType)
-               <*> (betweenSpace pRInfer)
+       <|> ExF <$> (string "exfalso" *> skipSpace *> pRType)
+               <*> (skipSpace *> pRInfer)
        <|> Var <$> pIdentifier
        <|> string "(" *> skipSpace *> pRInfer <* skipSpace <* string ")"
 

@@ -14,56 +14,110 @@ open import Relation.Binary.PropositionalEquality hiding ([_])
 
 open import linear.Type
 
-{-# IMPORT Surface.Parser #-}
+{-# FOREIGN GHC import qualified Type.Parser    #-}
+{-# FOREIGN GHC import qualified Surface.Parser #-}
 
 data Pattern : Set where
   `v   : String → Pattern
   _,,_ : (p q : Pattern) → Pattern
-{-# COMPILED_DATA Pattern Surface.Parser.Pattern Surface.Parser.All Surface.Parser.And #-}
 
-data Check : Set
-{-# COMPILED_DECLARE_DATA Check Surface.Parser.Check #-}
-data Infer : Set
-{-# COMPILED_DECLARE_DATA Infer Surface.Parser.Infer #-}
+data RPattern : Set where
+  RAll : String → RPattern
+  RAnd : RPattern → RPattern → RPattern
 
-data Check where
-  `lam_↦_      : String → Check → Check
-  `let_∷=_`in_ : Pattern → Infer → Check → Check
-  `unit        : Check
-  `prd         : Check → Check → Check
-  `inl_        : Check → Check
-  `inr_        : Check → Check
-  `neu_        : Infer → Check
-{-# COMPILED_DATA
-    Check Surface.Parser.Check
-    Surface.Parser.Lam
-    Surface.Parser.Let
-    Surface.Parser.One
-    Surface.Parser.Prd
-    Surface.Parser.Inl
-    Surface.Parser.Inr
-    Surface.Parser.Neu
+{-# COMPILE GHC RPattern
+    = data Surface.Parser.Pattern
+    (Surface.Parser.All
+    | Surface.Parser.And)
+#-}
+
+embed^RPattern : RPattern → Pattern
+embed^RPattern (RAll x) = `v x
+embed^RPattern (RAnd x x₁) = embed^RPattern x ,, embed^RPattern x₁
+
+mutual
+
+  data Check : Set where
+    `lam_↦_      : String → Check → Check
+    `let_∷=_`in_ : Pattern → Infer → Check → Check
+    `unit        : Check
+    `prd         : Check → Check → Check
+    `inl_        : Check → Check
+    `inr_        : Check → Check
+    `neu_        : Infer → Check
+
+  data Infer : Set where
+    `var                    : String → Infer
+    `app                    : Infer → Check → Infer
+    `skip                   : Check → Infer → Infer
+    `fst `snd               : Infer → Infer
+    `case_return_of_↦_%%_↦_ : Infer → Type → String → Check → String → Check → Infer
+    `exfalso                : Type → Infer → Infer
+    `cut                    : Check → Type → Infer
+
+data RCheck : Set
+data RInfer : Set
+
+data RCheck where
+  Lam     : String → RCheck → RCheck
+  Let     : RPattern → RInfer → RCheck → RCheck
+  One     : RCheck
+  Prd     : RCheck → RCheck → RCheck
+  Inl Inr : RCheck → RCheck
+  Neu     : RInfer → RCheck
+
+{-# COMPILE GHC RCheck
+    = data Surface.Parser.Check
+    (Surface.Parser.Lam
+    | Surface.Parser.Let
+    | Surface.Parser.One
+    | Surface.Parser.Prd
+    | Surface.Parser.Inl
+    | Surface.Parser.Inr
+    | Surface.Parser.Neu)
  #-}
 
-data Infer where
-  `var                    : String → Infer
-  `app                    : Infer → Check → Infer
-  `skip                   : Check → Infer → Infer
-  `fst `snd               : Infer → Infer
-  `case_return_of_↦_%%_↦_ : Infer → Type → String → Check → String → Check → Infer
-  `exfalso                : Type → Infer → Infer
-  `cut                    : Check → Type → Infer
-{-# COMPILED_DATA
-    Infer Surface.Parser.Infer
-    Surface.Parser.Var
-    Surface.Parser.App
-    Surface.Parser.Skp
-    Surface.Parser.Fst
-    Surface.Parser.Snd
-    Surface.Parser.Cas
-    Surface.Parser.ExF
-    Surface.Parser.Cut
+data RInfer where
+  Var     : String → RInfer
+  App     : RInfer → RCheck → RInfer
+  Skp     : RCheck → RInfer → RInfer
+  Fst Snd : RInfer → RInfer
+  Cas     : RInfer → RType → String → RCheck → String → RCheck → RInfer
+  ExF     : RType → RInfer → RInfer
+  Cut     : RCheck → RType → RInfer
+
+{-# COMPILE GHC RInfer
+    = data Surface.Parser.Infer
+    (Surface.Parser.Var
+    | Surface.Parser.App
+    | Surface.Parser.Skp
+    | Surface.Parser.Fst
+    | Surface.Parser.Snd
+    | Surface.Parser.Cas
+    | Surface.Parser.ExF
+    | Surface.Parser.Cut)
 #-}
+
+embed^RCheck : RCheck → Check
+embed^RInfer : RInfer → Infer
+
+
+embed^RCheck (Lam x x₁) = `lam x ↦ embed^RCheck x₁
+embed^RCheck (Let x x₁ x₂) = `let embed^RPattern x ∷= embed^RInfer x₁ `in embed^RCheck x₂
+embed^RCheck One = `unit
+embed^RCheck (Prd x x₁) = `prd (embed^RCheck x) (embed^RCheck x₁)
+embed^RCheck (Inl x) = `inl (embed^RCheck x)
+embed^RCheck (Inr x) = `inr (embed^RCheck x)
+embed^RCheck (Neu x) = `neu (embed^RInfer x)
+
+embed^RInfer (Var x) = `var x
+embed^RInfer (App x x₁) = `app (embed^RInfer x) (embed^RCheck x₁)
+embed^RInfer (Skp x x₁) = `skip (embed^RCheck x) (embed^RInfer x₁)
+embed^RInfer (Fst x) = `fst  (embed^RInfer x)
+embed^RInfer (Snd x) = `snd  (embed^RInfer x)
+embed^RInfer (Cas x x₁ x₂ x₃ x₄ x₅) = `case embed^RInfer x return embed^RType x₁ of x₂ ↦ embed^RCheck x₃ %% x₄ ↦ embed^RCheck x₅
+embed^RInfer (ExF x x₁) = `exfalso (embed^RType x) (embed^RInfer x₁)
+embed^RInfer (Cut x x₁) = `cut (embed^RCheck x) (embed^RType x₁)
 
 -- example:
 

@@ -3,12 +3,17 @@ module linear.Data.ByteString where
 open import Data.String.Base
 open import IO.Primitive
 
-{-# IMPORT Data.ByteString #-}
-{-# IMPORT Data.Text       #-}
+{-# FOREIGN GHC import qualified Data.ByteString #-}
+{-# FOREIGN GHC import qualified Data.Text       #-}
 
 postulate
-  ByteString : Set
-  readFileBS : String → IO ByteString
+  RByteString : Set
+  RreadFileBS : String → IO RByteString
 
-{-# COMPILED_TYPE ByteString Data.ByteString.ByteString               #-}
-{-# COMPILED readFileBS (Data.ByteString.readFile . Data.Text.unpack) #-}
+{-# COMPILE GHC RByteString = type Data.ByteString.ByteString             #-}
+{-# COMPILE GHC RreadFileBS = Data.ByteString.readFile . Data.Text.unpack #-}
+
+ByteString = RByteString
+
+readFileBS : String → IO ByteString
+readFileBS = RreadFileBS
