@@ -1,0 +1,173 @@
+\documentclass[a4paper]{easychair}
+
+\usepackage{bbold}
+\usepackage{amssymb}
+\usepackage{mathpartir}
+
+\newtheorem{lemma}{Lemma}
+
+\title{Typing with Leftovers: a Mechanisation of ILL}
+\titlerunning{Typing with Leftovers}
+
+\author{Guillaume Allais \inst{1}}
+\institute{
+  Radboud University
+  Nijmegen, The Netherlands
+  \email{gallais@cs.ru.nl}}
+\authorrunning{Allais G.}
+
+\begin{document}
+\maketitle
+
+A linear type system is characterised by the fact that all the
+resources available in the context have to be used exactly once
+by the term being checked. In traditional presentations of
+intuitionistic linear logic this is achieved by representing
+the context as a multiset and, in each rule, cutting it up and
+distributing its parts among the premises. This is epitomised
+by the introduction rule for tensor (cf. Figure~\ref{rule:tensor}).
+
+However, multisets are an intrinsically extensional notion and
+therefore quite arduous to work with in an intensional type
+theory. Various strategies can be applied to tackle this issue;
+most of them rely on using linked lists to represent contexts
+together with either extra inference rules to reorganise the
+context or a side condition to rules splitting the context so
+that it may be re-arranged on the fly. In the following example,
+$≈$ stands for ``bag-equivalence'' of lists.
+
+\begin{figure}[ht]
+\begin{mathpar}
+\inferrule
+ {Γ ⊢ σ \and Δ ⊢ τ
+}{Γ, Δ ⊢ σ ⊗ τ
+}{⊗_i}
+
+\and \inferrule
+ {Γ ⊢ σ \and Δ ⊢ τ \and Γ, Δ ≈ Θ
+}{Θ ⊢ σ ⊗ τ
+}{⊗_i}
+\end{mathpar}
+\caption{Introduction rules for $⊗$.
+         Left: usual presentation;
+         Right: with reordering on the fly\label{rule:tensor}}
+\end{figure}
+
+All of these strategies are artefacts of the unfortunate mismatch
+between the ideal mathematical objects one wishes to model and
+their internal representation in the proof assistant. Short of
+having proper quotient types, this will continue to be an issue
+when dealing with multisets. The solution we offer tries not to
+replicate a set-theoretic approach in intuitionistic type theory
+but rather strives to find the type theoretical structures which
+can make the problem more tractable. Given the right abstractions,
+the proofs follow directly by structural induction.
+
+McBride's recent work~\cite{McBride2016} on combining linear and
+dependent types highlights the distinction one can make between
+referring to a resource and actually consuming it. In the same spirit,
+rather than dispatching the available resources in the appropriate
+sub-derivations, we consider that a term is checked in a \emph{given}
+context on top of which usage annotations are super-imposed.
+
+A derivation $Γ ⊢ σ ⊠ Δ$ corresponds to a proof of $σ$ in a context $γ$
+with input usage annotations $Γ$ and output usage annoations $Δ$.
+Informally, the resources used to prove $σ$ correspond to the difference
+between the ones available in $Γ$ and the \emph{leftovers} present in $Δ$.
+Wherever we used to split the context between sub-derivations, we now
+thread the leftovers from one to the next. Writing $f_{σ}$ for a
+\emph{fresh} resource of type $σ$ and $s_{σ}$ for a \emph{stale} one,
+we can give the following new introduction rules for tensor and the
+linear implication, two examples characteristic of the treatment of
+context splitting on one hand and context extension under a binder
+on the other:
+
+\begin{figure}[ht]
+\begin{mathpar}
+\inferrule
+ {Γ ⊢ σ ⊠ Δ \and Δ ⊢ τ ⊠ Θ
+}{Γ ⊢ σ ⊗ τ ⊠ Θ
+}{⊗_i}
+
+\and \inferrule
+ {Γ ∙ f_{σ} ⊢ τ ⊠ Δ ∙ s_{σ}
+}{Γ ⊢ σ ⊸ τ ⊠ Δ
+}{⊸_i}
+\end{mathpar}
+\caption{Introduction rules for $⊗$ and $⊸$ with leftovers\label{rules:leftovers}}
+\end{figure}
+
+This approach is particularly well-suited to use intuitionistic linear
+logic as a type system for an untyped $λ$-calculus where well-scopedness
+is statically enforced: in the untyped calculus, it \emph{is} the case
+that both branches of a pair live in the same scope. In our development,
+we use an inductive family in the style of Altenkirch and Reus~\cite{Altenkirch1999}
+and opt for a bidirectional presentation~\cite{Pierce:2000:LTI:345099.345100}
+to minimise the amount of redundant information that needs to be stored.
+
+Type-inference (resp. Type-checking) is then inferring (resp. checking)
+a term's type but \emph{also} annotating the resources consumed by the
+term in question and returning the \emph{leftovers}. These typing
+relations can be described by two mutual definitions. The definitions in
+Figure~\ref{rules:leftovers} would for instance become:
+
+\begin{figure}[ht]
+\begin{mathpar}
+\inferrule
+ {Γ ⊢ σ ∋ a ⊠ Δ \and Δ ⊢ τ ∋ b ⊠ Θ
+}{Γ ⊢ σ ⊗ τ ∋ (a, b) ⊠ Θ
+}
+
+\and \inferrule
+ {Γ ∙ f_{σ} ⊢ τ ∋ b ⊠ Δ ∙ s_{σ}
+}{Γ ⊢ σ ⊸ τ ∋ λb ⊠ Δ
+}
+\end{mathpar}
+\caption{Type\emph{checking} rules for pairs and lambdas\label{rules:checking}}
+\end{figure}
+
+For this mechanisation to be usable, it needs to be well-behaved with
+respect to the natural operations on the underlying calculus (renaming
+and substitution) but also encompass all of ILL. Our Agda formalisation
+(available at \url{https://github.com/gallais/typing-with-leftovers})
+states and proves the following results for a system handling types of
+the shape:
+\[σ, τ, ... ::= α \,|\, 𝟘 \,|\, 𝟙 \,|\, σ \,⊸\, τ \,|\, σ \,⊕\, τ \,|\, σ \,⊗\, τ \,|\, σ \,\&\, τ\]
+
+\begin{lemma}[Framing] The usage annotation of resources left untouched
+by a typing derivation can be altered freely. The change is unnoticeable
+from the underlying $λ$-term's point of view.
+\end{lemma}
+
+\begin{lemma}[Weakening] The input and output contexts of a typing
+derivation can be expanded with arbitrarily many new resources. This
+corresponds to a weakening on the underlying $λ$-term.
+\end{lemma}
+
+\begin{lemma}[Parallel Substitution] Given a term and a typing derivation
+corresponding to each one of the fresh resources in its typing derivation's
+context, one can build a new typing derivation and a leftover environment.
+The corresponding action on the underlying $λ$-term is parallel substitution.
+\end{lemma}
+
+\begin{lemma}[Functional Relation] The typing relation is functional: for
+given ``inputs'', the outputs are uniquely determined. It is also the case
+that the input context is uniquely determined by the output one, the term
+and the type.
+\end{lemma}
+
+\begin{lemma}[Typechecking] Type checking (resp. Type inference) is decidable.
+\end{lemma}
+
+\begin{lemma}[Soundness] Typing derivations give rise to sequent proofs
+in ILL.
+\end{lemma}
+
+\begin{lemma}[Completeness] From a sequent proofs in ILL, one can build a
+pair of an untyped term together with the appropriate typing derivation.
+\end{lemma}
+
+\bibliographystyle{plain}
+\bibliography{main}
+
+\end{document}
