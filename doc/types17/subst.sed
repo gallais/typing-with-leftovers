@@ -9,6 +9,7 @@ s/λ/\\lambda{}/g
 
 s/⊢/\\vdash{}/g
 s/∋/\\ni{}/g
+s/∈/\\in{}/g
 s/⊠/\\boxtimes{}/g
 s/⊗/\\otimes{}/g
 s/⊕/\\oplus{}/g
