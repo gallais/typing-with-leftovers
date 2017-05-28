@@ -1,0 +1,113 @@
+\documentclass{beamer}
+\usetheme{ru}
+\usepackage{xcolor}
+\usepackage{amssymb}
+\usepackage{mathpartir}
+
+\newcommand{\inval}[1]{\colorbox{blue!40}{$#1$}}
+\newcommand{\outval}[1]{\colorbox{orange!50}{$#1$}}
+
+\title{Typing with Leftovers}
+\subtitle{A Mechanisation of Intuitionistic Linear Logic}
+\author{Guillaume Allais}
+\institute[Radboud University Nijmegen]{
+  Brouwer Seminar \\
+  Radboud University Nijmegen}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}{Introduction rule for tensor: Contexts as Multisets}
+
+\begin{mathpar}
+\inferrule
+ {Γ ⊢ σ \and Δ ⊢ τ
+}{Γ, Δ ⊢ σ ⊗ τ
+}{⊗_i}
+\end{mathpar}
+
+\begin{itemize}
+ \item<2-> Multisets are an extensional notion
+ \item<3-> Going bottom-up (typechecking), one needs to guess a split
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Introduction rule for tensor: Contexts as Lists}
+\begin{mathpar}
+\inferrule
+ {Γ ⊢ σ \and Δ ⊢ τ \and Γ, Δ ≈ Θ
+}{Θ ⊢ σ ⊗ τ
+}{⊗_i}
+\end{mathpar}
+
+\begin{itemize}
+ \item<2-> The user has to provide the split / permutation by hand
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Introduction rule for tensor: Contexts as Available Resources}
+\begin{mathpar}
+\inferrule
+ {\inval{Γ} ⊢ \inval{σ} ⊠ \outval{Δ} \and \inval{Δ} ⊢ \inval{τ} ⊠ \outval{Θ}
+}{\inval{Γ} ⊢ \inval{σ ⊗ τ} ⊠ \outval{Θ}
+}{⊗_i}
+\end{mathpar}
+
+\begin{itemize}
+ \item \inval{Inputs} vs. \outval{Outputs}
+ \item<2-> Nothing to guess: syntax directed
+ \item<3-> However the scope keeps changing!
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Variant: Contexts as Resource Annotations}
+\begin{mathpar}
+\inferrule
+ {n : ℕ \and
+  γ : Context_n \and
+  Γ, Δ : Usage_γ \and
+  σ : Type
+}{
+\inval{Γ} ⊢ \inval{σ} ⊠ \outval{Δ} : Set
+}
+\end{mathpar}
+\end{frame}
+
+\begin{frame}{With Well Scoped Terms}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{mathpar}
+\inferrule
+ {n : ℕ \and
+  γ : Context_n \\
+  t : Check_n \\
+  Γ, Δ : Usage_γ \\
+  σ : Type
+}{
+\inval{Γ} ⊢ \inval{σ} ∋ \inval{t} ⊠ \outval{Δ} : Set
+}
+\end{mathpar}
+\end{column}
+\begin{column}{0.5\textwidth}
+\begin{mathpar}
+\inferrule
+ {n : ℕ \and
+  γ : Context_n \\
+  t : Infer_n \\
+  Γ, Δ : Usage_γ \\
+  σ : Type
+}{
+\inval{Γ} ⊢ \inval{t} ∈ \outval{σ} ⊠ \outval{Δ} : Set
+}
+\end{mathpar}
+\end{column}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}[fragile]{Thanks for Your Attention}
+\url{https://github.com/gallais/typing-with-leftovers}
+\end{frame}
+
+\end{document}
