@@ -6,13 +6,16 @@
 
 \newcommand{\inval}[1]{\colorbox{blue!40}{$#1$}}
 \newcommand{\outval}[1]{\colorbox{orange!50}{$#1$}}
+\newcommand{\fresh}[1]{f_{#1}}
+\newcommand{\stale}[1]{s_{#1}}
 
 \title{Typing with Leftovers}
 \subtitle{A Mechanisation of Intuitionistic Linear Logic}
 \author{Guillaume Allais}
-\institute[Radboud University Nijmegen]{
-  Brouwer Seminar \\
-  Radboud University Nijmegen}
+\date{May 29th, 2017}
+\institute[TYPES'17]{
+  TYPES 2017 \\
+  Budapest, Hungary}
 
 \begin{document}
 
@@ -34,14 +37,26 @@
 \end{frame}
 
 \begin{frame}{Introduction rule for tensor: Contexts as Lists}
+\begin{itemize}
+\item Either explicit commutation rules
+\begin{mathpar}
+\inferrule
+ {Γ, σ, τ, Δ ⊢ ν
+}{Γ, τ, σ, Δ ⊢ ν
+}{swap}
+\end{mathpar}
+
+\item Or introduction rules with reordering ``on the fly'':
 \begin{mathpar}
 \inferrule
  {Γ ⊢ σ \and Δ ⊢ τ \and Γ, Δ ≈ Θ
 }{Θ ⊢ σ ⊗ τ
 }{⊗_i}
 \end{mathpar}
+\end{itemize}
 
 \begin{itemize}
+ \item<2-> Non structural
  \item<2-> The user has to provide the split / permutation by hand
 \end{itemize}
 \end{frame}
@@ -72,9 +87,36 @@
 \inval{Γ} ⊢ \inval{σ} ⊠ \outval{Δ} : Set
 }
 \end{mathpar}
+
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{mathpar}
+\inferrule
+ {
+}{
+\inval{Γ, \fresh{σ}} ⊢ \inval{σ} ⊠ \outval{Γ, \stale{σ}}
+}{ax}
+\end{mathpar}
+\end{column}
+\begin{column}{0.5\textwidth}
+\begin{mathpar}
+\inferrule
+ {\inval{Γ} ⊢ \inval{σ} ⊠ \outval{Δ}
+}{
+\inval{Γ, s} ⊢ \inval{σ} ⊠ \outval{Δ, s}
+}{wk}
+\end{mathpar}
+\end{column}
+\end{columns}
+
+\begin{itemize}
+ \item<2-> Context shared across the whole derivation
+ \item<3-> The Axiom rule corresponds to consumption
+ \item<4-> A notion of weakening: some resources don't matter (yet)
+\end{itemize}
 \end{frame}
 
-\begin{frame}{With Well Scoped Terms}
+\begin{frame}{With Well Scoped Terms, Bidirectionally}
 \begin{columns}
 \begin{column}{0.5\textwidth}
 \begin{mathpar}
@@ -103,10 +145,29 @@
 \end{mathpar}
 \end{column}
 \end{columns}
+
+\begin{itemize}
+ \item<2-> Fully syntax-directed (same constructors for $λ$C \& TwL)
+ \item<3-> Fully compatible with operations on $λ$C
+\end{itemize}
 \end{frame}
 
+\begin{frame}{Theorems}
+\begin{tabular}{ll}
+ Framing       & Unused resources can be in any state \\
+ Weakening     & One can add resources, they will be ignored \\
+ Substitution  & Parallel linear substitutions yield valid terms \\
+ Functionality & The relation is deterministic (backward \& forward) \\
+ Typechecking  & Type checking / inference is decidable \\
+ Soudness      & Derivations in TwL give rise to sequents in ILL \\
+ Completeness  & Sequents in ILL give rise to derivations in TwL \\
+\end{tabular}
+\end{frame}
 
 \begin{frame}[fragile]{Thanks for Your Attention}
+All of this work has been formalised in Agda.
+It is available at:
+
 \url{https://github.com/gallais/typing-with-leftovers}
 \end{frame}
 

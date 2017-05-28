@@ -5,6 +5,7 @@ s/α/\\alpha{}/g
 s/γ/\\gamma{}/g
 s/σ/\\sigma{}/g
 s/τ/\\tau{}/g
+s/ν/\\nu{}/g
 s/λ/\\lambda{}/g
 
 s/⊢/\\vdash{}/g
