@@ -19,7 +19,7 @@ type Identifier = Text
 
 reservedKeywords :: [String]
 reservedKeywords =
-  [ "let", "in", "case", "return", "of", "inl", "inr" , "fst" , "snd" , ";", "unit", "exfalso" ]
+  [ "let", "in", "case", "return", "of", "inl", "inr" , "fst" , "snd" , "exfalso" ]
 
 pIdentifier :: Parser Identifier
 pIdentifier = do
@@ -47,17 +47,16 @@ pRCheck = Lam <$> (string "\\" *> skipSpace
       <|> Let <$> (string "let" *> betweenSpace pPattern)
               <*> (string "="   *> betweenSpace pRInfer)
               <*> (string "in"  *> skipSpace *> pRCheck)
-      <|> One <$  string "unit"
+      <|> One <$  string "()"
       <|> Prd <$> (string "(" *> betweenSpace pRCheck)
               <*> (string "," *> betweenSpace pRCheck <* string ")")
       <|> Inl <$> (string "inl" *> skipSpace *> pRCheck)
       <|> Inr <$> (string "inr" *> skipSpace *> pRCheck)
-      <|> Neu <$> pRInfer2
+      <|> Neu <$> pRInfer
 
 data InferF b =
     Var Identifier
   | App (InferF b) (CheckF b)
-  | Skp (CheckF b) (InferF b)
   | Fst (InferF b)
   | Snd (InferF b)
   | Cas (InferF b) (TypeF b) Identifier (CheckF b) Identifier (CheckF b)
@@ -68,25 +67,31 @@ data InferF b =
 type RInfer = InferF String
 type Infer  = InferF Integer
 
-pRInfer :: Parser RInfer
-pRInfer = Skp <$> pRCheck <* betweenSpace (string ";")
-              <*> pRInfer
-      <|> pRInfer2
+pRVar :: Parser RInfer
+pRVar = Var <$> pIdentifier
 
+pRCut :: Parser RInfer
+pRCut = Cut <$> (string "(" *> betweenSpace pRCheck)
+            <*> (string ":" *> betweenSpace pRType <* string ")")
+
+pRNut :: Parser RInfer
+pRNut = pRVar <|> pRCut
+
+pRArg :: Parser RCheck
+pRArg = Neu <$> pRVar
+    <|> string "(" *> betweenSpace pRCheck <* string ")"
 
 chainl1 :: Parser a -> Parser b -> Parser (a -> b -> a) -> Parser a
 chainl1 p q op = p >>= rest
   where rest x = (op <*> return x <*> q >>= rest) <|> return x
 
-pRInfer2 :: Parser RInfer
-pRInfer2 = (chainl1 pRInfer3 pRCheck $ App <$ string " " <* skipSpace)
-       <|> pRInfer3
+pRInfer :: Parser RInfer
+pRInfer = (chainl1 pRInfer2 pRArg $ App <$ string " " <* skipSpace)
+       <|> pRInfer2
 
-pRInfer3 :: Parser RInfer
-pRInfer3 = Fst <$> (string "fst" *> skipSpace *> pRInfer)
-       <|> Snd <$> (string "snd" *> skipSpace *> pRInfer)
-       <|> Cut <$> (string "(" *> betweenSpace pRCheck)
-               <*> (string ":" *> betweenSpace pRType <* string ")")
+pRInfer2 :: Parser RInfer
+pRInfer2 = Fst <$> (string "fst" *> skipSpace *> pRInfer2)
+       <|> Snd <$> (string "snd" *> skipSpace *> pRInfer2)
        <|> Cas <$> (string "case"   *> betweenSpace pRInfer)
                <*> (string "return" *> betweenSpace pRType)
                <*> (string "of"     *> betweenSpace pIdentifier)
@@ -94,12 +99,13 @@ pRInfer3 = Fst <$> (string "fst" *> skipSpace *> pRInfer)
                <*> (string "|"      *> betweenSpace pIdentifier)
                <*> (string "->"     *> skipSpace *> pRCheck)
        <|> ExF <$> (string "exfalso" *> skipSpace *> pRType)
-               <*> (skipSpace *> pRInfer)
-       <|> Var <$> pIdentifier
+               <*> (skipSpace *> pRInfer2)
+       <|> pRNut
        <|> string "(" *> skipSpace *> pRInfer <* skipSpace <* string ")"
 
 data Pattern =
     All Identifier
+  | Uni
   | And Pattern Pattern
   deriving Show
 
@@ -107,6 +113,7 @@ pPattern2 :: Parser Pattern
 pPattern2 = And <$> pPattern  <* skipSpace
                 <* string "," <* skipSpace
                <*> pPattern2
+       <|> Uni <$  string "()"
        <|> pPattern
 
 pPattern :: Parser Pattern

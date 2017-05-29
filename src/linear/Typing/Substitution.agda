@@ -23,7 +23,6 @@ mutual
   weakInfer : Weakening Infer L.weakInfer TInfer
   weakInfer 𝓜 (`var k)                     = `var (weakFin 𝓜 k)
   weakInfer 𝓜 (`app t u)                   = `app (weakInfer 𝓜 t) (weakCheck 𝓜 u)
-  weakInfer 𝓜 (`skip u t)                  = `skip (weakCheck 𝓜 u) (weakInfer 𝓜 t)
   weakInfer 𝓜 (`fst t)                     = `fst (weakInfer 𝓜 t)
   weakInfer 𝓜 (`snd t)                     = `snd (weakInfer 𝓜 t)
   weakInfer 𝓜 (`case t return σ of l %% r) = `case weakInfer 𝓜 t return σ
@@ -102,10 +101,6 @@ mutual
     let (θ₁ , tρ , ρ₁) = substInfer ρ t
         (θ₂ , uρ , ρ₂) = substCheck ρ₁ u
     in θ₂ , `app tρ uρ , ρ₂
-  substInfer ρ (`skip u t)                  =
-    let (θ₁ , uρ , ρ₁) = substCheck ρ u
-        (θ₂ , tρ , ρ₂) = substInfer ρ₁ t
-    in θ₂ , `skip uρ tρ , ρ₂
   substInfer ρ (`fst t)                     =
     let (θ₁ , tρ , ρ₁) = substInfer ρ t
     in θ₁ , `fst tρ , ρ₁

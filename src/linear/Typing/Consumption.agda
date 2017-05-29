@@ -17,7 +17,6 @@ mutual
   consumptionInfer : Consumption TInfer
   consumptionInfer (`var k)                     = consumptionFin k
   consumptionInfer (`app t u)                   = trans (consumptionInfer t) (consumptionCheck u)
-  consumptionInfer (`skip u t)                  = trans (consumptionCheck u) (consumptionInfer t)
   consumptionInfer (`fst t)                     = consumptionInfer t
   consumptionInfer (`snd t)                     = consumptionInfer t
   consumptionInfer (`case t return σ of l %% r) =
@@ -43,9 +42,6 @@ mutual
   framingInfer c (`app t u)                   =
     let (_ , c₁ , c₂) = divide c (consumptionInfer t) (consumptionCheck u)
     in `app (framingInfer c₁ t) (framingCheck c₂ u)
-  framingInfer c (`skip u t) =
-    let (_ , c₁ , c₂) = divide c (consumptionCheck u) (consumptionInfer t)
-    in `skip (framingCheck c₁ u) (framingInfer c₂ t)
   framingInfer c (`fst t)    = `fst framingInfer c t
   framingInfer c (`snd t)    = `snd framingInfer c t
   framingInfer c (`case t return σ of l %% r) =

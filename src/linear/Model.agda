@@ -67,6 +67,7 @@ module LINEAR {𝓜^C 𝓜^I : Model} (𝓜 : Linear 𝓜^C 𝓜^I) where
     {γ δ θ : List Type} {σ ν : Type} {k : ℕ} {σp : Context k} {p : Pattern k} →
     σ ∋ p ↝ σp → 𝓜^I γ σ → 𝓜^C (toList σp L.++ δ) ν → γ ++ δ ≅ θ → 𝓜^C θ ν
   linearPattern `v t u inc = neu (app (cut (lam u)) (neu t) (UE.sym inc))
+  linearPattern `⟨⟩ t u inc = neu (skip (neu t) (cut u) inc)
   linearPattern {δ = δ} {ν = ν} (p₁ ,, p₂) t u inc =
     let δ₁  = patternContext p₁
         δ₂  = patternContext p₂
@@ -105,11 +106,6 @@ module LINEAR {𝓜^C 𝓜^I : Model} (𝓜 : Linear 𝓜^C 𝓜^I) where
         T   = linearCheck t (consumptionCheck t)
         INC = UE.divide (consumptionInfer f) (consumptionCheck t) inc
     in app F T INC
-  linearInfer (`skip u t) inc =
-    let U   = linearCheck u (consumptionCheck u)
-        T   = linearInfer t (consumptionInfer t)
-        INC = UE.divide (consumptionCheck u) (consumptionInfer t) inc
-    in skip U T INC
   linearInfer (`fst t) inc    = fst (linearInfer t inc)
   linearInfer (`snd t) inc    = snd (linearInfer t inc)
   linearInfer (`case t return ν of l %% r) inc =

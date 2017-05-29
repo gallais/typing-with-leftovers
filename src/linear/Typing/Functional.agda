@@ -18,13 +18,13 @@ RPattern (A , _ , p) δ = A ∋ p ↝ δ
 
 functionalPattern : Functional′ RPattern
 functionalPattern _ `v         `v         = refl
+functionalPattern _ `⟨⟩        `⟨⟩        = refl
 functionalPattern _ (p₁ ,, q₁) (p₂ ,, q₂) = cong₂ _ (functionalPattern _ p₁ p₂) (functionalPattern _ q₁ q₂)
 
 functionalInfer : Functional (InferTyping TInfer)
 functionalInfer _ (`var k₁)    (`var k₂)    = functionalFin _ k₁ k₂
 functionalInfer _ (`app t₁ u₁) (`app t₂ u₂) = cong (λ { (_ ─o τ) → τ; σ → σ })
                                             $ functionalInfer _ t₁ t₂
-functionalInfer _ (`skip _ t₁) (`skip _ t₂) = functionalInfer _ t₁ t₂
 functionalInfer _ (`fst t₁)    (`fst t₂)    = cong (λ { (σ & _) → σ; σ → σ})
                                             $ functionalInfer _ t₁ t₂
 functionalInfer _ (`snd t₁)    (`snd t₂)    = cong (λ { (_ & τ) → τ; σ → σ})
@@ -41,9 +41,6 @@ mutual
   functionalInferPost _ (`app t₁ u₁) (`app t₂ u₂)
     with functionalInferPost _ t₁ t₂
   ... | refl = cong _ $ functionalCheckPost _ u₁ u₂
-  functionalInferPost _ (`skip u₁ t₁) (`skip u₂ t₂)
-    with functionalCheckPost _ u₁ u₂
-  ... | refl = functionalInferPost _ t₁ t₂
   functionalInferPost _ (`fst t₁) (`fst t₂)
     with functionalInferPost _ t₁ t₂
   ... | refl = refl
@@ -85,10 +82,6 @@ mutual
     with functionalInfer _ t₁ t₂
   ... | refl with functionalCheckPre _ u₁ u₂
   ... | refl with functionalInferPre _ t₁ t₂
-  ... | refl = refl
-  functionalInferPre _ (`skip u₁ t₁) (`skip u₂ t₂)
-    with functionalInferPre _ t₁ t₂
-  ... | refl with functionalCheckPre _ u₁ u₂
   ... | refl = refl
   functionalInferPre _ (`fst t₁) (`fst t₂)
     with functionalInfer _ t₁ t₂

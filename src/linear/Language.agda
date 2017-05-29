@@ -22,7 +22,6 @@ mutual
   data Infer (n : ℕ) : Set where
     `var_               : (k : Fin n) → Infer n
     `app                : (t : Infer n) (u : Check n) → Infer n
-    `skip               : (t : Check n) (u : Infer n) → Infer n
     `fst_               : (t : Infer n) → Infer n
     `snd_               : (t : Infer n) → Infer n
     `case_return_of_%%_ : (i : Infer n) (σ : Type) (l r : Check (suc n)) → Infer n
@@ -31,6 +30,7 @@ mutual
 
   data Pattern : (m : ℕ) → Set where
     `v   : Pattern 1
+    `⟨⟩  : Pattern 0
     _,,_ : {m n : ℕ} (p : Pattern m) (q : Pattern n) → Pattern (m ℕ.+ n)
 
 -- hack
@@ -51,7 +51,6 @@ mutual
   weakInfer : Weakening Infer
   weakInfer inc (`var k)                     = `var (weakFin inc k)
   weakInfer inc (`app i u)                   = `app (weakInfer inc i) (weakCheck inc u)
-  weakInfer inc (`skip u t)                  = `skip (weakCheck inc u) (weakInfer inc t)
   weakInfer inc (`fst t)                     = `fst (weakInfer inc t)
   weakInfer inc (`snd t)                     = `snd (weakInfer inc t)
   weakInfer inc (`case i return σ of l %% r) =
@@ -81,7 +80,6 @@ mutual
   substInfer : Substituting Infer Infer
   substInfer ρ (`var k)                     = substFin fresheyInfer ρ k
   substInfer ρ (`app i u)                   = `app (substInfer ρ i) (substCheck ρ u)
-  substInfer ρ (`skip u t)                  = `skip (substCheck ρ u) (substInfer ρ t)
   substInfer ρ (`fst t)                     = `fst (substInfer ρ t)
   substInfer ρ (`snd t)                     = `snd (substInfer ρ t)
   substInfer ρ (`case i return σ of l %% r) =

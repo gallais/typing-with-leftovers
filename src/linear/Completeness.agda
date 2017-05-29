@@ -196,7 +196,7 @@ complete (⊗L t)     =
 complete 1R         = , `unit
 complete (1L t)     =
   let (rt , T) = complete t
-  in , (`neu `skip (`neu (`var z)) (T.weakInfer (insert ] 𝟙 [ finish) (`cut T)))
+  in , `let `⟨⟩ ∷= `var z `in T.weakCheck (insert _ finish) T
 complete 0L = , `neu (`exfalso _ (proj₂ (`0L _ _)))
 complete (─oR t)    = , `lam (proj₂ $ complete t)
 complete (─oL {γ} {δ} {σ} {τ} {ν} t u)  =

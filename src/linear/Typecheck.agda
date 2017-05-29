@@ -28,9 +28,16 @@ consume (σ ∷ Γ)     (suc k) = consumeSuc Γ σ k <$> consume Γ k
 
 checkPattern : {n : ℕ} (σ : Type) (p : Pattern n) → Dec $ PATTERN σ p
 checkPattern σ `v              = yes (σ ∷ [] , `v)
+checkPattern 𝟙 `⟨⟩             = yes ([] , `⟨⟩)
+checkPattern (σ ⊗ τ)  (p ,, q) = patternTensor <$> checkPattern σ p <*> checkPattern τ q
+checkPattern (κ x)    `⟨⟩      = no (λ { (_ , ()) })
+checkPattern 𝟘        `⟨⟩      = no (λ { (_ , ()) })
+checkPattern (σ ⊗ τ)  `⟨⟩      = no (λ { (_ , ()) })
+checkPattern (σ ─o τ) `⟨⟩      = no (λ { (_ , ()) })
+checkPattern (σ & τ)  `⟨⟩      = no (λ { (_ , ()) })
+checkPattern (σ ⊕ τ)  `⟨⟩      = no (λ { (_ , ()) })
 checkPattern 𝟙        (p ,, q) = no (λ { (_ , ()) })
 checkPattern 𝟘        (p ,, q) = no (λ { (_ , ()) })
-checkPattern (σ ⊗ τ)  (p ,, q) = patternTensor <$> checkPattern σ p <*> checkPattern τ q
 checkPattern (σ ─o τ) (p ,, q) = no (λ { (_ , ()) })
 checkPattern (σ & τ)  (p ,, q) = no (λ { (_ , ()) })
 checkPattern (κ x)    (p ,, q) = no (λ { (_ , ()) })
@@ -65,18 +72,6 @@ mutual
                                coerce = subst₂ (_⊢_∋ _ ⊠ _) (cong proj₂ eq) (proj₁ $ ─o-inj $ cong proj₁ eq)
                            in ¬p (_ , coerce (app-inv-argument (INFER.proof p)))
   ... | yes (θ , U) = yes (τ , θ , `app T U)
-
-  -- SKIP
-  infer Γ (`skip u t)
-    with check Γ 𝟙 u
-  ... | no ¬p = no $ λ p → ¬p (_ , (proj₁ $ proj₂ $ skip-inv $ INFER.proof p))
-  ... | yes (Δ , U) with infer Δ t
-  ... | no ¬q = no $ λ q →
-    let (U′ P., T′) = proj₂ $ skip-inv $ INFER.proof q
-        eq          = functionalCheckPost _ U U′
-    in ¬q (_ , _ , subst (λ Δ → TInfer Δ _ _ _) (sym eq) T′)
-  ... | yes (Θ , σ , T) = yes (Θ , σ , `skip U T)
-
 
 
   -- FST

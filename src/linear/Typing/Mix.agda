@@ -78,12 +78,6 @@ mutual
         (f , F)             = mixInfer eqΓ eqΔ₁₂ eqΓ′ eqΔ′₁₂ f
         (t , T)             = mixCheck eqΔ₁₂ eqΔ eqΔ′₁₂ eqΔ′ t
     in , `app F T
-  mixInfer {p = p} {q} eqΓ eqΔ eqΓ′ eqΔ′ (`skip u t) =
-    let (Δ₁  , Δ₂  , eqΔ₁₂) = splitUsages p _
-        (Δ′₁₂ , eqΔ′₁₂)     = unsplitUsages q Δ₁ Δ₂
-        (u , U)             = mixCheck eqΓ eqΔ₁₂ eqΓ′ eqΔ′₁₂ u
-        (t , T)             = mixInfer eqΔ₁₂ eqΔ eqΔ′₁₂ eqΔ′ t
-    in , `skip U T
   mixInfer eqΓ eqΔ eqΓ′ eqΔ′ (`fst p) = Prod.map `fst_ `fst_ $ mixInfer eqΓ eqΔ eqΓ′ eqΔ′ p
   mixInfer eqΓ eqΔ eqΓ′ eqΔ′ (`snd p) = Prod.map `snd_ `snd_ $ mixInfer eqΓ eqΔ eqΓ′ eqΔ′ p
   mixInfer {p = p} {q} eqΓ eqΔ eqΓ′ eqΔ′ (`case t return σ of l %% r) =

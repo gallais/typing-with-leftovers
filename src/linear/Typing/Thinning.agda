@@ -107,11 +107,6 @@ thinning′Infer 𝓜 eq₁ eq₂ (`app f t) =
       (f′ , eqf , F) = thinning′Infer 𝓜 eq₁ eq f
       (t′ , eqt , T) = thinning′Check 𝓜 eq eq₂ t
   in , cong₂ `app eqf eqt , `app F T
-thinning′Infer 𝓜 eq₁ eq₂ (`skip u t) =
-  let (φ , eq)       = split-⋈ 𝓜 eq₁ eq₂ (consumptionCheck u) (consumptionInfer t)
-      (u′ , equ , U) = thinning′Check 𝓜 eq₁ eq u
-      (t′ , eqt , T) = thinning′Infer 𝓜 eq eq₂ t
-  in , cong₂ `skip equ eqt , `skip U T
 thinning′Infer 𝓜 eq₁ eq₂ (`fst t) =
   let (t′ , eqt , T) = thinning′Infer 𝓜 eq₁ eq₂ t
   in , cong `fst_ eqt , `fst T

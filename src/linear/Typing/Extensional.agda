@@ -40,10 +40,6 @@ mutual
     let f′ = extensionalInfer eqs₁ eqs₂ EQs₁ (coerceʳ eqs₂) f
         t′ = extensionalCheck (CP.sym eqs₂) eqs₂ (coerceˡ eqs₂) EQs₂ t
     in `app f′ t′
-  extensionalInfer eqs₁ eqs₂ EQs₁ EQs₂ (`skip u t) =
-    let u′ = extensionalCheck eqs₁ eqs₂ EQs₁ (coerceʳ eqs₂) u
-        t′ = extensionalInfer (CP.sym eqs₂) eqs₂ (coerceˡ eqs₂) EQs₂ t
-    in `skip u′ t′
   extensionalInfer eqs₁ eqs₂ EQs₁ EQs₂ (`fst t) =
     `fst (extensionalInfer eqs₁ eqs₂ EQs₁ EQs₂ t)
   extensionalInfer eqs₁ eqs₂ EQs₁ EQs₂ (`snd t) =

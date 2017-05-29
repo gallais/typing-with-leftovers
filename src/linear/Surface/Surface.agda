@@ -19,20 +19,24 @@ open import linear.Type
 
 data Pattern : Set where
   `v   : String → Pattern
+  `⟨⟩  : Pattern
   _,,_ : (p q : Pattern) → Pattern
 
 data RPattern : Set where
   RAll : String → RPattern
+  RUni : RPattern
   RAnd : RPattern → RPattern → RPattern
 
 {-# COMPILE GHC RPattern
     = data Surface.Parser.Pattern
     (Surface.Parser.All
+    | Surface.Parser.Uni
     | Surface.Parser.And)
 #-}
 
 embed^RPattern : RPattern → Pattern
 embed^RPattern (RAll x) = `v x
+embed^RPattern RUni = `⟨⟩
 embed^RPattern (RAnd x x₁) = embed^RPattern x ,, embed^RPattern x₁
 
 mutual
@@ -49,7 +53,6 @@ mutual
   data Infer : Set where
     `var                    : String → Infer
     `app                    : Infer → Check → Infer
-    `skip                   : Check → Infer → Infer
     `fst `snd               : Infer → Infer
     `case_return_of_↦_%%_↦_ : Infer → Type → String → Check → String → Check → Infer
     `exfalso                : Type → Infer → Infer
@@ -80,7 +83,6 @@ data RCheck where
 data RInfer where
   Var     : String → RInfer
   App     : RInfer → RCheck → RInfer
-  Skp     : RCheck → RInfer → RInfer
   Fst Snd : RInfer → RInfer
   Cas     : RInfer → RType → String → RCheck → String → RCheck → RInfer
   ExF     : RType → RInfer → RInfer
@@ -90,7 +92,6 @@ data RInfer where
     = data Surface.Parser.Infer
     (Surface.Parser.Var
     | Surface.Parser.App
-    | Surface.Parser.Skp
     | Surface.Parser.Fst
     | Surface.Parser.Snd
     | Surface.Parser.Cas
@@ -112,7 +113,6 @@ embed^RCheck (Neu x) = `neu (embed^RInfer x)
 
 embed^RInfer (Var x) = `var x
 embed^RInfer (App x x₁) = `app (embed^RInfer x) (embed^RCheck x₁)
-embed^RInfer (Skp x x₁) = `skip (embed^RCheck x) (embed^RInfer x₁)
 embed^RInfer (Fst x) = `fst  (embed^RInfer x)
 embed^RInfer (Snd x) = `snd  (embed^RInfer x)
 embed^RInfer (Cas x x₁ x₂ x₃ x₄ x₅) = `case embed^RInfer x return embed^RType x₁ of x₂ ↦ embed^RCheck x₃ %% x₄ ↦ embed^RCheck x₅
@@ -170,7 +170,8 @@ import Level
 open RawMonad (monad {Level.zero}) hiding (_⊗_)
 
 scopePattern : Pattern → ∃ λ n → Vec String n × L.Pattern n
-scopePattern (`v nm)   = , nm ∷ [] , L.`v
+scopePattern (`v nm)  = , nm ∷ [] , L.`v
+scopePattern `⟨⟩      = zero , [] , L.`⟨⟩
 scopePattern (p ,, q) =
   let (m , xs , p′) = scopePattern p
       (n , ys , q′) = scopePattern q
@@ -194,7 +195,6 @@ mutual
   ... | yes (k , _) = just (L.`var k)
   ... | no ¬p = nothing
   scopeInfer nms (`app f t)  = L.`app  <$> scopeInfer nms f ⊛ scopeCheck nms t
-  scopeInfer nms (`skip u t) = L.`skip <$> scopeCheck nms u ⊛ scopeInfer nms t
   scopeInfer nms (`fst t)    = L.`fst_ <$> scopeInfer nms t
   scopeInfer nms (`snd t)    = L.`snd_ <$> scopeInfer nms t
   scopeInfer nms (`case i return σ of nml ↦ l %% nmr ↦ r) =
