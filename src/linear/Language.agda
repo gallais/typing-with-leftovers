@@ -24,9 +24,9 @@ mutual
     `app                : (t : Infer n) (u : Check n) → Infer n
     `fst_               : (t : Infer n) → Infer n
     `snd_               : (t : Infer n) → Infer n
-    `case_return_of_%%_ : (i : Infer n) (σ : Type) (l r : Check (suc n)) → Infer n
-    `exfalso            : (σ : Type) (i : Infer n) → Infer n
-    `cut                : (t : Check n) (σ : Type) → Infer n
+    `case_return_of_%%_ : (i : Infer n) (σ : Type!) (l r : Check (suc n)) → Infer n
+    `exfalso            : (σ : Type!) (i : Infer n) → Infer n
+    `cut                : (t : Check n) (σ : Type!) → Infer n
 
   data Pattern : (m : ℕ) → Set where
     `v   : Pattern 1

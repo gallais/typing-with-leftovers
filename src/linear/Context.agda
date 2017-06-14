@@ -8,18 +8,21 @@ open import linear.Type
 open import linear.Scope as Sc hiding (Mergey ; copys ; inserts)
 open import Relation.Binary.PropositionalEquality
 
-infixr 4 _∷_ □_
+infixr 5 _∷_ □_
 -- Contexts: (boxed) lists of types
 data Context : ℕ → Set where
   []   : Context 0
   _∷_  : {n : ℕ} → Type! → Context n → Context (suc n)
   □_   : {n : ℕ} → Context n → Context n
 
-infixr 6 _++_
+infixr 4 _++_
 _++_ : {m n : ℕ} → Context m → Context n → Context (m ℕ.+ n)
-[]      ++ δ = δ
-(σ ∷ γ) ++ δ = σ ∷ (γ ++ δ)
-(□ γ)   ++ δ = □ (γ ++ δ)
+[]    ++ δ = δ
+σ ∷ γ ++ δ = σ ∷ (γ ++ δ)
+□ γ   ++ δ = □ (γ ++ δ)
+
+□-inj : {m : ℕ} {Γ Δ : Context m} → (Context m ∋ □ Γ) ≡ □ Δ → Γ ≡ Δ
+□-inj refl = refl
 
 -- Induction principle
 module _

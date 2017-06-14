@@ -1,6 +1,7 @@
 module linear.Usage where
 
 open import Data.Unit
+open import Data.Bool
 open import Data.Nat as ℕ
 open import Data.Fin
 open import Data.Product
@@ -21,14 +22,14 @@ open import Relation.Binary.PropositionalEquality
 
 
 -- Usage: fresh or stale
-infix 5 `fresh_ `stale_ fresh_ stale_
+infix 6 `fresh_ `stale_ fresh_ stale_
 data Usage : (a : Type) → Set where
   `fresh_ : (a : Type) → Usage a
   `stale_ : (a : Type) → Usage a
 
 `Usage! : Type! → Set
-`Usage! (σ !^ 0) = Usage σ
-`Usage! _        = ⊤
+`Usage! (σ !^ false) = Usage σ
+`Usage! _            = ⊤
 
 -- wrapper to facilitate type inference
 record Usage! (σ : Type!) : Set where
@@ -37,14 +38,14 @@ record Usage! (σ : Type!) : Set where
 open Usage! public
 
 fresh_ : (σ : Type!) → Usage! σ
-fresh σ !^ 0     = [ `fresh σ ]
-fresh σ !^ suc m = [ tt       ]
+fresh σ !^ false = [ `fresh σ ]
+fresh σ !^ true  = [ tt       ]
 
 stale_ : (σ : Type!) → Usage! σ
-stale σ !^ 0     = [ `stale σ ]
-stale σ !^ suc m = [ tt       ]
+stale σ !^ false = [ `stale σ ]
+stale σ !^ true  = [ tt       ]
 
-infixr 4 _∷_ □_
+infixr 5 _∷_ □_
 data Usages : {n : ℕ} (γ : Context n) → Set where
   []  : Usages []
   _∷_ : {n : ℕ} {γ : Context n} {a : Type!} →
@@ -62,7 +63,7 @@ head (S ∷ _) = S
 tail : {n : ℕ} {γ : Context n} {a : Type!} → Usages (a ∷ γ) → Usages γ
 tail (_ ∷ Γ) = Γ
 
-infixr 3 _++_
+infixr 4 _++_
 _++_ : {m n : ℕ} {γ : Context m} {δ : Context n}
        (Γ : Usages γ) (Δ : Usages δ) → Usages (γ C.++ δ)
 []    ++ Δ = Δ
@@ -76,18 +77,13 @@ data _⊢var_∈_⊠_ :
   {n : ℕ} {γ : Context n}
   (Γ : Usages γ) (k : Fin n) (σ : Type!) (Δ : Usages γ) → Set where
 
-  -- axiom: no matter whether it's been used already or not, a
-  -- resource of type (σ !) can be reused
-  z!  : {n : ℕ} {γ : Context n} {Γ : Usages γ}
-        {σ : Type} {m p : ℕ} {S : Usage! (σ !^ suc m)} →
-        -------------------------------------------------
-        S ∷ Γ ⊢var zero ∈ σ !^ p ⊠ (stale σ !^ suc m) ∷ Γ
-
-  -- axiom: linear resources can only b used once. They are turned
-  -- from fresh to stale when consumed
-  z0  : {n : ℕ} {γ : Context n} {Γ : Usages γ} {σ : Type} →
+  -- axiom: linear resources can only be used once. They are turned
+  -- from fresh to stale when consumed (nb: as fresh = stale for
+  -- resources of type σ!, it doesn't prevent us from using them
+  -- multiple times!)
+  z   : {n : ℕ} {γ : Context n} {Γ : Usages γ} {σ : Type!} →
         -----------------------------------------------------------
-        (fresh σ !^ 0) ∷ Γ ⊢var zero ∈ σ !^ 0 ⊠ (stale σ !^ 0) ∷ Γ
+        fresh σ ∷ Γ ⊢var zero ∈ σ ⊠ stale σ ∷ Γ
 
   -- weak: one can ignore a resource. In the output context it is
   -- simply left unchanged
@@ -212,8 +208,7 @@ TFin = _⊢var_∈_⊠_
 
 weakFin : Weakening Fin Sc.weakFin TFin
 weakFin finish         k      = k
-weakFin (copy 𝓜)     z!     = z!
-weakFin (copy 𝓜)     z0     = z0
+weakFin (copy 𝓜)     z      = z
 weakFin (copy 𝓜)     (wk k) = wk weakFin 𝓜 k
 weakFin (copy 𝓜)     (op k) = op weakFin (copy 𝓜) k
 -- same as before: we need to eta-expand by case-splitting on
@@ -244,11 +239,11 @@ data Env {E : ℕ → Set} (𝓔 : Typing E) : {k l : ℕ}
           ---------------------------------
           Env 𝓔 Τ₁ (t ∷ ρ) Τ₃ (fresh a ∷ Γ)
 
-  ─∷_   : {a : Type!} {k l : ℕ}  {θ : Context l} {ρ : Sc.Env E k l} {t : E l}
+  ─∷_   : {a : Type} {k l : ℕ}  {θ : Context l} {ρ : Sc.Env E k l} {t : E l}
           {Τ₁ Τ₂ : Usages θ} {γ : Context k} {Γ : Usages γ} →
           Env 𝓔 Τ₁ ρ Τ₂ Γ →
           -----------------------------------
-          Env 𝓔 Τ₁ (t ∷ ρ) Τ₂ (stale a ∷ Γ)
+          Env 𝓔 Τ₁ (t ∷ ρ) Τ₂ (stale (a !^ false) ∷ Γ)
 
   [v]∷_ : {a : Type!} {k l : ℕ} {θ : Context l} {ρ : Sc.Env E k l}
           {Τ₁ Τ₂ : Usages θ} {γ : Context k} {Γ : Usages γ} →
@@ -256,11 +251,11 @@ data Env {E : ℕ → Set} (𝓔 : Typing E) : {k l : ℕ}
           -----------------------------------------------------------
           Env 𝓔 (fresh a ∷ Τ₁) (v∷ ρ) (fresh a ∷ Τ₂) (fresh a ∷ Γ)
 
-  ]v[∷_ : {a : Type!} {k l : ℕ} {θ : Context l} {ρ : Sc.Env E k l}
+  ]v[∷_ : {a : Type} {k l : ℕ} {θ : Context l} {ρ : Sc.Env E k l}
           {Τ₁ Τ₂ : Usages θ} {γ : Context k} {Γ : Usages γ} →
           Env 𝓔 Τ₁ ρ Τ₂ Γ →
           -----------------------------------------------------------
-          Env 𝓔 (stale a ∷ Τ₁) (v∷ ρ) (stale a ∷ Τ₂) (stale a ∷ Γ)
+          Env 𝓔 (stale (a !^ false) ∷ Τ₁) (v∷ ρ) (stale (a !^ false) ∷ Τ₂) (stale (a !^ false) ∷ Γ)
 
   □_    : {k l : ℕ} {θ : Context l} {ρ : Sc.Env E k l}
           {Τ₁ Τ₂ : Usages θ} {γ : Context k} {Γ : Usages γ} →
@@ -327,6 +322,7 @@ withFreshVars (□ δ)   ρ = □ withFreshVars δ ρ
 
 withStaleVars : {E : ℕ → Set} {𝓔 : Typing E} →
                 s^Extending (Sc.Env E) Sc.withFreshVars (Env 𝓔)
-withStaleVars []      ρ = ρ
-withStaleVars (a ∷ δ) ρ = ]v[∷ withStaleVars δ ρ
-withStaleVars (□ δ)   ρ = □ withStaleVars δ ρ
+withStaleVars []                ρ = ρ
+withStaleVars (a !^ false ∷ δ)  ρ = ]v[∷ withStaleVars δ ρ
+withStaleVars (a !^ true  ∷ δ)  ρ = [v]∷ withStaleVars δ ρ
+withStaleVars (□ δ)             ρ = □ withStaleVars δ ρ

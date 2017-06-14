@@ -21,11 +21,19 @@ open import linear.Typecheck.Problem
 
 -- Decidability of Type-checking
 
-consume : {n : ℕ} {γ : Context n} (Γ : Usages γ) (k : Fin n) → Dec $ CONSUME Γ k
-consume ([ σ ] ∷ Γ) zero    = yes (σ , ] σ [ ∷ Γ , z)
-consume (] σ [ ∷ Γ) zero    = no (λ { (_ , _ , ()) })
-consume (σ ∷ Γ)     (suc k) = consumeSuc Γ σ k <$> consume Γ k
+consume : {n : ℕ} (γ : Context n) (Γ : Usages γ) (k : Fin n) → Dec $ CONSUME Γ k
+consume (□ γ)   (□ Γ)   k       = {!!}
+consume (a ∷ γ) (A ∷ Γ) zero    = {!!}
+consume (a ∷ γ) (A ∷ Γ) (suc k) = consumeSuc Γ A k <$> consume γ Γ k
+consume []      []      ()
 
+{-
+consume (stale σ ∷ Γ) zero    = yes (σ , stale σ ∷ Γ , z)
+consume (stale σ ∷ Γ) zero    = no (λ { (_ , _ , ()) })
+consume (σ ∷ Γ)     (suc k) = consumeSuc Γ σ k <$> consume Γ k
+-}
+
+{-
 checkPattern : {n : ℕ} (σ : Type) (p : Pattern n) → Dec $ PATTERN σ p
 checkPattern σ `v              = yes (σ ∷ [] , `v)
 checkPattern 𝟙 `⟨⟩             = yes ([] , `⟨⟩)
@@ -260,3 +268,4 @@ mutual
   check Γ (σ & τ)  (`inr t) = no $ λ p → case CHECK.proof p of λ ()
   check Γ (κ n)    (`inr t) = no $ λ p → case CHECK.proof p of λ ()
 
+-}

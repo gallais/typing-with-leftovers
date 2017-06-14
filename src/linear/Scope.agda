@@ -29,7 +29,7 @@ weakFin (copy m)   zero    = zero
 weakFin (copy m)   (suc k) = suc (weakFin m k)
 weakFin (insert m) k       = suc (weakFin m k)
 
-infixr 4 _∷_
+infixr 5 _∷_
 data Env (T : ℕ → Set) : (k l : ℕ) → Set where
   []   : {l : ℕ} → Env T 0 l
   v∷_ : {k l : ℕ} → Env T k l → Env T (suc k) (suc l)

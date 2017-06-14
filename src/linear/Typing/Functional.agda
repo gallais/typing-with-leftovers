@@ -13,7 +13,7 @@ open import linear.Usage.Functional
 open import linear.Typing
 open import linear.Relation.Functional
 
-RPattern : (i : Type × Σ[ m ∈ ℕ ] Pattern m) (o : let (_ , m , _) = i in Context m) → Set
+RPattern : (i : Type! × Σ[ m ∈ ℕ ] Pattern m) (o : let (_ , m , _) = i in Context m) → Set
 RPattern (A , _ , p) δ = A ∋ p ↝ δ
 
 functionalPattern : Functional′ RPattern
@@ -23,7 +23,7 @@ functionalPattern _ (p₁ ,, q₁) (p₂ ,, q₂) = cong₂ _ (functionalPattern
 
 functionalInfer : Functional (InferTyping TInfer)
 functionalInfer _ (`var k₁)    (`var k₂)    = functionalFin _ k₁ k₂
-functionalInfer _ (`app t₁ u₁) (`app t₂ u₂) = cong (λ { (_ ─o τ) → τ; σ → σ })
+functionalInfer _ (`app t₁ u₁) (`app t₂ u₂) = cong (λ { (_ ⊸ τ) → τ; σ → σ })
                                             $ functionalInfer _ t₁ t₂
 functionalInfer _ (`fst t₁)    (`fst t₂)    = cong (λ { (σ & _) → σ; σ → σ})
                                             $ functionalInfer _ t₁ t₂
@@ -64,7 +64,7 @@ mutual
     (`let_∷=_`in_ {δ = δ} p₁ t₁ u₁) (`let p₂ ∷= t₂ `in u₂)
     with functionalInferPost _ t₁ t₂
   ... | refl with functionalPattern _ p₁ p₂
-  ... | refl = functional++ ]] δ [[ refl (functionalCheckPost _ u₁ u₂)
+  ... | refl = functional++ s⌜ δ ⌝ refl (functionalCheckPost _ u₁ u₂)
   functionalCheckPost _ `unit `unit = refl
   functionalCheckPost _ (`prd⊗ a₁ b₁) (`prd⊗ a₂ b₂)
     with functionalCheckPost _ a₁ a₂
@@ -107,7 +107,7 @@ mutual
   functionalCheckPre _ (`let p₁ ∷= t₁ `in u₁) (`let p₂ ∷= t₂ `in u₂)
     with functionalInfer _ t₁ t₂
   ... | refl with functionalPattern _ p₁ p₂
-  ... | refl with functional++ [[ patternContext p₁ ]] refl (functionalCheckPre _ u₁ u₂)
+  ... | refl with functional++ f⌜ patternContext p₁ ⌝ refl (functionalCheckPre _ u₁ u₂)
   ... | refl = cong proj₂ $ functionalInferPre _ t₁ t₂
   functionalCheckPre _ `unit `unit = refl
   functionalCheckPre _ (`prd⊗ a₁ b₁) (`prd⊗ a₂ b₂)
