@@ -7,6 +7,7 @@
 
 \input{commands}
 \usepackage{agda}
+\usepackage{float}
 \usepackage{mathpartir, lscape}
 \usepackage{todonotes}
 \usepackage{microtype}
@@ -21,7 +22,8 @@
 \bibliographystyle{plainurl}% the recommended bibstyle
 
 % Author macros::begin %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\title{Typing with Leftovers -- A mechanization of Intuitionistic Linear Logic\footnote{This work was partially supported by someone.}}
+\title{Typing with Leftovers \protect\\
+{\Large A mechanization of Intuitionistic Linear Logic\footnote{This work was partially supported by someone.}}}
 \titlerunning{Typing with Leftovers} %optional, in case that the title is too long; the running title should fit into the top page column
 
 %% Please provide for each author the \author and \affil macro,
@@ -73,7 +75,7 @@ resources added to the input context come out unchanged in the output
 one), a rather direct proof of stability under substitution, an
 analogue of the frame rule of separation logic showing that the 
 state of unused resources can be safely ignored, and a proof that
-typechecking is decidable. 
+typechecking is decidable.\todo{Equivalence with ILL + Surface language}
 
 The work has been fully formalised in Agda, commented source files 
 are provided as additional material available at~\url{https://github.com/gallais/typing-with-leftovers}.
@@ -111,14 +113,34 @@ of the programming languages whose type system includes notions of linearity,
 we need to have a good representation of such constraints.
 
 \paragraph*{Notations} This whole development has been fully formalised
-in Agda. Rather than including Agda syntax, the results are reformulated
-in terms of definitions, lemmas, theorems, etc. However it is important
-to keep in mind the distinction between various kinds of objects.
+in Agda. Rather than using Agda's syntax, the results are reformulated
+in terms of definitions, lemmas, theorems, and examples. However it is
+important to keep in mind the distinction between various kinds of objects.
 \texttt{Teletype} is used to denote data constructors, \DefinedType{small
 capitals} are characteristic of defined types. A type families' index is
-written as a subscript e.g. $\Var{}_n$.
+written as a subscript e.g. $\Var{}_n$. 
+
+We use two kinds of inference rules to describe inductive families: double
+rules are used to define types whilst simple ones correspond to constructors.
+In each case the premises correspond to arguments (usually called parameters
+and indices for types) and the conclusion shows the name of the constructor.
+A typical example is the inductively defined set of unary natural numbers:
+\begin{mathpar}
+\type{ }{\Nat{} : \Set{}}
+\and \constructor{ }{0 : \Nat{}}
+\and \constructor{n : \Nat{}}{1+ n : \Nat{}}
+\end{mathpar}
 
 \section{The Calculus of Raw Terms}
+
+The calculus we study in this paper is meant to be a core language,
+even though it will be rather easy to write programs in it. As a
+consequence all the design choices have been guided by the goal
+of facilitating its mechanical treatment in a dependently-typed language.
+That is why we use de Bruijn indices to represent variable bindings.
+We demonstrate in the code accompanying the paper how a simple scope
+checking pass can turn a surface level version of the language using
+strings as variable names into this representation.
 
 Following Altenkirch and Reus~\cite{altenkirch1999monadic},
 we define the raw terms of our language not as an inductive
@@ -129,56 +151,57 @@ free variables currently in scope. As is nowadays folklore, instead of
 using a set-indexed presentation where a closed terms is indexed by
 the empty set $⊥$ and fresh variables are introduced by wrapping
 the index in a \texttt{Maybe} type constructor\footnote{The value
-\texttt{nothing} represents the fresh variable whilst the data
-constructor \texttt{just} lifts all the existing ones in the new
-scope.}, we index our terms by a natural number instead. The
-\Var{} type family defined below represents the de Bruijn
-indices~\cite{debruijn1972lambda} corresponding to the $n-1$ free
-variables present in a scope $n$.
+\texttt{nothing} represents the fresh variable whilst the constructor
+\texttt{just} lifts the other ones in the new scope.}, we index
+our terms by a natural number instead. The
+\Var{} type family\footnote{It is also known as \texttt{Fin} (for
+``finite set'') in the dependently typed programming community.}
+defined below represents the de Bruijn indices~\cite{debruijn1972lambda}
+corresponding to the $n-1$ free variables present in a scope $n$.
 
 \begin{mathpar}
-\inferrule
+\type
  {n : \Nat{}
 }{\Var{}_n : \Set{}
 }
 
-\and \inferrule
+\and \constructor
  {
 }{\texttt{zero} : \Var{}_{1 + n}
 }
 
-\and \inferrule
+\and \constructor
  {k : \Var{}_n
 }{\texttt{suc} (k) : \Var{}_{1 + n}
 }
 \end{mathpar}
 
-The calculus is presented in a bidirectional fashion~\cite{pierce2000local}.
-This gives a clean classification of term formers as being either
-constructors of canonical values or eliminations corresponding to
-computations. This separation also characterises the flow of
-information during typechecking: given a context assigning a type
-to each free variable, canonical values (which we call \Checkable{})
-can be \emph{check}ed against a type whilst we may infer the type of
-computations (which we call \Inferable{}).
+We present the calculus in a bidirectional fashion~\cite{pierce2000local}.
+This definition style scales well to more complex type theories where full
+type-inference is not tractable anymore whilst only requiring the programmer
+to add top-level type annotations. The term constructors of the calculus are
+split in two different syntactic categories corresponding to constructors
+of canonical values on one hand and eliminators on the other. These
+categories characterise the flow of information during typechecking: given a
+context assigning a type to each free variable, canonical values (which we call
+\Checkable{}) can be \emph{check}ed against a type whilst we may \emph{infer}
+the type of computations (which we call \Inferable{}).
 
-\begin{figure}[h]\centering
+\todo{Explain what these constructors do?}
+\begin{figure}[H]\centering
 \begin{tabular}{lcl}
-⟨$\Inferable{}_n$⟩ & ::= & \texttt{var} ⟨$\Var{}_n$⟩ \\
-                   &  |  & \texttt{app} ⟨$\Inferable{}_n$⟩ ⟨$\Checkable{}_n$⟩ \\
-                   &  |  & \texttt{case} ⟨$\Inferable{}_n$⟩
-                           \texttt{return} ⟨\Type{}⟩
-                           \texttt{of} ⟨$\Checkable{}_{1 + n}$⟩
-                           \texttt{\%\%} ⟨$\Checkable{}_{1 + n}$⟩ \\
-                   &  |  & \texttt{cut} ⟨$\Checkable{}_n$⟩ ⟨\Type{}⟩ \\ \\
+⟨$\Inferable{}_n$⟩ & ::= & \var{} ⟨$\Var{}_n$⟩ \\
+                   &  |  & \app{⟨$\Inferable{}_n$⟩}{⟨$\Checkable{}_n$⟩} \\
+                   &  |  & \cas{⟨$\Inferable{}_n$⟩}{⟨\Type{})}{⟨$\Checkable{}_{1 + n}$⟩}{⟨$\Checkable{}_{1 + n}$⟩} \\
+                   &  |  & \prl{⟨$\Inferable{}_n$⟩} ~|~ \prr{⟨$\Inferable{}_n$⟩} \\
+                   &  |  & \cut{⟨$\Checkable{}_n$⟩}{⟨\Type{}⟩} \\ \\
 
-⟨$\Checkable{}_n$⟩ & ::= & \texttt{lam} ⟨$\Checkable{}_{1 + n}$⟩ \\
-                   &  |  & \texttt{let} ⟨$\Pattern{}_m$⟩ \texttt{∷=} ⟨$\Inferable{}_n$⟩
-                           \texttt{in} ⟨$\Checkable{}_{m + n}$⟩ \\
-                   &  |  & \texttt{inl} ⟨$\Checkable{}_n$⟩ \\
-                   &  |  & \texttt{inr} ⟨$\Checkable{}_n$⟩ \\
-                   &  |  & \texttt{prd} ⟨$\Checkable{}_n$⟩ ⟨$\Checkable{}_n$⟩ \\
-                   &  |  & \texttt{neu} ⟨$\Inferable{}_n$⟩ \\                  
+⟨$\Checkable{}_n$⟩ & ::= & \lam{⟨$\Checkable{}_{1 + n}$⟩} \\
+                   &  |  & \letin{⟨$\Pattern{}_m$⟩}{⟨$\Inferable{}_n$⟩}{⟨$\Checkable{}_{m + n}$⟩} \\
+                   &  |  & \inl{⟨$\Checkable{}_n$⟩} \\
+                   &  |  & \inr{⟨$\Checkable{}_n$⟩} \\
+                   &  |  & \prd{⟨$\Checkable{}_n$⟩}{⟨$\Checkable{}_n$⟩} \\
+                   &  |  & \neu{⟨$\Inferable{}_n$⟩} \\
 \end{tabular}
 \caption{Grammar of the Language of Raw Terms}
 \end{figure}
@@ -199,22 +222,22 @@ lets. This is achieved thanks to a rather simple piece of kit: the
 pattern binding $n$ variables. Because variables are represented as
 de Bruijn indices, the base pattern does not need to be associated
 with a name, it simply is a constructor \texttt{v} binding exactly
-$1$ variable. The comma pattern constructor takes two nested patterns
+one variable. The comma pattern constructor takes two nested patterns
 respectively binding $m$ and $n$ variables and uses them to deeply
 match a pair thus binding $(m + n)$ variables.
 
 \begin{mathpar}
-\inferrule
+\type
  {n : \Nat{}
 }{\Pattern{}_n : \Set{}
 }
 
-\and \inferrule
+\and \constructor
  {
 }{\texttt{v} : \Pattern{}_1
 }
 
-\and \inferrule
+\and \constructor
  {p : \Pattern{}_m \and q : \Pattern{}_n
 }{p \texttt{,} q : \Pattern{}_{m + n}
 }
@@ -256,9 +279,26 @@ like $x \mapsto (x, x)$ does.
 
 \section{Linear Typing Rules}
 
-These considerations lead us to the need for a typing relation
-describing the rules terms need to abide by in order to qualify
-as valid programs. A linear type system is characterised by the
+These observations demonstrate that we need to define a typing
+relation describing the rules terms need to abide by in order
+to qualify as well-typed linear programs. We start by defining
+the types our programs may have using the grammar in Figure~\ref{fig:types}.
+Apart from the usual linear type formers, we have a constructor
+\Base{} which makes it possible to have countably many different
+base types.
+
+\begin{figure}[ht]\centering
+\begin{tabular}{lcl}
+⟨$\Type{}$⟩ & ::= & \Base{⟨$\mathbb{N}$⟩}
+              ~|~ \Lolli{⟨$\Type{}$⟩}{⟨$\Type{}$⟩}
+              ~|~ \Tensor{⟨$\Type{}$⟩}{⟨$\Type{}$⟩} \\
+            &  |  & \Sum{⟨$\Type{}$⟩}{⟨$\Type{}$⟩}
+              ~|~ \With{⟨$\Type{}$⟩}{⟨$\Type{}$⟩}
+\end{tabular}
+\caption{Grammar of $\Type{}$}\label{fig:types}
+\end{figure}
+
+A linear type system is characterised by the
 fact that all the resources available in a context have to be
 used exactly once by the term being checked. In traditional
 presentations of linear logic this is achieved by representing
@@ -274,7 +314,8 @@ together with either extra inference rules to reorganise the
 context or a side condition to rules splitting the context so
 that it may be re-arranged on the fly. In the following example
 $\_≈\_$ stands for ``bag-equivalence'' of lists.
-\begin{figure}[h]
+
+\begin{figure}[ht]
 \begin{mathpar}
 \inferrule
  {Γ ⊢ σ \and Δ ⊢ τ
@@ -319,17 +360,17 @@ the resources consumed by the term in question and returning the
 A \Context{} is a list of \Type{}s indexed by its length. It can
 be formally described by the following inference rules:
 \begin{mathpar}
-\inferrule
+\type
  {n : \Nat{}
 }{\Context{}_n : \Set{}
 }
 
-\and \inferrule
+\and \constructor
  {
 }{[] : \Context{}_0
 }
 
-\and \inferrule
+\and \constructor
  {γ : \Context{}_n \and σ : \Type{}
 }{γ ∙ σ : \Context{}_{1 + n}
 }
@@ -349,29 +390,29 @@ lifted to contexts in a pointwise manner and we reuse the $\Usage{}$
 name and the $\fresh{}$ and $\stale{}$ constructors.
 
 \begin{mathpar}
-\inferrule
+\type
  {σ : \Type{}
 }{\Usage{σ} : \Set{}
 }
-\and\inferrule
+\and\constructor
  {
 }{\fresh{σ} : \Usage{σ}
 }
-\and\inferrule
+\and\constructor
  {
 }{\stale{σ} : \Usage{σ}
 }
 \end{mathpar}
 \begin{mathpar}
-\inferrule
+\type
  { γ : \Context{}_n
 }{\Usages{γ} : \Set{}
 }
-\and\inferrule
+\and\constructor
  {
 }{[] : \Usages{[]}
 }
-\and\inferrule
+\and\constructor
  {Γ : \Usages{γ ∙ σ} \and S : \Usage{σ}
 }{Γ ∙ S : \Usages{γ ∙ σ}
 }
@@ -390,7 +431,7 @@ the leftover resources. Formally:
 A ``Typing Relation'' for $T$ a \Nat{}-indexed inductive family is
 an indexed relation $\text{\𝓣{}}_n$ such that:
 \begin{mathpar}
-\inferrule
+\type
  {n : \Nat{} \and γ : \Context{}_n \and Γ, Δ : \Usages{γ} \and t : T_n \and σ : \Type{}
 }{\text{\𝓣{}}_n(Γ, t, σ, Δ) : \Set{}
 }
@@ -401,6 +442,7 @@ This definition clarifies the notion but also leads to more generic
 statements later on: weakening, substitution, framing can all be
 expressed as properties a Typing Relation might have.
 
+\todo{explain}
 \input{typing-rules}
 
 \subsubsection{Typing de Bruijn indices}
@@ -429,21 +471,21 @@ typing derivation associated to it depending on the author's intent.
 
 \begin{example}
 The de Bruijn index 1 has type τ in the context (γ ∙ σ ∙ τ) with
-usage annotation ($Γ ∙ \texttt{fresh}_τ ∙ \texttt{fresh}_σ$):
+usage annotation ($Γ ∙ \fresh{τ} ∙ \fresh{σ}$):
 \begin{mathpar}
 \inferrule
  {\inferrule
    {
-  }{Γ ∙ \texttt{fresh}_τ ⊢ \texttt{zero} ∈ τ ⊠ Γ ∙ \texttt{stale}_τ
+  }{Γ ∙ \fresh{τ} ⊢ \varzero{} ∈ τ ⊠ Γ ∙ \stale{τ}
   }
-}{Γ ∙ \texttt{fresh}_τ ∙ \texttt{fresh}_σ ⊢ \texttt{suc(zero)} ∈ τ ⊠ Γ ∙ \texttt{stale}_τ ∙ \texttt{fresh}_σ
+}{Γ ∙ \fresh{τ} ∙ \fresh{σ} ⊢ \varsucc{\varzero} ∈ τ ⊠ Γ ∙ \stale{τ} ∙ \fresh{σ}
 }
 \end{mathpar}
 Or, as it would be written in Agda, taking advantage of the fact that
 the language constructs and the typing rules about them have been given
 the same names:
 \begin{lstlisting}
-  one : 'Γ' '∙' fresh 'τ' '∙' fresh 'σ' ⊢ suc(zero) '∈' 'τ' '⊠' 'Γ' '∙' stale 'τ' '∙' fresh 'σ'
+  one : 'Γ' '∙' f 'τ' '∙' f 'σ' ⊢ s z '∈' 'τ' '⊠' 'Γ' '∙' s 'τ' '∙' f 'σ'
   one = suc zero
 \end{lstlisting}
 \end{example}
@@ -495,20 +537,20 @@ can be checked at type (σ ⊸ σ) in an empty context:
    {\inferrule
      {\inferrule
        {
-      }{[] ∙ \texttt{fresh}_σ ⊢ \texttt{zero} ∈ σ ⊠ [] ∙ \texttt{stale}_σ
+      }{[] ∙ \fresh{σ} ⊢ \varzero ∈ σ ⊠ [] ∙ \stale{σ}
       }
-    }{[] ∙ \texttt{fresh}_σ ⊢ \texttt{var}(\texttt{zero}) ∈ σ ⊠ [] ∙ \texttt{stale}_σ
+    }{[] ∙ \fresh{σ} ⊢ \var{\varzero} ∈ σ ⊠ [] ∙ \stale{σ}
     }
-  }{[] ∙ \texttt{fresh}_σ ⊢ σ ∋ \texttt{neu}(\texttt{var}(\texttt{zero})) ⊠ [] ∙ \texttt{stale}_σ
+  }{[] ∙ \fresh{σ} ⊢ σ ∋ \neu{(\var{\varzero})} ⊠ [] ∙ \stale{σ}
   }
-}{[] ⊢ σ ⊸ σ ∋ \texttt{lam}(\texttt{neu}(\texttt{var}(\texttt{zero}))) ⊠ []
+}{[] ⊢ σ ⊸ σ ∋ \lam{(\neu{(\var{\varzero})})} ⊠ []
 }
 \end{mathpar}
 Or, as it would be written in Agda where the typing rules were
 given the same name as their term constructor counterparts:
 \begin{lstlisting}
-  identity : [] '⊢' 'σ' '⊸' 'σ' '∋' lam (neu (var zero)) '⊠' []
-  identity = lam (neu (var zero))
+  identity : [] '⊢' 'σ' '⊸' 'σ' '∋' lam (neu (var z)) '⊠' []
+  identity = lam (neu (var z))
 \end{lstlisting}
 \end{example}
 
@@ -520,8 +562,8 @@ or the following one in Agda which quite a lot more readable:
 
 \begin{lstlisting}
   swapTyped : [] '⊢' ('σ' '⊗' 'τ') '⊸' ('τ' '⊗' 'σ') '∋' swap '⊠' []
-  swapTyped = lam (let (v , v) ∷= var zero
-                   in prd (neu (var (suc zero))) (neu (var zero))
+  swapTyped = lam (let (v , v) ∷= var z
+                   in prd (neu (var (s z))) (neu (var z))
 \end{lstlisting}
 \end{example}
 
@@ -549,7 +591,6 @@ then \𝓣{}$(Θ, t, σ, ξ)$ also holds.
 \end{definition}
 
 
-
 \begin{definition}
 \label{definition:differences}
 The ``consumption equivalence'' characterises the pairs of an input and
@@ -561,21 +602,21 @@ side but the two annotations may be different (here denoted $A$ and $B$
 respectively). On the other hand, if the resource has been consumed
 on one side then it has to be on the other side too.
 \begin{mathpar}
-\inferrule
+\type
  {Γ, Δ, Θ, ξ : \Usages{γ}
 }{Γ ─ Δ ≡ Θ ─ ξ : \Set{}
 }
-\and \inferrule
+\and \constructor
  {
 }{[] - [] ≡ [] - []
 }{
 }
-\and \inferrule
+\and \constructor
  {Γ - Δ ≡ Θ - ξ
 }{(Γ ∙ A) - (Δ ∙ A) ≡ (Θ ∙ B) - (ξ ∙ B)
 }{
 }
-\and \inferrule
+\and \constructor
  {Γ - Δ ≡ Θ - ξ
 }{(Γ ∙ \texttt{fresh}_σ) - (Δ ∙ \texttt{stale}_σ) ≡ (Θ ∙ \texttt{fresh}_σ) - (ξ ∙ \texttt{stale}_σ)
 }{
@@ -644,10 +685,47 @@ the extra variables in scope are assigned and finally one for their
 $\Usages{}$ mentioning whether these variables are fresh or stale.
 
 \begin{definition}
-An Order Preserving Embedding is an inductive family. Its constructors
-dubbed ``moves'' describe a strategy to realise the promise of an
-embedding. Figure~\ref{figure:ope} defines three OPEs at the same
-time.
+An \textbf{Order Preserving Embedding} (OPE) is an inductive family. Its
+constructors dubbed ``moves'' describe a strategy to realise the promise
+of an injective embedding which respects the order induced by the de Bruijn
+indices. We start with an example in Figure~\ref{figure:exampleOpe} before
+giving, in Figure~\ref{figure:ope}, the formal definition of OPEs for \Nat{},
+\Context{} and $\Usages{}$.
+\end{definition}
+
+In the following example, we prove that the source context $\gamma ∙ \tau$
+can be safely embedded into the target one $\gamma ∙ \sigma ∙ \tau ∙ \nu$.
+To do so, we use all three of the moves the inductive definition of OPEs
+offers: $\texttt{insert}_{\alpha}$ which introduces a new variable of type
+$\alpha$, $\texttt{copy}$ which embeds the source context's top variable,
+and $\texttt{done}$ which simply copies the source context. To clarify the
+effect of each move on the source context, we write it in \textit{cons}-style
+rather than the \textit{snoc}-style used in the rest of the paper and insert
+extra space to align the source elements and their respective embeddings in
+the target.
+
+\begin{figure}[ht]\centering
+\begin{tabular}{l|ccccccc}
+\textit{OPE} & $\texttt{insert}_{\nu}$ &
+             & \texttt{copy} &
+             & $\texttt{insert}_{\sigma}$ &
+             & \texttt{done}\\
+\textit{source} & & 
+                & $\tau$ & , 
+                & &
+                & $\gamma$ \\
+\textit{target} & $\nu$ & ,
+                & $\tau$ & ,
+                & $\sigma$ & ,
+                & $\gamma$ \\
+\end{tabular}
+\caption{Example of an Order Preserving Embedding proving:
+         $\gamma ∙ \tau
+          \subseteq
+          \gamma ∙ \sigma ∙ \tau ∙ \nu$\label{figure:exampleOpe}}
+\end{figure}
+
+\todo{transition}
 
 The first column lists the names of the constructors associated to each
 one of the moves. The second column describes the OPE for \Nat{}s
@@ -681,63 +759,63 @@ type σ as an extra argument (it will be the type of the newly introduced
 variable) whilst the OPE for $\Usages{}$ takes a $\Usage{σ}$ (it will
 be the usage associated to that newly introduced variable of type σ).
 
-\begin{figure}\centering
+\begin{figure}[ht]\centering
 \begin{tabular}{l|c|c|c}
-& \inferrule
+& \type
  {k, l : \Nat{}
 }{k ≤ l : \Set{}
 }
-& \inferrule
+& \type
  {o : k ≤ l 
 }{\OPE{}(o) : \Set{}
 }
-& \inferrule
+& \type
  {o : k ≤ l \and O : \OPE{}(o)
 }{\OPE{}(O) : \Set{}
 } \\ & & \\
 \texttt{done}
-& \inferrule
+& \constructor
  {
 }{k ≤ k
 }
-& \inferrule
+& \constructor
  {
 }{\OPE{}(\texttt{done})
 }
-& \inferrule
+& \constructor
  {
 }{\OPE{}(\texttt{done})
 }\\ & & \\
 \texttt{copy}
-& \inferrule
+& \constructor
  {k ≤ l
 }{1+k ≤ 1+l
 }
-& \inferrule
+& \constructor
  {o : k ≤ l \and \OPE{}(o)
 }{\OPE{}(\texttt{copy}(o))
 }
-& \inferrule
+& \constructor
  {{\begin{array}{l}o : k ≤ l \\ O : \OPE{}(o)\end{array}} \and \OPE{}(O)
 }{\OPE{}(\texttt{copy}(O))
 }\\ & & \\
 \texttt{insert}
-& \inferrule
+& \constructor
  {k ≤ l
 }{k ≤ 1+l
 }
-& \inferrule
+& \constructor
  {o : k ≤ l \and \OPE{}(o) \and \Type{}
 }{\OPE{}(\texttt{insert}(o))
 }
-& \inferrule
+& \constructor
  {{\begin{array}{l}o : k ≤ l \\ O : \OPE{}(o) \\ σ : \Type{}\end{array}} \and \OPE{}(O) \and S : \Usage{σ}
 }{\OPE{}(\texttt{insert}(O, σ))
 }
 \end{tabular}
 \caption{Order Preserving Embeddings for \Nat{}, \Context{} and $\Usages{}$\label{figure:ope}}
 \end{figure}
-\end{definition}
+
 
 \begin{example}
 \label{example:ope}
@@ -821,15 +899,15 @@ source's scope and $l$ is the target's scope. There are three constructors:
 one for the empty environment ([]), one for going under a binder (\texttt{∙v})
 and one to extend an environment with an $\Inferable{}_l$.
 \begin{mathpar}
-\inferrule
+\type
  {
 }{[] : \Env{}(0, l)
 }
-\and \inferrule
+\and \constructor
  {ρ : \Env{}(k, l)
 }{ρ \texttt{∙v} : \Env{}(\texttt{suc}(k), \texttt{suc}(l)) 
 }
-\and \inferrule
+\and \constructor
  {ρ : \Env{}(k, l) \and t : \Inferable{}_l
 }{ρ ∙ t : \Env{} (\texttt{suc}(k), l)
 }
@@ -859,12 +937,12 @@ targeting the \texttt{fresh} variables in $Γ$. Unsurprisingly,
 the typing for the empty environment has the same input and output
 usages annotation. Formally:
 \begin{mathpar}
-\inferrule
+\type
  {{\begin{array}{l}θ : \Context{}_l \\ Θ₁, Θ₂ : \Usages{θ}\end{array}} \and ρ : \Env{}(k,l)
   \and {\begin{array}{l}γ : Context{}_k \\ Γ : \Usages{γ}\end{array}}
 }{\Env{}(Θ₁, ρ, Θ₂, Γ) : \Set{}
 }
-\and \inferrule
+\and \constructor
  {
 }{\Env{}(Θ₁, [], Θ₁, [])
 }
@@ -876,11 +954,11 @@ derivation for the term $t$ meant to be substituted for this variable.
 Otherwise, it does not carry anything extra but tracks in its input /
 output usages annotation the fact the variable has been consumed.
 \begin{mathpar}
-\inferrule
+\constructor
  {Θ₁ ⊢ t ∈ σ ⊠ Θ₂ \and \Env{}(Θ₂, ρ, Θ₃, Γ)
 }{\Env{}(Θ₁, ρ ∙ t, Θ₃, Γ ∙ \texttt{fresh}_σ)
 }
-\and \inferrule
+\and \constructor
  {\Env{}(Θ₁, ρ, Θ₂, Γ)
 }{\Env{}(Θ₁ ∙ \texttt{fresh}_σ, ρ \texttt{∙v}, Θ₂ ∙ \texttt{stale}_σ, Γ ∙ \texttt{fresh}_σ)
 }
@@ -892,11 +970,11 @@ the case for the ``going under a binder'' constructor, they are clearly
 enriched with an extra (now consumed) variable whereas it is not the case
 for the normal environment extension.
 \begin{mathpar}
-\inferrule
+\constructor
  {\Env{}(Θ₁, ρ, Θ₂, Γ)
 }{\Env{}(Θ₁, ρ ∙ t, Θ₂, Γ ∙ \texttt{stale}_σ)
 }
-\and \inferrule
+\and \constructor
  {\Env{}(Θ₁, ρ, Θ₂, Γ)
 }{\Env{}(Θ₁ ∙ \texttt{stale}_σ, ρ \texttt{∙v}, Θ₂ ∙ \texttt{stale}_σ, Γ ∙ \texttt{stale}_σ)
 }
@@ -1118,5 +1196,6 @@ currently an open question.
 
 \appendix
 \input{typing-swap}
+\input{typing-identity}
 
 \end{document}

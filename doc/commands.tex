@@ -22,3 +22,30 @@
 \newcommand{\Env}{\DefinedType{Env}}
 
 \newcommand{\Set}{\mathcal{\textit{Set}}}
+
+%% LANGUAGE
+\newcommand{\varzero}{\texttt{z}}
+\newcommand{\varsucc}[1]{\texttt{s}\, #1}
+
+\newcommand{\var}[1]{\texttt{var}~#1}
+\newcommand{\app}[2]{\texttt{app}~#1~#2}
+\newcommand{\cas}[4]{\texttt{case}~#1~\texttt{return}~#2~\texttt{of}~#3~\texttt{\%\!\!\%}~#4}
+\newcommand{\cut}[2]{\texttt{cut}~#1~#2}
+\newcommand{\lam}[1]{\texttt{lam}~#1}
+\newcommand{\letin}[3]{\texttt{let}~#1 \texttt{∷=}\, #2 \texttt{in}\, #3}
+\newcommand{\inl}[1]{\texttt{inl}~#1}
+\newcommand{\inr}[1]{\texttt{inr}~#1}
+\newcommand{\prd}[2]{\texttt{prd}~#1~#2}
+\newcommand{\neu}[1]{\texttt{neu}~#1}
+\newcommand{\prl}[1]{\texttt{prj$_1$}~#1}
+\newcommand{\prr}[1]{\texttt{prj$_2$}~#1}
+
+%% TYPES
+\newcommand{\Base}[1]{κ\, #1}
+\newcommand{\Lolli}[2]{#1 \,⊸\, #2}
+\newcommand{\Tensor}[2]{#1 \,⊗\, #2}
+\newcommand{\Sum}[2]{#1 \,⊕\, #2}
+\newcommand{\With}[2]{#1 \,\&\, #2}
+
+\newcommand{\type}[2]{\mprset{fraction={===}}\inferrule{#1}{#2}{}}
+\newcommand{\constructor}[2]{\mprset{fraction={---}}\inferrule{#1}{#2}{}}

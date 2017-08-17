@@ -1,4 +1,4 @@
-\begin{figure}[p]
+\begin{figure}[ht]
 \begin{mathpar}
 \inferrule
  {{\begin{array}{l}
@@ -44,11 +44,11 @@
 \begin{mathpar}
 \inferrule
  {
-}{Γ ∙ \fresh{σ} ⊢ \texttt{zero} ∈ σ ⊠ Γ ∙ \stale{σ}
+}{Γ ∙ \fresh{σ} ⊢ \varzero ∈ σ ⊠ Γ ∙ \stale{σ}
 }
 \and \inferrule
  {Γ ⊢ k ∈ σ ⊠ Δ
-}{Γ ∙ A ⊢ \texttt{suc}(k) ∈ σ ⊠ Δ ∙ A
+}{Γ ∙ A ⊢ \varsucc{k} ∈ σ ⊠ Δ ∙ A
 }
 \end{mathpar}
 \caption{Typing rules for \Var{}\label{figure:deBruijn}}
@@ -56,11 +56,11 @@
 \begin{mathpar}
 \inferrule
  {Γ ⊢ k ∈ σ ⊠ Δ
-}{Γ ⊢ \texttt{var}(k) ∈ σ ⊠ Δ
+}{Γ ⊢ \var{k} ∈ σ ⊠ Δ
 }
 \and \inferrule
  {Γ ⊢ t ∈ σ ⊸ τ ⊠ Δ \and Δ ⊢ σ ∋ u ⊠ Θ
-}{Γ ⊢ \texttt{app}(t, u) ∈ τ ⊠ Θ
+}{Γ ⊢ \app{t}{u} ∈ τ ⊠ Θ
 }
 \and \inferrule
  {Γ ⊢ t ∈ σ ⊕ τ ⊠ Δ \and
@@ -68,11 +68,11 @@
     Δ ∙ \fresh{σ} ⊢ ν ∋ l ⊠ Θ ∙ \stale{σ} \\
     Δ ∙ \fresh{τ} ⊢ ν ∋ r ⊠ Θ ∙ \stale{τ}
   \end{array}}
-}{Γ ⊢ \texttt{case}~t~\texttt{return}~ν~\texttt{of}~l~\texttt{\%\!\%}~r ∈ ν ⊠ Θ
+}{Γ ⊢ \cas{t}{ν}{l}{r} ∈ ν ⊠ Θ
 }
 \and \inferrule
  {Γ ⊢ σ ∋ t ⊠ Δ
-}{Γ ⊢ \texttt{cut}(t, σ) ∈ σ ⊠ Δ
+}{Γ ⊢ \cut{t}{σ} ∈ σ ⊠ Δ
 }
 \end{mathpar}
 \caption{Typing rules for \Inferable{}\label{figure:infer}}
@@ -80,28 +80,28 @@
 \begin{mathpar}
 \inferrule
  {Γ ∙ \fresh{σ} ⊢ τ ∋ b ⊠ Δ ∙ \stale{σ}
-}{Γ ⊢ σ ⊸ τ ∋ \texttt{lam}(b) ⊠ Δ
+}{Γ ⊢ σ ⊸ τ ∋ \lam{b} ⊠ Δ
 }
 \and \inferrule
  {Γ ⊢ t ∈ σ ⊠ Δ \and σ ∋ p \leadsto{} δ
   \\\\ Δ \append{} \fresh{δ} ⊢ τ ∋ u ⊠ Θ \append{} \stale{δ}
-}{Γ ⊢ τ ∋ \texttt{let}~p~\texttt{∷=}~t~\texttt{in}~u ⊠ Θ
+}{Γ ⊢ τ ∋ \letin{p}{t}{u} ⊠ Θ
 }
 \and \inferrule
  {Γ ⊢ σ ∋ t ⊠ Δ
-}{Γ ⊢ σ ⊕ τ ∋ \texttt{inl}(t) ⊠ Δ
+}{Γ ⊢ σ ⊕ τ ∋ \inl{t} ⊠ Δ
 }
 \and \inferrule
  {Γ ⊢ τ ∋ t ⊠ Δ
-}{Γ ⊢ σ ⊕ τ ∋ \texttt{inr}(t) ⊠ Δ
+}{Γ ⊢ σ ⊕ τ ∋ \inr{t} ⊠ Δ
 }
 \\ \inferrule
  {Γ ⊢ σ ∋ a ⊠ Δ \and Δ ⊢ τ ∋ b ⊠ Θ
-}{Γ ⊢ σ ⊗ τ ∋ \texttt{prd}(a, b) ⊠ Θ
+}{Γ ⊢ σ ⊗ τ ∋ \prd{a}{b} ⊠ Θ
 }
 \and \inferrule
  {Γ ⊢ t ∈ σ ⊠ Δ
-}{Γ ⊢ σ ∋ \texttt{neu}(t) ⊠ Δ
+}{Γ ⊢ σ ∋ \neu{t} ⊠ Δ
 }
 \end{mathpar}
 \caption{Typing rules for \Checkable{}\label{figure:check}}
