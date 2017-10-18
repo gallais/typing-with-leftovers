@@ -8,20 +8,22 @@
 \newcommand{\fresh}[1]{\texttt{f}_{#1}}
 \newcommand{\stale}[1]{\texttt{s}_{#1}}
 
-\newcommand{\Usage}[1]{\DefinedType{Usage}_{#1}}
-\newcommand{\Usages}[1]{\DefinedType{Usage}_{#1}}
+\newcommand{\Usage}[1]{\ensuremath{\DefinedType{Usage}_{#1}}}
+\newcommand{\Usages}[1]{\ensuremath{\DefinedType{Usage}_{#1}}}
 
 \newcommand{\Type}{\DefinedType{Type}}
 \newcommand{\Nat}{\DefinedType{Nat}}
-\newcommand{\Var}{\DefinedType{Var}}
-\newcommand{\Inferable}{\DefinedType{Infer}}
-\newcommand{\Checkable}{\DefinedType{Check}}
-\newcommand{\Pattern}{\DefinedType{Pattern}}
-\newcommand{\Context}{\DefinedType{Context}}
+\newcommand{\Var}[1]{\ensuremath{\DefinedType{Var}_{#1}}}
+\newcommand{\Inferable}[1]{\ensuremath{\DefinedType{Infer}_{#1}}}
+\newcommand{\Checkable}[1]{\ensuremath{\DefinedType{Check}_{#1}}}
+\newcommand{\Pattern}[1]{\ensuremath{\DefinedType{Pattern}_{#1}}}
+\newcommand{\Context}[1]{\ensuremath{\DefinedType{Context}_{#1}}}
 \newcommand{\OPE}{\DefinedType{OPE}}
 \newcommand{\Env}{\DefinedType{Env}}
 
 \newcommand{\Set}{\mathcal{\textit{Set}}}
+
+\newcommand{\natsucc}[1]{\text{1\!+} #1}
 
 %% LANGUAGE
 \newcommand{\varzero}{\texttt{z}}

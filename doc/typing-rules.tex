@@ -2,10 +2,10 @@
 \begin{mathpar}
 \inferrule
  {{\begin{array}{l}
-    γ : \Context{}_n \\
+    γ : \Context{n} \\
     Γ : \Usages{γ}
   \end{array}}
-  \and k : \Var{}_n
+  \and k : \Var{n}
   \and {\begin{array}{l}
     σ : \Type{}    \\
     Δ : \Usages{γ}
@@ -14,10 +14,10 @@
 }
 \and \inferrule
  {{\begin{array}{l}
-    γ : \Context{}_n \\
+    γ : \Context{n} \\
     Γ : \Usages{γ}
   \end{array}}
-  \and t : \Inferable{}_n
+  \and t : \Inferable{n}
   \and {\begin{array}{l}
     σ : \Type{}    \\
     Δ : \Usages{γ}
@@ -26,12 +26,12 @@
 }
 \and \inferrule
  {{\begin{array}{l}
-    γ : \Context{}_n \\
+    γ : \Context{n} \\
     Γ : \Usages{γ}
   \end{array}}
   \and {\begin{array}{l}
     σ : \Type{}    \\
-    t : \Inferable{}_n
+    t : \Inferable{n}
   \end{array}}
   \and Δ : \Usages{γ}
 }{Γ ⊢ σ  ∋ t ⊠ Δ : \Set{}

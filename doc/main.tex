@@ -118,17 +118,19 @@ in terms of definitions, lemmas, theorems, and examples. However it is
 important to keep in mind the distinction between various kinds of objects.
 \texttt{Teletype} is used to denote data constructors, \DefinedType{small
 capitals} are characteristic of defined types. A type families' index is
-written as a subscript e.g. $\Var{}_n$. 
+written as a subscript e.g. \Var{n}.
 
 We use two kinds of inference rules to describe inductive families: double
 rules are used to define types whilst simple ones correspond to constructors.
 In each case the premises correspond to arguments (usually called parameters
 and indices for types) and the conclusion shows the name of the constructor.
-A typical example is the inductively defined set of unary natural numbers:
+A typical example is the inductively defined set of unary natural numbers.
+The inductive type is called \Nat{} and it has two constructors: $0$ takes
+no argument whilst \natsucc{\cdot} takes a \Nat{} $n$ and represents its successor.
 \begin{mathpar}
 \type{ }{\Nat{} : \Set{}}
 \and \constructor{ }{0 : \Nat{}}
-\and \constructor{n : \Nat{}}{1+ n : \Nat{}}
+\and \constructor{n : \Nat{}}{\natsucc{n} : \Nat{}}
 \end{mathpar}
 
 \section{The Calculus of Raw Terms}
@@ -157,23 +159,12 @@ our terms by a natural number instead. The
 \Var{} type family\footnote{It is also known as \texttt{Fin} (for
 ``finite set'') in the dependently typed programming community.}
 defined below represents the de Bruijn indices~\cite{debruijn1972lambda}
-corresponding to the $n-1$ free variables present in a scope $n$.
+corresponding to the $n$ free variables present in a scope $n$.
 
 \begin{mathpar}
-\type
- {n : \Nat{}
-}{\Var{}_n : \Set{}
-}
-
-\and \constructor
- {
-}{\texttt{zero} : \Var{}_{1 + n}
-}
-
-\and \constructor
- {k : \Var{}_n
-}{\texttt{suc} (k) : \Var{}_{1 + n}
-}
+\type{n : \Nat{}}{\Var{n} : \Set{}}
+\and \constructor{ }{\varzero{} : \Var{\natsucc{n}}}
+\and \constructor{k : \Var{n}}{\varsucc{k} : \Var{\natsucc{n}}}
 \end{mathpar}
 
 We present the calculus in a bidirectional fashion~\cite{pierce2000local}.
@@ -190,18 +181,17 @@ the type of computations (which we call \Inferable{}).
 \todo{Explain what these constructors do?}
 \begin{figure}[H]\centering
 \begin{tabular}{lcl}
-⟨$\Inferable{}_n$⟩ & ::= & \var{} ⟨$\Var{}_n$⟩ \\
-                   &  |  & \app{⟨$\Inferable{}_n$⟩}{⟨$\Checkable{}_n$⟩} \\
-                   &  |  & \cas{⟨$\Inferable{}_n$⟩}{⟨\Type{})}{⟨$\Checkable{}_{1 + n}$⟩}{⟨$\Checkable{}_{1 + n}$⟩} \\
-                   &  |  & \prl{⟨$\Inferable{}_n$⟩} ~|~ \prr{⟨$\Inferable{}_n$⟩} \\
-                   &  |  & \cut{⟨$\Checkable{}_n$⟩}{⟨\Type{}⟩} \\ \\
+⟨\Inferable{n}⟩ & ::= & \var{} ⟨\Var{n}⟩ \\
+                   &  |  & \app{⟨\Inferable{n}⟩}{⟨\Checkable{n}⟩} \\
+                   &  |  & \cas{⟨\Inferable{n}⟩}{⟨\Type{})}{⟨\Checkable{\natsucc{n}}⟩}{⟨\Checkable{\natsucc{n}}⟩} \\
+                   &  |  & \prl{⟨\Inferable{n}⟩} ~|~ \prr{⟨\Inferable{n}⟩} \\
+                   &  |  & \cut{⟨\Checkable{n}⟩}{⟨\Type{}⟩} \\ \\
 
-⟨$\Checkable{}_n$⟩ & ::= & \lam{⟨$\Checkable{}_{1 + n}$⟩} \\
-                   &  |  & \letin{⟨$\Pattern{}_m$⟩}{⟨$\Inferable{}_n$⟩}{⟨$\Checkable{}_{m + n}$⟩} \\
-                   &  |  & \inl{⟨$\Checkable{}_n$⟩} \\
-                   &  |  & \inr{⟨$\Checkable{}_n$⟩} \\
-                   &  |  & \prd{⟨$\Checkable{}_n$⟩}{⟨$\Checkable{}_n$⟩} \\
-                   &  |  & \neu{⟨$\Inferable{}_n$⟩} \\
+⟨\Checkable{n}⟩ & ::= & \lam{⟨\Checkable{\natsucc{n}}⟩} \\
+                   &  |  & \letin{⟨\Pattern{m}⟩}{⟨\Inferable{n}⟩}{⟨\Checkable{m + n}⟩} \\
+                   &  |  & \inl{⟨\Checkable{n}⟩} ~|~ \inr{⟨\Checkable{n}⟩} \\
+                   &  |  & \prd{⟨\Checkable{n}⟩}{⟨\Checkable{n}⟩} \\
+                   &  |  & \neu{⟨\Inferable{n}⟩} \\
 \end{tabular}
 \caption{Grammar of the Language of Raw Terms}
 \end{figure}
@@ -218,7 +208,7 @@ type-inference for \Inferable{} terms.
 A notable specificity of this language is the ability to use nested
 patterns in a let binder rather than having to resort to cascading
 lets. This is achieved thanks to a rather simple piece of kit: the
-\Pattern{} type family. A value of type $\Pattern{}_n$ represents a
+\Pattern{} type family. A value of type $\Pattern{n}$ represents a
 pattern binding $n$ variables. Because variables are represented as
 de Bruijn indices, the base pattern does not need to be associated
 with a name, it simply is a constructor \texttt{v} binding exactly
@@ -227,20 +217,10 @@ respectively binding $m$ and $n$ variables and uses them to deeply
 match a pair thus binding $(m + n)$ variables.
 
 \begin{mathpar}
-\type
- {n : \Nat{}
-}{\Pattern{}_n : \Set{}
-}
-
-\and \constructor
- {
-}{\texttt{v} : \Pattern{}_1
-}
-
-\and \constructor
- {p : \Pattern{}_m \and q : \Pattern{}_n
-}{p \texttt{,} q : \Pattern{}_{m + n}
-}
+\type{n : \Nat{}}{\Pattern{n} : \Set{}}
+\and \constructor{ }{\texttt{v} : \Pattern{1}}
+\and \constructor{ }{\texttt{⟨⟩} : \Pattern{0}}
+\and \constructor{p : \Pattern{m} \and q : \Pattern{n}}{p \texttt{,} q : \Pattern{m + n}}
 \end{mathpar}
 
 The grammar of raw terms only guarantees that all expressions are
@@ -253,8 +233,8 @@ ones as the following examples demonstrate:
 an input and swapping its components. It corresponds to the mathematical
 function $(x, y) \mapsto (y, x)$.
 \begin{lstlisting}
-  swap = lam (let (v , v) ∷= var zero
-              in prd (neu (var (suc zero))) (neu (var zero)))
+  swap = lam (let (v , v) ∷= var z
+              in prd (neu (var (s z))) (neu (var z)))
 \end{lstlisting}
 \end{example}
 
@@ -263,8 +243,8 @@ function $(x, y) \mapsto (y, x)$.
 ill-typed: the let-binding it uses tries to break down a function as
 if it were a pair.
 \begin{lstlisting}
-  illTyped = let (v , v) ∷= cut (lam (neu (var zero))) (a ⊸ a)
-             in prd (neu (var zero)) (neu (var (suc zero)))
+  illTyped = let (v , v) ∷= cut (lam (neu (var z))) (a ⊸ a)
+             in prd (neu (var z)) (neu (var (s z)))
 \end{lstlisting}
 \end{example}
 
@@ -273,7 +253,7 @@ Finally, \texttt{diagonal} is a term typable in the simply-typed
 lambda calculus but it is not linear: it duplicates its input just
 like $x \mapsto (x, x)$ does.
 \begin{lstlisting}
-  diagonal = lam (prd (neu (var zero)) (neu (var zero)))
+  diagonal = lam (prd (neu (var z)) (neu (var z)))
 \end{lstlisting}
 \end{example}
 
@@ -360,20 +340,9 @@ the resources consumed by the term in question and returning the
 A \Context{} is a list of \Type{}s indexed by its length. It can
 be formally described by the following inference rules:
 \begin{mathpar}
-\type
- {n : \Nat{}
-}{\Context{}_n : \Set{}
-}
-
-\and \constructor
- {
-}{[] : \Context{}_0
-}
-
-\and \constructor
- {γ : \Context{}_n \and σ : \Type{}
-}{γ ∙ σ : \Context{}_{1 + n}
-}
+\type{n : \Nat{}}{\Context{n} : \Set{}}
+\and \constructor{ }{[] : \Context{0}}
+\and \constructor{γ : \Context{n} \and σ : \Type{}}{γ ∙ σ : \Context{\natsucc{n}}}
 \end{mathpar}
 \end{definition}
 
@@ -405,7 +374,7 @@ name and the $\fresh{}$ and $\stale{}$ constructors.
 \end{mathpar}
 \begin{mathpar}
 \type
- { γ : \Context{}_n
+ { γ : \Context{n}
 }{\Usages{γ} : \Set{}
 }
 \and\constructor
@@ -432,7 +401,7 @@ A ``Typing Relation'' for $T$ a \Nat{}-indexed inductive family is
 an indexed relation $\text{\𝓣{}}_n$ such that:
 \begin{mathpar}
 \type
- {n : \Nat{} \and γ : \Context{}_n \and Γ, Δ : \Usages{γ} \and t : T_n \and σ : \Type{}
+ {n : \Nat{} \and γ : \Context{n} \and Γ, Δ : \Usages{γ} \and t : T_n \and σ : \Type{}
 }{\text{\𝓣{}}_n(Γ, t, σ, Δ) : \Set{}
 }
 \end{mathpar}
@@ -486,7 +455,7 @@ the language constructs and the typing rules about them have been given
 the same names:
 \begin{lstlisting}
   one : 'Γ' '∙' f 'τ' '∙' f 'σ' ⊢ s z '∈' 'τ' '⊠' 'Γ' '∙' s 'τ' '∙' f 'σ'
-  one = suc zero
+  one = s z
 \end{lstlisting}
 \end{example}
 
@@ -585,7 +554,7 @@ definition of $Γ - Δ ≡ Θ - ξ$):
 
 \begin{definition}A Typing Relation \𝓣{} for a \Nat{}-indexed
 family $T$ has the Framing Property if for all $k$ a \Nat{},
-γ a $\Context{}_k$, Γ, Δ, Θ, ξ four $\Usages{γ}$, $t$ an element
+γ a $\Context{k}$, Γ, Δ, Θ, ξ four $\Usages{γ}$, $t$ an element
 of $T_k$ and σ a Type, if $Γ - Δ ≡ Θ - ξ$ and \𝓣{}$(Γ, t, σ, Δ)$
 then \𝓣{}$(Θ, t, σ, ξ)$ also holds.
 \end{definition}
@@ -827,7 +796,7 @@ seen in the types, the latter ones depend on the former ones. This
 type of embedding is very much grounded in reality: it is precisely
 what pushing a substitution under a lambda abstraction calls for.
 \begin{lstlisting}
-  scopeWithFV : n '≤' suc n
+  scopeWithFV : n '≤' s n
   scopeWithFV = insert done
 
   contextWithFV : Type '→' Context.OPE scopeWithFV
@@ -849,7 +818,7 @@ terms themselves.
 such that we have a function $\texttt{weak}_T$ transporting proofs that
 $k ≤ l$ to functions $T_k → T_l$ is said to have the Weakening Property
 if for all $k, l$ in \Nat{}, $o$ a proof that $k ≤ l$, $O$ a proof that
-$\OPE{}(o)$ and $𝓞$ a proof that $\OPE{}(O)$ then for all γ a $\Context{}_k$,
+$\OPE{}(o)$ and $𝓞$ a proof that $\OPE{}(O)$ then for all γ a $\Context{k}$,
 Γ and Δ two $\Usages{γ}$, $t$ an element of $T_k$ and σ a \Type{}, if
 \𝓣{}$(Γ, t, σ, Δ)$ holds true then we also have
 \𝓣{}$(\texttt{patch}(𝓞, Γ), \texttt{weak}_T(o, t), σ, \texttt{patch}(𝓞, Δ))$.
@@ -891,13 +860,13 @@ returned by the induction hypothesis would then live in an extended
 context and quite a lot of effort would be needed to downcast them
 back to the smaller context they started in. The solution is to have
 an explicit constructor for ``going under a binder'' which can be
-simply peeled off on the way out of a binder. 
+simply peeled off on the way out of a binder.
 
 \begin{definition}The environment \Env{} used to define substitution
 for raw terms is indexed by two \Nat{}s $k$ and $l$ where $k$ is the
 source's scope and $l$ is the target's scope. There are three constructors:
 one for the empty environment ([]), one for going under a binder (\texttt{∙v})
-and one to extend an environment with an $\Inferable{}_l$.
+and one to extend an environment with an $\Inferable{l}$.
 \begin{mathpar}
 \type
  {
@@ -905,10 +874,10 @@ and one to extend an environment with an $\Inferable{}_l$.
 }
 \and \constructor
  {ρ : \Env{}(k, l)
-}{ρ \texttt{∙v} : \Env{}(\texttt{suc}(k), \texttt{suc}(l)) 
+}{ρ \texttt{∙v} : \Env{}(\texttt{suc}(k), \texttt{suc}(l))
 }
 \and \constructor
- {ρ : \Env{}(k, l) \and t : \Inferable{}_l
+ {ρ : \Env{}(k, l) \and t : \Inferable{l}
 }{ρ ∙ t : \Env{} (\texttt{suc}(k), l)
 }
 \end{mathpar}
@@ -919,14 +888,14 @@ same syntactical class as \Var{}s, they can be substituted for them
 without any issue.
 
 \begin{lemma}Raw terms are stable under substitutions: for all $k$ and
-$l$, given $t$ a term $\Inferable{}_k$ (resp. $\Checkable{}_k$) and $ρ$
+$l$, given $t$ a term $\Inferable{k}$ (resp. $\Checkable{k}$) and $ρ$
 an environment $\Env{}(k,l)$, we can apply the substitution $ρ$ to $t$
-and obtain an $\Inferable{}_l$ (resp. $\Checkable{}_l$).
+and obtain an $\Inferable{l}$ (resp. $\Checkable{l}$).
 \end{lemma}
 \begin{proof}By mutual induction on the raw terms, using the \texttt{∙v}
 \Env{} constructor when going under a binder. The need for weakening or
 crafting fresh variables has not disappeared, it has been transferred to
-the auxiliary function looking up a value in $ρ$ given a $\Var{}_k$.
+the auxiliary function looking up a value in $ρ$ given a $\Var{k}$.
 \end{proof}
 
 \begin{definition}The environments used when proving that Typing
@@ -938,8 +907,8 @@ the typing for the empty environment has the same input and output
 usages annotation. Formally:
 \begin{mathpar}
 \type
- {{\begin{array}{l}θ : \Context{}_l \\ Θ₁, Θ₂ : \Usages{θ}\end{array}} \and ρ : \Env{}(k,l)
-  \and {\begin{array}{l}γ : Context{}_k \\ Γ : \Usages{γ}\end{array}}
+ {{\begin{array}{l}θ : \Context{l} \\ Θ₁, Θ₂ : \Usages{θ}\end{array}} \and ρ : \Env{}(k,l)
+  \and {\begin{array}{l}γ : Context{k} \\ Γ : \Usages{γ}\end{array}}
 }{\Env{}(Θ₁, ρ, Θ₂, Γ) : \Set{}
 }
 \and \constructor
@@ -985,9 +954,9 @@ for the normal environment extension.
 A Typing Relation \𝓣{} for a \Nat{}-indexed family $T$ equipped with
 a function \texttt{subst} which for all \Nat{}s $k, l$, given an
 element $T_k$ and an $\Env{}(k,l)$ returns an element $T_l$ is said to
-be stable under substitution if for all \Nat{}s $k$ and $l$, γ a $\Context{}_k$,
+be stable under substitution if for all \Nat{}s $k$ and $l$, γ a $\Context{k}$,
 Γ and Δ two $\Usages{γ}$, $t$ an element of $T_k$, σ a Type, ρ an $\Env{}(k,l)$,
-$θ$ a $\Context{}_l$ and $Θ₁$ and $Θ₃$ two $\Usages{θ}$ such that
+$θ$ a $\Context{l}$ and $Θ₁$ and $Θ₃$ two $\Usages{θ}$ such that
 \𝓣{}$(Γ, t, σ, Δ)$ and $\Env{}(Θ₁, ρ, Θ₃, Γ)$ holds then there exists a $Θ₂$
 of type $\Usages{θ}$ such that \𝓣{}$(Θ₁, \texttt{subst}(t, ρ), σ, Θ₂)$ and
 $\Env{}(Θ₂, ρ, Θ₃, Δ)$.
@@ -1046,13 +1015,13 @@ is uniquely determined.
 \begin{theorem}[Decidability of Typechecking]
 \label{theorem:typechecking}
 Type-inference for \Inferable{} and Type-checking for \Checkable{} are
-decidable. In other words, given a \Nat{} $k$, γ a $\Context{}_k$ and
+decidable. In other words, given a \Nat{} $k$, γ a \Context{k} and
 Γ a $\Usages{γ}$,
 \begin{enumerate}
-  \item for all $\Inferable{}_k$ $t$, it is decidable whether there is
-        a \Type{} $σ$ and Δ a $\Usages{γ}$ such that $Γ ⊢ t ∈ σ ⊠ Δ$
-  \item for all \Type{} σ and $\Checkable{}_k$, it is decidable whether
-        there is Δ a $\Usages{γ}$ such that $Γ ⊢ σ ∋ t ⊠ Δ$.
+  \item for all \Inferable{k} $t$, it is decidable whether there is
+        a \Type{} $σ$ and Δ a \Usages{γ} such that $Γ ⊢ t ∈ σ ⊠ Δ$
+  \item for all \Type{} σ and \Checkable{k}, it is decidable whether
+        there is Δ a \Usages{γ} such that $Γ ⊢ σ ∋ t ⊠ Δ$.
 \end{enumerate}
 \end{theorem}
 \begin{proof}
