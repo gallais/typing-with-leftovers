@@ -63,11 +63,11 @@
 \maketitle
 
 \begin{abstract}
-We start from a simple λ-calculus and introduce a bidirectional 
-typing relation corresponding to an Intuitionistic Linear Logic. This 
+We start from an untyped, well-scoped λ-calculus and introduce a bidirectional
+typing relation corresponding to an Intuitionistic Linear Logic. This
 relation is based on the idea that a linear term consumes some of the
 resources available in its context whilst leaving behind leftovers
-which could then be fed to another program. 
+which can then be fed to another program.
 
 Concretely, this means that typing derivations have both an input 
 and an output context. This leads to a notion of weakening (the extra
@@ -140,11 +140,11 @@ even though it will be rather easy to write programs in it. As a
 consequence all the design choices have been guided by the goal
 of facilitating its mechanical treatment in a dependently-typed language.
 That is why we use de Bruijn indices to represent variable bindings.
-We demonstrate in the code accompanying the paper how a simple scope
-checking pass can turn a surface level version of the language using
-strings as variable names into this representation.
+We demonstrate in the code accompanying the paper how to combine a
+parser and a scope checker to turn a surface level version of the
+language using strings as variable names into this representation.
 
-Following Altenkirch and Reus~\cite{altenkirch1999monadic},
+Following Bird and Patterson~\cite{bird_paterson_1999} and Altenkirch and Reus~\cite{altenkirch1999monadic},
 we define the raw terms of our language not as an inductive
 type but rather as an inductive \emph{family}~\cite{dybjer1994inductive}.
 This technique, sometimes dubbed ``type-level de Bruijn indices'',
@@ -169,26 +169,44 @@ corresponding to the $n$ free variables present in a scope $n$.
 
 We present the calculus in a bidirectional fashion~\cite{pierce2000local}.
 This definition style scales well to more complex type theories where full
-type-inference is not tractable anymore whilst only requiring the programmer
-to add top-level type annotations. The term constructors of the calculus are
-split in two different syntactic categories corresponding to constructors
-of canonical values on one hand and eliminators on the other. These
-categories characterise the flow of information during typechecking: given a
-context assigning a type to each free variable, canonical values (which we call
-\Checkable{}) can be \emph{check}ed against a type whilst we may \emph{infer}
-the type of computations (which we call \Inferable{}).
+type-inference is not tractable anymore whilst keeping the type annotations
+the programmer needs to add to a minimum. The term constructors of the calculus
+are split in two different syntactic categories corresponding to constructors
+of canonical values on one hand and eliminators on the other. These categories
+characterise the flow of information during typechecking: given a context
+assigning a type to each free variable, canonical values (which we call \Checkable{})
+can be \emph{check}ed against a type whilst we may \emph{infer} the type of
+computations (which we call \Inferable{}). Each type is indexed by a scope:
 
-\todo{Explain what these constructors do?}
+\begin{mathpar}
+\type{n : \Nat{}}{\Inferable{n} : \Set{}}
+\and \type{n : \Nat{}}{\Checkable{n} : \Set{}}
+\end{mathpar}
+
+On top of the constructors one would expect for a usual definition of
+the untyped λ-calculus (\var{\cdot}, \app{\cdot}{\cdot}, and \lam{\cdot})
+we have constructors and eliminators for sums (\inl{\cdot}, \inr{\cdot},
+\cas{\cdot}{\cdot}{\cdot}{\cdot}), products (\prd{\cdot}, \letin{\cdot}{\cdot}{\cdot},
+\prl{\cdot}, \prr{\cdot}), unit (\uni{}, \letin{\cdot}{\cdot}{\cdot})
+and void (\exf{\cdot}{\cdot}). Two additional rules (\neu{\cdot} and
+\cut{\cdot}{\cdot} respectively) allow the embedding of \Inferable{}
+into \Checkable{} and vice-versa. They make it possible to form redexes
+by embedding canonical values into computations and then applying
+eliminators to them. In terms of typechecking, they correspond to a
+change of direction between inferring and checking.
+
 \begin{figure}[H]\centering
 \begin{tabular}{lcl}
-⟨\Inferable{n}⟩ & ::= & \var{} ⟨\Var{n}⟩ \\
+⟨\Inferable{n}⟩ & ::= & \var{⟨\Var{n}⟩} \\
                    &  |  & \app{⟨\Inferable{n}⟩}{⟨\Checkable{n}⟩} \\
                    &  |  & \cas{⟨\Inferable{n}⟩}{⟨\Type{})}{⟨\Checkable{\natsucc{n}}⟩}{⟨\Checkable{\natsucc{n}}⟩} \\
                    &  |  & \prl{⟨\Inferable{n}⟩} ~|~ \prr{⟨\Inferable{n}⟩} \\
+                   &  |  & \exf{⟨\Type{}⟩}{⟨\Inferable{n}⟩} \\
                    &  |  & \cut{⟨\Checkable{n}⟩}{⟨\Type{}⟩} \\ \\
 
 ⟨\Checkable{n}⟩ & ::= & \lam{⟨\Checkable{\natsucc{n}}⟩} \\
                    &  |  & \letin{⟨\Pattern{m}⟩}{⟨\Inferable{n}⟩}{⟨\Checkable{m + n}⟩} \\
+                   &  |  & \uni{} \\
                    &  |  & \inl{⟨\Checkable{n}⟩} ~|~ \inr{⟨\Checkable{n}⟩} \\
                    &  |  & \prd{⟨\Checkable{n}⟩}{⟨\Checkable{n}⟩} \\
                    &  |  & \neu{⟨\Inferable{n}⟩} \\
@@ -196,25 +214,21 @@ the type of computations (which we call \Inferable{}).
 \caption{Grammar of the Language of Raw Terms}
 \end{figure}
 
-Two additional rules (\texttt{neu} and \texttt{cut} respectively)
-allow the embedding of \Inferable{} into \Checkable{} and vice-versa. They
-make it possible to form redexes by embedding canonical values into
-computations and then applying eliminators to them. In terms of
-typechecking, they correspond to a change of direction between
-inferring and checking. The constructor \texttt{cut} takes an
-extra \Type{} argument in order to guarantee the success of
-type-inference for \Inferable{} terms.
+The constructors \texttt{cut}, \texttt{case}, and \texttt{exfalso}
+take an extra \Type{} argument in order to guarantee the success
+and uniqueness of type-inference for \Inferable{} terms.
 
 A notable specificity of this language is the ability to use nested
 patterns in a let binder rather than having to resort to cascading
 lets. This is achieved thanks to a rather simple piece of kit: the
-\Pattern{} type family. A value of type $\Pattern{n}$ represents a
-pattern binding $n$ variables. Because variables are represented as
-de Bruijn indices, the base pattern does not need to be associated
-with a name, it simply is a constructor \texttt{v} binding exactly
-one variable. The comma pattern constructor takes two nested patterns
-respectively binding $m$ and $n$ variables and uses them to deeply
-match a pair thus binding $(m + n)$ variables.
+\Pattern{} type family. A value of type $\Pattern{n}$ represents an
+irrefutable pattern binding $n$ variables. Because variables are
+represented as de Bruijn indices, the base pattern does not need to
+be associated with a name, it simply is a constructor \texttt{v}
+binding exactly one variable. The brackets pattern \texttt{⟨⟩} matches
+unit values and binds nothing. The comma pattern constructor takes
+two nested patterns respectively binding $m$ and $n$ variables and
+uses them to deeply match a pair thus binding $(m + n)$ variables.
 
 \begin{mathpar}
 \type{n : \Nat{}}{\Pattern{n} : \Set{}}
