@@ -1,4 +1,4 @@
-\begin{figure}[ht]
+\begin{figure}[H]
 \begin{mathpar}
 \inferrule
  {{\begin{array}{l}
@@ -10,7 +10,7 @@
     σ : \Type{}    \\
     Δ : \Usages{γ}
   \end{array}}
-}{Γ ⊢ t ∈ \fresh{σ} ⊠ Δ : \Set{}
+}{Γ ⊢_v t ∈ σ ⊠ Δ : \Set{}
 }
 \and \inferrule
  {{\begin{array}{l}
@@ -36,85 +36,15 @@
   \and Δ : \Usages{γ}
 }{Γ ⊢ σ  ∋ t ⊠ Δ : \Set{}
 }
+\and \inferrule
+{ { }
+  \and {\begin{array}{l}
+    σ : \Type{}    \\
+    p : \Pattern{n}
+  \end{array}}
+  \and γ : \Context{n}
+}{σ ∋ p \leadsto{} γ : \Set{}
+}
 \end{mathpar}
 \caption{Typing relations for \Var{}, \Inferable{}, \Checkable{} and \Pattern{}}
-\end{figure}
-
-\begin{figure}[p]
-\begin{mathpar}
-\inferrule
- {
-}{Γ ∙ \fresh{σ} ⊢ \varzero ∈ σ ⊠ Γ ∙ \stale{σ}
-}
-\and \inferrule
- {Γ ⊢ k ∈ σ ⊠ Δ
-}{Γ ∙ A ⊢ \varsucc{k} ∈ σ ⊠ Δ ∙ A
-}
-\end{mathpar}
-\caption{Typing rules for \Var{}\label{figure:deBruijn}}
-
-\begin{mathpar}
-\inferrule
- {Γ ⊢ k ∈ σ ⊠ Δ
-}{Γ ⊢ \var{k} ∈ σ ⊠ Δ
-}
-\and \inferrule
- {Γ ⊢ t ∈ σ ⊸ τ ⊠ Δ \and Δ ⊢ σ ∋ u ⊠ Θ
-}{Γ ⊢ \app{t}{u} ∈ τ ⊠ Θ
-}
-\and \inferrule
- {Γ ⊢ t ∈ σ ⊕ τ ⊠ Δ \and
-  {\begin{array}{l}
-    Δ ∙ \fresh{σ} ⊢ ν ∋ l ⊠ Θ ∙ \stale{σ} \\
-    Δ ∙ \fresh{τ} ⊢ ν ∋ r ⊠ Θ ∙ \stale{τ}
-  \end{array}}
-}{Γ ⊢ \cas{t}{ν}{l}{r} ∈ ν ⊠ Θ
-}
-\and \inferrule
- {Γ ⊢ σ ∋ t ⊠ Δ
-}{Γ ⊢ \cut{t}{σ} ∈ σ ⊠ Δ
-}
-\end{mathpar}
-\caption{Typing rules for \Inferable{}\label{figure:infer}}
-
-\begin{mathpar}
-\inferrule
- {Γ ∙ \fresh{σ} ⊢ τ ∋ b ⊠ Δ ∙ \stale{σ}
-}{Γ ⊢ σ ⊸ τ ∋ \lam{b} ⊠ Δ
-}
-\and \inferrule
- {Γ ⊢ t ∈ σ ⊠ Δ \and σ ∋ p \leadsto{} δ
-  \\\\ Δ \append{} \fresh{δ} ⊢ τ ∋ u ⊠ Θ \append{} \stale{δ}
-}{Γ ⊢ τ ∋ \letin{p}{t}{u} ⊠ Θ
-}
-\and \inferrule
- {Γ ⊢ σ ∋ t ⊠ Δ
-}{Γ ⊢ σ ⊕ τ ∋ \inl{t} ⊠ Δ
-}
-\and \inferrule
- {Γ ⊢ τ ∋ t ⊠ Δ
-}{Γ ⊢ σ ⊕ τ ∋ \inr{t} ⊠ Δ
-}
-\\ \inferrule
- {Γ ⊢ σ ∋ a ⊠ Δ \and Δ ⊢ τ ∋ b ⊠ Θ
-}{Γ ⊢ σ ⊗ τ ∋ \prd{a}{b} ⊠ Θ
-}
-\and \inferrule
- {Γ ⊢ t ∈ σ ⊠ Δ
-}{Γ ⊢ σ ∋ \neu{t} ⊠ Δ
-}
-\end{mathpar}
-\caption{Typing rules for \Checkable{}\label{figure:check}}
-
-\begin{mathpar}
-\inferrule
- {
-}{σ ∋ \texttt{v} \leadsto{} σ ∙ []
-}
-\and \inferrule
- {σ ∋ p \leadsto{} γ \and τ ∋ q \leadsto{} δ
-}{σ ⊗ τ ∋ (p \texttt{,} q) \leadsto{} δ \append γ
-}
-\end{mathpar}
-\caption{Typing rules for \Pattern{}\label{figure:pattern}}
 \end{figure}

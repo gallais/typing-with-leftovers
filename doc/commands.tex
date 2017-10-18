@@ -5,8 +5,8 @@
 
 \newcommand{\append}{+\!\!\!+}
 
-\newcommand{\fresh}[1]{\texttt{f}_{#1}}
-\newcommand{\stale}[1]{\texttt{s}_{#1}}
+\newcommand{\fresh}[1]{\ensuremath{\texttt{f}_{#1}}}
+\newcommand{\stale}[1]{\ensuremath{\texttt{s}_{#1}}}
 
 \newcommand{\Usage}[1]{\ensuremath{\DefinedType{Usage}_{#1}}}
 \newcommand{\Usages}[1]{\ensuremath{\DefinedType{Usage}_{#1}}}
@@ -48,8 +48,10 @@
 \newcommand{\Base}[1]{κ\, #1}
 \newcommand{\Lolli}[2]{#1 \,⊸\, #2}
 \newcommand{\Tensor}[2]{#1 \,⊗\, #2}
+\newcommand{\Unit}{\ensuremath{\mathbb{1}}}
 \newcommand{\Sum}[2]{#1 \,⊕\, #2}
 \newcommand{\With}[2]{#1 \,\&\, #2}
+\newcommand{\Zero}{\ensuremath{\mathbb{0}}}
 
 \newcommand{\type}[2]{\mprset{fraction={===}}\inferrule{#1}{#2}{}}
 \newcommand{\constructor}[2]{\mprset{fraction={---}}\inferrule{#1}{#2}{}}

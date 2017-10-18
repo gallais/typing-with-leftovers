@@ -283,13 +283,15 @@ base types.
 
 \begin{figure}[ht]\centering
 \begin{tabular}{lcl}
-⟨$\Type{}$⟩ & ::= & \Base{⟨$\mathbb{N}$⟩}
-              ~|~ \Lolli{⟨$\Type{}$⟩}{⟨$\Type{}$⟩}
-              ~|~ \Tensor{⟨$\Type{}$⟩}{⟨$\Type{}$⟩} \\
-            &  |  & \Sum{⟨$\Type{}$⟩}{⟨$\Type{}$⟩}
-              ~|~ \With{⟨$\Type{}$⟩}{⟨$\Type{}$⟩}
+⟨\Type{}⟩ & ::= & \Base{⟨$\mathbb{N}$⟩}
+             ~|~    \Zero{}
+             ~|~    \Unit{} \\
+            & |   & \Lolli{⟨\Type{}⟩}{⟨\Type{}⟩}
+             ~|~    \Tensor{⟨\Type{}⟩}{⟨\Type{}⟩} \\
+            & |   & \Sum{⟨\Type{}⟩}{⟨\Type{}⟩}
+             ~|~    \With{⟨\Type{}⟩}{⟨\Type{}⟩}
 \end{tabular}
-\caption{Grammar of $\Type{}$}\label{fig:types}
+\caption{Grammar of \Type{}}\label{fig:types}
 \end{figure}
 
 A linear type system is characterised by the
@@ -423,9 +425,13 @@ an indexed relation $\text{\𝓣{}}_n$ such that:
 
 This definition clarifies the notion but also leads to more generic
 statements later on: weakening, substitution, framing can all be
-expressed as properties a Typing Relation might have.
+expressed as properties a Typing Relation might have. We can already
+list the typing relations introduced later on in this article which
+fit this pattern. We have split their arguments into three columns
+depending on whether they should be understood as either inputs (the
+known things), scrutinees (the things being validated), or outputs
+(the things that we learn).
 
-\todo{explain}
 \input{typing-rules}
 
 \subsubsection{Typing de Bruijn indices}
@@ -433,15 +439,17 @@ expressed as properties a Typing Relation might have.
 The simplest instance of a Typing Relation is the one for de Bruijn
 indices: given an index $k$ and a usage annotation, it successfully
 associates a type $σ$ to that index if and only if the $k$th resource
-in context is of type $σ$ and fresh (i.e. its $\Usage{}$ is $\fresh{σ}$).
-In the resulting leftovers, this resource will have turned stale ($\stale{σ}$):
+in context is of type $σ$ and fresh (i.e. its \Usage{σ} is \fresh{σ}).
+In the resulting leftovers, this resource will have turned stale (\stale{σ}):
+
 \begin{definition}
-\label{typing:deBruijn}
 The typing relation is presented in a sequent-style: Γ ⊢ $k$ ∈ σ ⊠ Δ
 means that starting from the usage annotation Γ, the de Bruijn index
 $k$ is ascribed type σ with leftovers Δ. It is defined inductively by
 two constructors (cf. Figure~\ref{figure:deBruijn}).
 \end{definition}
+
+\input{typing-rules-var}
 
 \begin{remark}The careful reader will have noticed that there is precisely
 one typing rule for each \Var{} constructor. It is not a coincidence. And
@@ -496,12 +504,19 @@ the type is inferred. $Γ ⊢ t ∈ σ ⊠ Δ$ means that given Γ a
 $\Usages{γ}$, and $t$ an \Inferable{}, the type σ is inferred
 together with leftovers Δ, another $\Usages{γ}$. The rules are
 listed in Figure~\ref{figure:infer}.
+\end{definition}
 
-For \Checkable{}, the type σ comes first: $Γ ⊢ σ ∋ t ⊠ Δ$ means
+\input{typing-rules-infer}
+
+\begin{definition}For \Checkable{}, the type σ comes first: $Γ ⊢ σ ∋ t ⊠ Δ$ means
 that given Γ a $\Usages{γ}$, a type σ, the \Checkable{} $t$ can
 be checked to have type σ with leftovers Δ. The rules can be found
 in Figure~\ref{figure:check}.
+\end{definition}
 
+\input{typing-rules-check}
+
+\begin{definition}
 Finally, \Pattern{}s are checked against a type and a context of
 newly bound variables is generated. If the variable pattern always
 succeeds, the pair constructor pattern on the other hand obviously
@@ -510,6 +525,8 @@ The context of newly-bound variables is then the collection of the
 contexts associated to the nested patterns. The rules are given in
 Figure~\ref{figure:pattern}.
 \end{definition}
+
+\input{typing-rules-pattern}
 
 \begin{example}
 Given these rules, it is easy to see that the identity function

@@ -1,0 +1,36 @@
+\begin{figure}[H]
+\begin{mathpar}
+\inferrule
+ {Γ ∙ \fresh{σ} ⊢ τ ∋ b ⊠ Δ ∙ \stale{σ}
+}{Γ ⊢ σ ⊸ τ ∋ \lam{b} ⊠ Δ
+}
+\and \inferrule
+ {Γ ⊢ σ ∋ a ⊠ Δ \and Δ ⊢ τ ∋ b ⊠ Θ
+}{Γ ⊢ σ ⊗ τ ∋ \prd{a}{b} ⊠ Θ
+}
+\\
+\and \inferrule
+ {Γ ⊢ σ ∋ t ⊠ Δ
+}{Γ ⊢ σ ⊕ τ ∋ \inl{t} ⊠ Δ
+}
+\and \inferrule
+ {Γ ⊢ τ ∋ t ⊠ Δ
+}{Γ ⊢ σ ⊕ τ ∋ \inr{t} ⊠ Δ
+}
+\and \inferrule
+ {Γ ⊢ σ ∋ a ⊠ Δ \and Γ ⊢ τ ∋ b ⊠ Δ
+}{Γ ⊢ σ \& τ ∋ \prd{a}{b} ⊠ Δ
+}
+\\
+\and \inferrule
+ {Γ ⊢ t ∈ σ ⊠ Δ \and σ ∋ p \leadsto{} δ
+  \\\\ Δ \append{} \fresh{δ} ⊢ τ ∋ u ⊠ Θ \append{} \stale{δ}
+}{Γ ⊢ τ ∋ \letin{p}{t}{u} ⊠ Θ
+}
+\and \inferrule
+ {Γ ⊢ t ∈ σ ⊠ Δ
+}{Γ ⊢ σ ∋ \neu{t} ⊠ Δ
+}
+\end{mathpar}
+\caption{Typing rules for \Checkable{}\label{figure:check}}
+\end{figure}

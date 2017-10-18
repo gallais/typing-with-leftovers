@@ -1,0 +1,37 @@
+\begin{figure}[H]
+\begin{mathpar}
+\inferrule
+ {Γ ⊢_v k ∈ σ ⊠ Δ
+}{Γ ⊢ \var{k} ∈ σ ⊠ Δ
+}
+\and \inferrule
+ {Γ ⊢ t ∈ σ ⊸ τ ⊠ Δ \and Δ ⊢ σ ∋ u ⊠ Θ
+}{Γ ⊢ \app{t}{u} ∈ τ ⊠ Θ
+}
+\and \inferrule
+ {Γ ⊢ t ∈ σ ⊕ τ ⊠ Δ \and
+  {\begin{array}{l}
+    Δ ∙ \fresh{σ} ⊢ ν ∋ l ⊠ Θ ∙ \stale{σ} \\
+    Δ ∙ \fresh{τ} ⊢ ν ∋ r ⊠ Θ ∙ \stale{τ}
+  \end{array}}
+}{Γ ⊢ \cas{t}{ν}{l}{r} ∈ ν ⊠ Θ
+}
+\and \inferrule
+ {Γ ⊢ t ∈ σ \& τ ⊠ Δ
+}{Γ ⊢ \prl{t} ∈ σ ⊠ Δ
+}
+\and \inferrule
+ {Γ ⊢ t ∈ σ \& τ ⊠ Δ
+}{Γ ⊢ \prr{t} ∈ τ ⊠ Δ
+}
+\and \inferrule
+ {Γ ⊢ t ∈ 𝟘 ⊠ Δ
+}{Γ ⊢ \exf{σ}{t} ∈ σ ⊠ Δ
+}
+\and \inferrule
+ {Γ ⊢ σ ∋ t ⊠ Δ
+}{Γ ⊢ \cut{t}{σ} ∈ σ ⊠ Δ
+}
+\end{mathpar}
+\caption{Typing rules for \Inferable{}\label{figure:infer}}
+\end{figure}
