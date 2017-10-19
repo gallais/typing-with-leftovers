@@ -99,7 +99,7 @@ actual mutable object in a lazy, purely functional setting.
 However, in the context of the rising development of dependently-typed
 programming languages~\cite{Brady2013idris, norell2009dependently} which,
 unlike ghc's Haskell~\cite{weirich2013towards}, incorporate a hierarchy
-of universes in order to make certain that the underlying logic is consistent,
+of universes in order to ensure that the underlying logic is consistent,
 some of these techniques are not applicable anymore. Indeed, the use of
 large quantification in the definition of the ST-monad crucially relies
 on impredicativity. As a consequence, the specification of programs
@@ -233,7 +233,7 @@ uses them to deeply match a pair thus binding $(m + n)$ variables.
 \begin{mathpar}
 \type{n : \Nat{}}{\Pattern{n} : \Set{}}
 \and \constructor{ }{\texttt{v} : \Pattern{1}}
-\and \constructor{ }{\texttt{⟨⟩} : \Pattern{0}}
+\and \constructor{ }{\texttt{⟨\!⟩} : \Pattern{0}}
 \and \constructor{p : \Pattern{m} \and q : \Pattern{n}}{p \texttt{,} q : \Pattern{m + n}}
 \end{mathpar}
 
@@ -302,8 +302,8 @@ the context as a multiset and, in each rule, cutting it up and
 distributing its parts among the premises. This is epitomised
 by the introduction rule for tensor (cf. Figure~\ref{rule:tensor}).
 
-However, multisets are an intrinsically extensional notion and
-therefore quite arduous to work with in an intensional type
+However, multisets are an intrinsically \emph{extensional} notion and
+therefore quite arduous to work with in an \emph{intensional} type
 theory. Various strategies can be applied to tackle this issue;
 most of them rely on using linked lists to represent contexts
 together with either extra inference rules to reorganise the
@@ -326,16 +326,20 @@ $\_≈\_$ stands for ``bag-equivalence'' of lists.
 \caption{Introduction rules for tensor (left: usual presentation, right: with reordering on the fly)\label{rule:tensor}}
 \end{figure}
 
+Although one can find coping mechanisms to handle such clunky systems
+(for instance using a solver for bag-equivalence~\cite{danielsson2012bag}
+based on the proof-by-reflection~\cite{boutin1997using} approach to
+automation), we would rather not.
 All of these strategies are artefacts of the unfortunate mismatch
 between the ideal mathematical objects one wishes to model and
 their internal representation in the proof assistant. Short of
 having proper quotient types, this will continue to be an issue
 when dealing with multisets. The solution described in the rest
-of this paper tries not to replicate a set-theoretic approach in
-intuitionistic type theory but rather strives to find the type
-theoretical structures which can make the problem more tractable.
-Indeed, given the right abstractions most proofs become simple
-structural inductions.
+of this paper is syntax-directed; it does not try to replicate a
+set-theoretic approach in intuitionistic type theory but rather
+strives to find the type theoretical structures which can make
+the problem more tractable. Indeed, given the right abstractions
+most proofs become direct structural inductions.
 
 \subsection{Usage Annotations}
 
@@ -353,7 +357,7 @@ the resources consumed by the term in question and returning the
 
 \begin{definition}
 \label{definition:context}
-A \Context{} is a list of \Type{}s indexed by its length. It can
+A \textbf{\Context{}} is a list of \Type{}s indexed by its length. It can
 be formally described by the following inference rules:
 \begin{mathpar}
 \type{n : \Nat{}}{\Context{n} : \Set{}}
@@ -365,14 +369,14 @@ be formally described by the following inference rules:
 
 \begin{definition}
 \label{definition:usage}
-A $\Usage{}$ is a predicate on a type $σ$ describing whether the
+A \textbf{\Usage{}} is a predicate on a type $σ$ describing whether the
 resource associated to it is available or not. We name the
-constructors describing these two states $\fresh{}$ (for ``fresh'')
-and $\stale{}$ (for ``stale'') respectively.
-\todo{Overloading}
- These are naturally
-lifted to contexts in a pointwise manner and we reuse the $\Usage{}$
-name and the $\fresh{}$ and $\stale{}$ constructors.
+constructors describing these two states \fresh{} (for \textbf{fresh})
+and \stale{} (for \textbf{stale}) respectively.
+These are naturally lifted to contexts in a pointwise manner and we reuse
+the \Usages{} name and the \fresh{} and \stale{} names for the functions
+taking a context and returning either a fully fresh or fully stale \Usages{}
+for it.
 
 \begin{mathpar}
 \type
@@ -413,7 +417,7 @@ the leftover resources. Formally:
 
 \begin{definition}
 \label{definition:typing}
-A ``Typing Relation'' for $T$ a \Nat{}-indexed inductive family is
+A \textbf{Typing Relation} for $T$ a \Nat{}-indexed inductive family is
 an indexed relation $\text{\𝓣{}}_n$ such that:
 \begin{mathpar}
 \type
@@ -430,9 +434,16 @@ list the typing relations introduced later on in this article which
 fit this pattern. We have split their arguments into three columns
 depending on whether they should be understood as either inputs (the
 known things), scrutinees (the things being validated), or outputs
-(the things that we learn).
+(the things that we learn) and hint at what the flow of information
+in the typechecker will be.
 
 \input{typing-rules}
+
+\begin{remark}The use of ⊠ is meant to suggest that the input Γ
+get distributed between the type σ of the term and the leftovers
+Δ obtained as an output. Informally $Γ \simeq σ ⊗ Δ$, hence the
+use of a tensor-like symbol.
+\end{remark}
 
 \subsubsection{Typing de Bruijn indices}
 
@@ -443,7 +454,7 @@ in context is of type $σ$ and fresh (i.e. its \Usage{σ} is \fresh{σ}).
 In the resulting leftovers, this resource will have turned stale (\stale{σ}):
 
 \begin{definition}
-The typing relation is presented in a sequent-style: Γ ⊢ $k$ ∈ σ ⊠ Δ
+The typing relation for \Var{} is presented in a sequent-style: Γ ⊢$_v$ $k$ ∈ σ ⊠ Δ
 means that starting from the usage annotation Γ, the de Bruijn index
 $k$ is ascribed type σ with leftovers Δ. It is defined inductively by
 two constructors (cf. Figure~\ref{figure:deBruijn}).
@@ -454,15 +465,17 @@ two constructors (cf. Figure~\ref{figure:deBruijn}).
 \begin{remark}The careful reader will have noticed that there is precisely
 one typing rule for each \Var{} constructor. It is not a coincidence. And
 if these typing rules are not named it's because in Agda, they can simply
-be given the same name as their \Var{} counterpart. The same will be true
-for \Inferable{}, \Checkable{} and \Pattern{} which means that writing
-down a typable program could be seen as either writing a raw term or the
-typing derivation associated to it depending on the author's intent.
+be given the same name as their \Var{} counterpart and the typechecker will
+perform type-directed disambiguation. The same will be true for \Inferable{},
+\Checkable{} and \Pattern{} which means that writing down a typable program
+could be seen as either writing a raw term or the typing derivation associated
+to it depending on the author's intent.
 \end{remark}
 
 \begin{example}
 The de Bruijn index 1 has type τ in the context (γ ∙ σ ∙ τ) with
-usage annotation ($Γ ∙ \fresh{τ} ∙ \fresh{σ}$):
+usage annotation (Γ ∙ \fresh{τ} ∙ \fresh{σ}), no matter what Γ
+actually is:
 \begin{mathpar}
 \inferrule
  {\inferrule
@@ -484,22 +497,23 @@ the same names:
 \subsubsection{Typing Terms}
 
 The key idea appearing in all the typing rules for compound
-expressions is to use the input $\Usages{}$ to type one of the
+expressions is to use the input \Usages{} to type one of the
 sub-expressions, collect the leftovers from that typing
-derivation and use them as the new input $\Usages{}$ when typing
+derivation and use them as the new input \Usages{} when typing
 the next sub-expression.
 
 Another common pattern can be seen across all the rules involving
 binders, be they λ-abstractions, let-bindings or branches of a
 case. Typechecking the body of a binder involves extending the
-input $\Usages{}$ with fresh variables and observing that they have
+input \Usages{} with fresh variables and observing that they have
 become stale in the output one. This guarantees that these bound
 variables cannot escape their scope as well as that they have indeed
-been used. Relaxing the staleness restriction would lead to an affine
+been used. Although not the focus of this paper, it is worth noting
+that relaxing the staleness restriction would lead to an affine
 type system which would be interesting in its own right.
 
 \begin{definition}The Typing Relation for \Inferable{} is typeset
-in a fashion similar to the one for \Var{}. Indeed, in both cases
+in a fashion similar to the one for \Var{}: in both cases
 the type is inferred. $Γ ⊢ t ∈ σ ⊠ Δ$ means that given Γ a
 $\Usages{γ}$, and $t$ an \Inferable{}, the type σ is inferred
 together with leftovers Δ, another $\Usages{γ}$. The rules are
@@ -508,13 +522,22 @@ listed in Figure~\ref{figure:infer}.
 
 \input{typing-rules-infer}
 
-\begin{definition}For \Checkable{}, the type σ comes first: $Γ ⊢ σ ∋ t ⊠ Δ$ means
-that given Γ a $\Usages{γ}$, a type σ, the \Checkable{} $t$ can
+\begin{definition}For \Checkable{}, the type σ comes first: Γ ⊢ σ ∋ t ⊠ Δ means
+that given Γ a \Usages{γ}, a type σ, the \Checkable{} $t$ can
 be checked to have type σ with leftovers Δ. The rules can be found
 in Figure~\ref{figure:check}.
 \end{definition}
 
 \input{typing-rules-check}
+
+We can see that both variants of a product type --tensor (⊗) and
+with (\&)-- use the same surface language constructor but are
+disambiguated in a type-directed manner in the checking relation.
+The premises are naturally widely different: With lets its user
+pick which of the two available types they want and as a consequence
+both components have to be proven using the same resources. Tensor
+on the other hand forces the user to use both so the leftovers
+are threaded from one premise to the other.
 
 \begin{definition}
 Finally, \Pattern{}s are checked against a type and a context of
@@ -537,7 +560,7 @@ can be checked at type (σ ⊸ σ) in an empty context:
    {\inferrule
      {\inferrule
        {
-      }{[] ∙ \fresh{σ} ⊢ \varzero ∈ σ ⊠ [] ∙ \stale{σ}
+      }{[] ∙ \fresh{σ} ⊢_v \varzero ∈ σ ⊠ [] ∙ \stale{σ}
       }
     }{[] ∙ \fresh{σ} ⊢ \var{\varzero} ∈ σ ⊠ [] ∙ \stale{σ}
     }
@@ -556,9 +579,9 @@ given the same name as their term constructor counterparts:
 
 \begin{example}\label{example:swapTyped}
 It is also possible to revisit Example \ref{example:swap} to prove
-that it can be checked against type (σ ⊗ τ) ⊸ (τ ⊗ σ) in an empty
+that \texttt{swap} can be checked against type (σ ⊗ τ) ⊸ (τ ⊗ σ) in an empty
 context. This gives the lengthy derivation included in the appendix
-or the following one in Agda which quite a lot more readable:
+or the following one in Agda which is quite a lot more readable:
 
 \begin{lstlisting}
   swapTyped : [] '⊢' ('σ' '⊗' 'τ') '⊸' ('τ' '⊗' 'σ') '∋' swap '⊠' []
@@ -584,17 +607,23 @@ it can use the other one instead. Formally (postponing the
 definition of $Γ - Δ ≡ Θ - ξ$):
 
 \begin{definition}A Typing Relation \𝓣{} for a \Nat{}-indexed
-family $T$ has the Framing Property if for all $k$ a \Nat{},
-γ a $\Context{k}$, Γ, Δ, Θ, ξ four $\Usages{γ}$, $t$ an element
-of $T_k$ and σ a Type, if $Γ - Δ ≡ Θ - ξ$ and \𝓣{}$(Γ, t, σ, Δ)$
-then \𝓣{}$(Θ, t, σ, ξ)$ also holds.
+family $T$ has the \textbf{Framing Property} if for all $k$ a \Nat{},
+γ a \Context{k}, Γ, Δ, Θ, ξ four \Usages{γ}, $t$ an element
+of $T_k$ and σ a Type, if Γ - Δ ≡ Θ - ξ and \𝓣{}(Γ, t, σ, Δ)
+then \𝓣{}(Θ, t, σ, ξ) also holds.
 \end{definition}
+
+\begin{remark}This is purely a property of the type system as
+witnessed by the fact that the term $t$ is left unchanged wich
+won't be the case when defining stability under Weakening or
+Substitution for instance.
+\end{remark}
 
 
 \begin{definition}
 \label{definition:differences}
-The ``consumption equivalence'' characterises the pairs of an input and
-an output $\Usages{}$ which have the same consumption pattern. The
+\textbf{Consumption Equivalence} characterises the pairs of an input and
+an output \Usages{} which have the same consumption pattern. The
 usages annotations for the empty context are trivially related.
 If the context is not empty, then there are two cases: if the
 resource is left untouched on one side, then so should it on the other
@@ -618,36 +647,36 @@ on one side then it has to be on the other side too.
 }
 \and \constructor
  {Γ - Δ ≡ Θ - ξ
-}{(Γ ∙ \texttt{fresh}_σ) - (Δ ∙ \texttt{stale}_σ) ≡ (Θ ∙ \texttt{fresh}_σ) - (ξ ∙ \texttt{stale}_σ)
+}{(Γ ∙ \fresh{σ}) - (Δ ∙ \stale{σ}) ≡ (Θ ∙ \fresh{σ}) - (ξ ∙ \stale{σ})
 }{
 }
 \end{mathpar}
 \end{definition}
 
-\begin{definition}The ``consumption partial order'' $Γ ⊆ Δ$ is defined as
-$Γ - Δ ≡ Γ - Δ$.
+\begin{definition}\textbf{Consumption Partial Order} Γ ⊆ Δ is defined as
+Γ - Δ ≡ Γ - Δ. It orders \Usages{} from least consumed to maximally consumed
 \end{definition}
 
-\begin{lemma}
+\begin{lemma} The following properties on the Consumption relations hold:
 \begin{enumerate}
   \item The consumption equivalence is a partial equivalence
   \item The consumption partial order is a partial order
-  \item If there is a Usages ``in between'' two others according to the consumption
-        partial order, then any pair of usages equal to these two can be split in a
-        manner compatible with this middle element. Formally: Given Γ, Δ, Θ, ξ
-        and χ such that $Γ - Δ ≡ Θ - ξ$, $Γ ⊆ χ$ and $χ ⊆ Δ$,
-        one can find ζ such that: $Γ - χ ≡ Θ - ζ$ and $χ - Δ ≡ ζ - ξ$.
+  \item If there is a \Usages{} χ ``in between'' two others Γ and Δ according to
+        the consumption partial order (i.e. $Γ ⊆ χ$ and $χ ⊆ Δ$), then any pair
+        of \Usages{} Θ, ξ consumption equal to Γ and Δ (i.e. $Γ - Δ ≡ Θ - ξ$)
+        can be split in a manner compatible with χ. In other words: one can find
+        ζ such that $Γ - χ ≡ Θ - ζ$ and $χ - Δ ≡ ζ - ξ$.
 \end{enumerate}
 \end{lemma}
 
 \begin{lemma}[Consumption]The Typing Relations for \Var{}, \Inferable{}
 and \Checkable{} all imply that if a typing derivation exists with input
-usages annotation Γ and output usages annotation Δ then $Γ ⊆ Δ$.
+\Usages{} annotation Γ and output \Usages{} annotation Δ then Γ ⊆ Δ.
 \end{lemma}
 
 \begin{theorem}
 \label{theorem:framing}
-The Typing Relations for \Var{} has the Framing Property.
+The Typing Relation for \Var{} has the Framing Property.
 So do the ones for \Inferable{} and \Checkable{}.
 \end{theorem}
 \begin{proof}
@@ -1196,6 +1225,5 @@ currently an open question.
 
 \appendix
 \input{typing-swap}
-\input{typing-identity}
 
 \end{document}

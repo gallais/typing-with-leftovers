@@ -1,6 +1,6 @@
 \begin{figure}[H]
 \begin{mathpar}
-\inferrule
+\type
  {{\begin{array}{l}
     γ : \Context{n} \\
     Γ : \Usages{γ}
@@ -10,9 +10,9 @@
     σ : \Type{}    \\
     Δ : \Usages{γ}
   \end{array}}
-}{Γ ⊢_v t ∈ σ ⊠ Δ : \Set{}
+}{Γ ⊢_v k ∈ σ ⊠ Δ : \Set{}
 }
-\and \inferrule
+\and \type
  {{\begin{array}{l}
     γ : \Context{n} \\
     Γ : \Usages{γ}
@@ -24,24 +24,19 @@
   \end{array}}
 }{Γ ⊢ t ∈ σ ⊠ Δ : \Set{}
 }
-\and \inferrule
+\and \type
  {{\begin{array}{l}
     γ : \Context{n} \\
-    Γ : \Usages{γ}
-  \end{array}}
-  \and {\begin{array}{l}
-    σ : \Type{}    \\
-    t : \Inferable{n}
-  \end{array}}
+    Γ : \Usages{γ} \\
+    σ : \Type{}
+   \end{array}}
+  \and t : \Checkable{n}
   \and Δ : \Usages{γ}
 }{Γ ⊢ σ  ∋ t ⊠ Δ : \Set{}
 }
-\and \inferrule
-{ { }
-  \and {\begin{array}{l}
-    σ : \Type{}    \\
-    p : \Pattern{n}
-  \end{array}}
+\and \type
+{ σ : \Type{}
+  \and p : \Pattern{n}
   \and γ : \Context{n}
 }{σ ∋ p \leadsto{} γ : \Set{}
 }

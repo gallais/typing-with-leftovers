@@ -23,6 +23,9 @@
 }
 \\
 \and \inferrule
+ {
+}{Γ ⊢ \Unit ∋ \uni ⊠ Γ
+} \and \inferrule
  {Γ ⊢ t ∈ σ ⊠ Δ \and σ ∋ p \leadsto{} δ
   \\\\ Δ \append{} \fresh{δ} ⊢ τ ∋ u ⊠ Θ \append{} \stale{δ}
 }{Γ ⊢ τ ∋ \letin{p}{t}{u} ⊠ Θ
