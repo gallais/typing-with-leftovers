@@ -640,7 +640,7 @@ on one side then it has to be on the other side too.
 }{[] - [] ≡ [] - []
 }{
 }
-\and \constructor
+\\ \constructor
  {Γ - Δ ≡ Θ - ξ
 }{(Γ ∙ A) - (Δ ∙ A) ≡ (Θ ∙ B) - (ξ ∙ B)
 }{
@@ -671,7 +671,7 @@ on one side then it has to be on the other side too.
 
 \begin{lemma}[Consumption]The Typing Relations for \Var{}, \Inferable{}
 and \Checkable{} all imply that if a typing derivation exists with input
-\Usages{} annotation Γ and output \Usages{} annotation Δ then Γ ⊆ Δ.
+\Usages{} annotation Γ and output \Usages{} annotation Δ then $Γ ⊆ Δ$.
 \end{lemma}
 
 \begin{theorem}
@@ -707,27 +707,24 @@ and called an Order Preserving Embeddding~\cite{chapman2009thesis,altenkirch1995
 Unlike a simple function witnessing the inclusion of its domain
 into its codomain, the restriction brought by order preserving
 embeddings guarantees that contraction is simply not possible which
-is crucial in a linear setting. In this development, three variations
-on OPEs are actually needed: one for \Nat{}s to describe the embedding
-of a scope into a larger one, one for \Context{} describing what types
-the extra variables in scope are assigned and finally one for their
-$\Usages{}$ mentioning whether these variables are fresh or stale.
+is crucial in a linear setting.
 
 \begin{definition}
 An \textbf{Order Preserving Embedding} (OPE) is an inductive family. Its
-constructors dubbed ``moves'' describe a strategy to realise the promise
-of an injective embedding which respects the order induced by the de Bruijn
-indices. We start with an example in Figure~\ref{figure:exampleOpe} before
-giving, in Figure~\ref{figure:ope}, the formal definition of OPEs for \Nat{},
-\Context{} and $\Usages{}$.
+constructors (dubbed ``moves'' in this paper) describe a strategy to realise
+the promise of an injective embedding which respects the order induced by
+the de Bruijn indices. We start with an example in Figure~\ref{figure:exampleOpe}
+before giving, in Figure~\ref{figure:ope}, the formal definition of OPEs for
+\Nat{}, \Context{} and \Usages{}.
 \end{definition}
 
 In the following example, we prove that the source context $\gamma ∙ \tau$
-can be safely embedded into the target one $\gamma ∙ \sigma ∙ \tau ∙ \nu$.
+can be safely embedded into the target one $\gamma ∙ \sigma ∙ \tau ∙ \nu$,
+written $\gamma ∙ \tau \leq \gamma ∙ \sigma ∙ \tau ∙ \nu$.
 To do so, we use all three of the moves the inductive definition of OPEs
-offers: $\texttt{insert}_{\alpha}$ which introduces a new variable of type
-$\alpha$, $\texttt{copy}$ which embeds the source context's top variable,
-and $\texttt{done}$ which simply copies the source context. To clarify the
+offers: \opeinsert{\alpha} which introduces a new variable of type
+$\alpha$, \opecopy{} which embeds the source context's top variable,
+and \opedone{} which simply copies the source context. To clarify the
 effect of each move on the source context, we write it in \textit{cons}-style
 rather than the \textit{snoc}-style used in the rest of the paper and insert
 extra space to align the source elements and their respective embeddings in
@@ -739,8 +736,8 @@ the target.
              & \texttt{copy} &
              & $\texttt{insert}_{\sigma}$ &
              & \texttt{done}\\
-\textit{source} & & 
-                & $\tau$ & , 
+\textit{source} & &
+                & $\tau$ & ,
                 & &
                 & $\gamma$ \\
 \textit{target} & $\nu$ & ,
@@ -750,52 +747,30 @@ the target.
 \end{tabular}
 \caption{Example of an Order Preserving Embedding proving:
          $\gamma ∙ \tau
-          \subseteq
+          \leq
           \gamma ∙ \sigma ∙ \tau ∙ \nu$\label{figure:exampleOpe}}
 \end{figure}
 
-\todo{transition}
+Now that we have seen an example, we can focus on the formal definition.
+We give the definition of \OPE{} for \Nat{}, \Context{} and \Usages{} all
+side by side in one table: the first column lists the names of the
+constructors associated to each move whilst the other ones give their
+corresponding types for each category. It is worth noting that \OPE{}s for
+\Context{} are indexed over the ones for \Nat{} and the \OPE{}s for \Usages{}
+are indexed by both.
 
-The first column lists the names of the constructors associated to each
-one of the moves. The second column describes the OPE for \Nat{}s
-and it follows closely the traditional definition of OPEs. The two
-remaining columns are a bit different: they respectively define the
-OPE for \Context{}s and the one for $\Usages{}$. However they do not
-mention the source and target sets in their indices; they are in
-fact generic enough to be applied to any context / usages of the
-right size. If a value of $k ≤ l$ is seen as a \emph{diff} between
-$k$ and $l$ then the OPEs on contexts and usages annotations only
-specify what to do for the variables introduced by the diff (i.e.
-the variables corresponding to an \texttt{insert} constructor).
-These diffs can then be applied to concrete contexts and usages
-respectively to transform them.
+The \Context{} and \Usages{} case are a bit special: they do not mention
+the source and target sets in their indices because they are in fact
+generic enough to be applied to any context / usages of the right size.
 
-The first row defines the move \texttt{done} for each one of the
-OPEs. It is the strategy corresponding to the trivial embedding of
-a set into itself by the identity function. It serves as a base case.
-
-The second row corresponds to the \texttt{copy} move which extends
-an existing embedding by copying the current $0$th variable from
-source to target. The corresponding cases for \Context{}s and
-$\Usages{}$ are purely structural: no additional content is required
-to be able to perform a \texttt{copy} move.
-
-Last but not least, the third row describes the move \texttt{insert}
-which introduces an extra variable in the target set. This is the
-move used to extend an existing context, i.e. to weaken it. In this
-case, it is paramount that the OPE for \Context{}s should take a
-type σ as an extra argument (it will be the type of the newly introduced
-variable) whilst the OPE for $\Usages{}$ takes a $\Usage{σ}$ (it will
-be the usage associated to that newly introduced variable of type σ).
-
-\begin{figure}[ht]\centering
+\begin{figure}[H]\centering
 \begin{tabular}{l|c|c|c}
 & \type
  {k, l : \Nat{}
 }{k ≤ l : \Set{}
 }
 & \type
- {o : k ≤ l 
+ {o : k ≤ l
 }{\OPE{}(o) : \Set{}
 }
 & \type
@@ -845,6 +820,28 @@ be the usage associated to that newly introduced variable of type σ).
 \caption{Order Preserving Embeddings for \Nat{}, \Context{} and $\Usages{}$\label{figure:ope}}
 \end{figure}
 
+The first row defines the move \opedone{}. It is the strategy
+corresponding to the trivial embedding of a set into itself by
+the identity function and serves as a base case. For \Nat{} this
+corresponds to the proof that $k \leq k$ for the $k$ at hand whilst
+for \Context{} and \Usage{} it will respectively yield
+$\gamma \leq \gamma$ and $\Gamma \leq \Gamma$ for \emph{all} \Context{k}
+$\gamma$ and \Usages{\gamma} $\Gamma$.
+
+The second row corresponds to the \texttt{copy} move which extends
+an existing embedding by copying the current $0$th variable from
+source to target. The corresponding cases for \Context{}s and
+$\Usages{}$ are purely structural: no additional content is required
+to be able to perform a \texttt{copy} move.
+
+Last but not least, the third row describes the move \texttt{insert}
+which introduces an extra variable in the target set. This is the
+move used to extend an existing context, i.e. to weaken it. In this
+case, it is paramount that the OPE for \Context{}s should take a
+type σ as an extra argument (it will be the type of the newly introduced
+variable) whilst the OPE for $\Usages{}$ takes a $\Usage{σ}$ (it will
+be the usage associated to that newly introduced variable of type σ).
+
 
 \begin{example}
 \label{example:ope}
@@ -867,12 +864,14 @@ what pushing a substitution under a lambda abstraction calls for.
 \end{lstlisting}
 \end{example}
 
-We leave out the definitions of the two \texttt{patch} functions applying
-the diff described by an OPE to respectively a context or a usages
-annotation. They are structural in the OPE. The interested reader will find
-them in the formal development in Agda. We also leave out the definition of
-weakening for raw terms. It is given by a simple structural induction on the
-terms themselves.
+We leave out the definitions of the two functions (called \texttt{patch})
+applying an OPE to respectively a \Context{} or a \Usages{} annotation.
+They are structural in the OPE. The interested reader will find them in the
+formal development in Agda. We also leave out the definition of weakening for
+raw terms which proves that given $k \leq l$ we can turn an \Inferable{k}
+(resp. \Checkable{k}) into an \Inferable{l} (resp. \Checkable{l}). It is given
+by a simple structural induction on the terms themselves, using \opecopy{}
+to go under binders.
 
 \begin{definition}A Typing Relation \𝓣{} for a \Nat{}-indexed family $T$
 such that we have a function $\texttt{weak}_T$ transporting proofs that
@@ -920,7 +919,10 @@ returned by the induction hypothesis would then live in an extended
 context and quite a lot of effort would be needed to downcast them
 back to the smaller context they started in. The solution is to have
 an explicit constructor for ``going under a binder'' which can be
-simply peeled off on the way out of a binder.
+simply peeled off on the way out of a binder. The values are still
+weakened to fit in the extended context they end up in but that happens
+at the point of use (i.e. when they are being looked up to replace a
+variable) instead of when pushing the substitution under a binder.
 
 \begin{definition}The environment \Env{} used to define substitution
 for raw terms is indexed by two \Nat{}s $k$ and $l$ where $k$ is the
@@ -929,12 +931,16 @@ one for the empty environment ([]), one for going under a binder (\texttt{∙v})
 and one to extend an environment with an $\Inferable{l}$.
 \begin{mathpar}
 \type
+ {k, l : \Nat{}
+}{\Env{}(k, l) : \Set{}
+}
+\and \constructor
  {
 }{[] : \Env{}(0, l)
 }
-\and \constructor
+\\ \constructor
  {ρ : \Env{}(k, l)
-}{ρ \texttt{∙v} : \Env{}(\texttt{suc}(k), \texttt{suc}(l))
+}{ρ \envextend{} : \Env{}(\texttt{suc}(k), \texttt{suc}(l))
 }
 \and \constructor
  {ρ : \Env{}(k, l) \and t : \Inferable{l}
@@ -952,7 +958,7 @@ $l$, given $t$ a term $\Inferable{k}$ (resp. $\Checkable{k}$) and $ρ$
 an environment $\Env{}(k,l)$, we can apply the substitution $ρ$ to $t$
 and obtain an $\Inferable{l}$ (resp. $\Checkable{l}$).
 \end{lemma}
-\begin{proof}By mutual induction on the raw terms, using the \texttt{∙v}
+\begin{proof}By mutual induction on the raw terms, using the \envextend{}
 \Env{} constructor when going under a binder. The need for weakening or
 crafting fresh variables has not disappeared, it has been transferred to
 the auxiliary function looking up a value in $ρ$ given a $\Var{k}$.
@@ -962,13 +968,22 @@ the auxiliary function looking up a value in $ρ$ given a $\Var{k}$.
 Relations are stable under substitution follow closely the ones
 for raw terms. $\Env{}(Θ₁, ρ, Θ₂, Γ)$ is a typing relation with
 input usages $Θ₁$ and output $Θ₂$ for the raw substitution $ρ$
-targeting the \texttt{fresh} variables in $Γ$. Unsurprisingly,
+targeting the fresh variables in $Γ$. Unsurprisingly,
 the typing for the empty environment has the same input and output
 usages annotation. Formally:
 \begin{mathpar}
 \type
- {{\begin{array}{l}θ : \Context{l} \\ Θ₁, Θ₂ : \Usages{θ}\end{array}} \and ρ : \Env{}(k,l)
-  \and {\begin{array}{l}γ : Context{k} \\ Γ : \Usages{γ}\end{array}}
+{{\begin{array}{l}
+   θ : \Context{l} \\
+   Θ₁ : \Usages{θ}
+  \end{array}}
+  \and
+ {\begin{array}{l}
+     ρ : \Env{}(k,l) \\
+     γ : \Context{k} \\
+     Γ : \Usages{γ}
+  \end{array}}
+ \and Θ₂ : \Usages{θ}
 }{\Env{}(Θ₁, ρ, Θ₂, Γ) : \Set{}
 }
 \and \constructor
@@ -976,7 +991,7 @@ usages annotation. Formally:
 }{\Env{}(Θ₁, [], Θ₁, [])
 }
 \end{mathpar}
-For \texttt{fresh} variables in Γ, there are two cases depending whether
+For fresh variables in Γ, there are two cases depending whether
 they have been introduced by going under a binder or not. If it is
 not the case then the typing environment carries around a typing
 derivation for the term $t$ meant to be substituted for this variable.
@@ -985,14 +1000,14 @@ output usages annotation the fact the variable has been consumed.
 \begin{mathpar}
 \constructor
  {Θ₁ ⊢ t ∈ σ ⊠ Θ₂ \and \Env{}(Θ₂, ρ, Θ₃, Γ)
-}{\Env{}(Θ₁, ρ ∙ t, Θ₃, Γ ∙ \texttt{fresh}_σ)
+}{\Env{}(Θ₁, ρ ∙ t, Θ₃, Γ ∙ \fresh{σ})
 }
 \and \constructor
  {\Env{}(Θ₁, ρ, Θ₂, Γ)
-}{\Env{}(Θ₁ ∙ \texttt{fresh}_σ, ρ \texttt{∙v}, Θ₂ ∙ \texttt{stale}_σ, Γ ∙ \texttt{fresh}_σ)
+}{\Env{}(Θ₁ ∙ \fresh{σ}, ρ \envextend{}, Θ₂ ∙ \stale{σ}, Γ ∙ \fresh{σ})
 }
 \end{mathpar}
-For \texttt{stale} variables, there are two cases too. They are however
+For stale variables, there are two cases too. They are however
 a bit more similar: none of them carry around an extra typing derivation.
 The main difference is in the shape of the input and output context: in
 the case for the ``going under a binder'' constructor, they are clearly
@@ -1001,18 +1016,18 @@ for the normal environment extension.
 \begin{mathpar}
 \constructor
  {\Env{}(Θ₁, ρ, Θ₂, Γ)
-}{\Env{}(Θ₁, ρ ∙ t, Θ₂, Γ ∙ \texttt{stale}_σ)
+}{\Env{}(Θ₁, ρ ∙ t, Θ₂, Γ ∙ \stale{σ})
 }
 \and \constructor
  {\Env{}(Θ₁, ρ, Θ₂, Γ)
-}{\Env{}(Θ₁ ∙ \texttt{stale}_σ, ρ \texttt{∙v}, Θ₂ ∙ \texttt{stale}_σ, Γ ∙ \texttt{stale}_σ)
+}{\Env{}(Θ₁ ∙ \stale{σ}, ρ \envextend{}, Θ₂ ∙ \stale{σ}, Γ ∙ \stale{σ})
 }
 \end{mathpar}
 \end{definition}
 
 \begin{definition}
 A Typing Relation \𝓣{} for a \Nat{}-indexed family $T$ equipped with
-a function \texttt{subst} which for all \Nat{}s $k, l$, given an
+a function $\texttt{subst}_T$ which for all \Nat{}s $k, l$, given an
 element $T_k$ and an $\Env{}(k,l)$ returns an element $T_l$ is said to
 be stable under substitution if for all \Nat{}s $k$ and $l$, γ a $\Context{k}$,
 Γ and Δ two $\Usages{γ}$, $t$ an element of $T_k$, σ a Type, ρ an $\Env{}(k,l)$,
