@@ -875,7 +875,7 @@ to go under binders.
 
 \begin{definition}A Typing Relation \𝓣{} for a \Nat{}-indexed family $T$
 such that we have a function $\texttt{weak}_T$ transporting proofs that
-$k ≤ l$ to functions $T_k → T_l$ is said to have the Weakening Property
+$k ≤ l$ to functions $T_k → T_l$ is said to have the \textbf{Weakening Property}
 if for all $k, l$ in \Nat{}, $o$ a proof that $k ≤ l$, $O$ a proof that
 $\OPE{}(o)$ and $𝓞$ a proof that $\OPE{}(O)$ then for all γ a $\Context{k}$,
 Γ and Δ two $\Usages{γ}$, $t$ an element of $T_k$ and σ a \Type{}, if
@@ -1029,7 +1029,7 @@ for the normal environment extension.
 A Typing Relation \𝓣{} for a \Nat{}-indexed family $T$ equipped with
 a function $\texttt{subst}_T$ which for all \Nat{}s $k, l$, given an
 element $T_k$ and an $\Env{}(k,l)$ returns an element $T_l$ is said to
-be stable under substitution if for all \Nat{}s $k$ and $l$, γ a $\Context{k}$,
+be \textbf{stable under substitution} if for all \Nat{}s $k$ and $l$, γ a $\Context{k}$,
 Γ and Δ two $\Usages{γ}$, $t$ an element of $T_k$, σ a Type, ρ an $\Env{}(k,l)$,
 $θ$ a $\Context{l}$ and $Θ₁$ and $Θ₃$ two $\Usages{θ}$ such that
 \𝓣{}$(Γ, t, σ, Δ)$ and $\Env{}(Θ₁, ρ, Θ₃, Γ)$ holds then there exists a $Θ₂$
@@ -1053,17 +1053,19 @@ in order to readjust the usages annotations.
 
 \section{Functionality}
 
-One thing we did not mention before because it was seldom used in the
-proofs is the fact that all of these typing relations are functional
+Although we did highlight that some of our relations' indices are meant
+to be seen as inputs whilst others are supposed to be outputs, we have
+not yet made this relationship formal. This fact was seldom used in the
+proofs so far but all of these typing relations are indeed functional
 when seen as various (binary or ternary) relations. Which means that if
 two typing derivations exist for some fixed arguments (seen as inputs)
 then the other arguments (seen as outputs) are equal to each other.
 
 \begin{definition}We say that a relation $R$ of type
-$Π(\mathit{ri} : \mathit{RI}).Π(\mathit{ii} : \mathit{II}).O(ri) → \Set{}$
-is functional if for all relevant inputs $\mathit{ri}$, all pairs of
-irrelevant inputs $\mathit{ii₁}$ and $\mathit{ii₂}$ and for all pairs
-of outputs $o₁$ and $o₂$, if both $R(\mathit{ri}, \mathit{ii₁}, o₁)$
+$Π(\mathit{ri} : \mathit{RI}). \mathit{II} → O(ri) → \Set{}$
+is \textbf{functional} if for all \emph{r}elevant \emph{i}nputs $\mathit{ri}$, all pairs of
+\emph{i}rrelevant \emph{i}nputs $\mathit{ii₁}$ and $\mathit{ii₂}$ and for all pairs
+of \emph{o}utputs $o₁$ and $o₂$, if both $R(\mathit{ri}, \mathit{ii₁}, o₁)$
 and $R(\mathit{ri}, \mathit{ii₂}, o₂)$ hold then $o₁ ≡ o₂$.
 \end{definition}
 
@@ -1089,7 +1091,7 @@ is uniquely determined.
 
 \begin{theorem}[Decidability of Typechecking]
 \label{theorem:typechecking}
-Type-inference for \Inferable{} and Type-checking for \Checkable{} are
+\textbf{Type-inference} for \Inferable{} and \textbf{Type-checking} for \Checkable{} are
 decidable. In other words, given a \Nat{} $k$, γ a \Context{k} and
 Γ a $\Usages{γ}$,
 \begin{enumerate}
@@ -1107,7 +1109,8 @@ heavily on the functionality of the various relations involved.
 \end{proof}
 
 One of the benefits of having a formal proof of a theorem in Agda is that
-the theorem actually has computational content and may be run:
+the theorem actually has computational content and may be run: the proof
+is a decision procedure.
 
 \begin{example}We can for instance check that the search procedure
 succeeds in finding the \texttt{swapTyped} derivation we had written down
