@@ -1169,13 +1169,32 @@ corresponding derivation built by the induction hypothesis need to
 be altered in a radical manner.
 
 
-
-
 %%%%%%%%%%%%%%%%%%
 %% RELATED WORK %%
 %%%%%%%%%%%%%%%%%%
 
 \section{Related Work}
+
+Rand, Paykin and Zdancewic's work on modelling quantum circuits in
+Coq~\cite{rand17qwire} necessarily includes a treatment of linearity
+as qbits cannot be duplicated. Their focus is mostly on the quantum
+aspect and they are happy relying on the Coq's scripting capabilities
+to cope with the traditional, extensional presentation.
+
+Polakow faced with the task of embedding a λ-linear calculus in
+Haskell~\cite{polakow2016embedding} used a typed-tagless
+approach~\cite{kiselyov2012typed} making the context of assumptions
+explicit as a parameter of the typeclass and using threading as a way
+to deal with rules which have multiple premisses.
+
+The proof search community has been confronted with the inefficiency
+of randomly splitting up the multiset of assumption when applying a
+tensor-introduction rule. In an effort to combat this non-determinism,
+they have introduced alternative sequent calculi returning
+leftovers~\cite{cervesato1996efficient, winiko1994deterministic}.
+However because they do not have to type a term living in a given
+context, they do not care about the structure of the context of
+assumptions: it is still modelled as a multiset.
 
 We have already mentioned McBride's work~\cite{mcbride2016got}
 on (as a first approximation: the setup is actually more general)
