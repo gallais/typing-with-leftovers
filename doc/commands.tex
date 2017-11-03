@@ -1,7 +1,7 @@
 \renewcommand{\textsc}[1]{{\footnotesize \uppercase{#1}}}
 \newcommand{\DefinedType}[1]{\text{\textsc{#1}}}
 
-\newcommand{\𝓣}{$\mathcal{T}$}
+\newcommand{\TR}[1]{\ensuremath{\mathcal{T}_{#1}}}
 
 \newcommand{\append}{+\!\!\!+}
 
@@ -20,6 +20,8 @@
 \newcommand{\Context}[1]{\ensuremath{\DefinedType{Context}_{#1}}}
 \newcommand{\OPE}{\DefinedType{OPE}}
 \newcommand{\Env}{\ensuremath{\DefinedType{Env}}}
+
+\newcommand{\TEnv}[4]{\ensuremath{#1 ⊢_e #2 ∋ #3 ⊠ #4}}
 
 \newcommand{\Set}{\mathcal{\textit{Set}}}
 
@@ -41,7 +43,7 @@
 \newcommand{\cas}[4]{\texttt{case}~#1~\texttt{return}~#2~\texttt{of}~#3~\texttt{\%\!\!\%}~#4}
 \newcommand{\cut}[2]{\texttt{cut}~#1~#2}
 \newcommand{\lam}[1]{\texttt{lam}~#1}
-\newcommand{\letin}[3]{\texttt{let}~#1 \texttt{∷=}\, #2 \texttt{in}\, #3}
+\newcommand{\letin}[3]{\texttt{let}~#1 \texttt{:=}\, #2 \texttt{in}\, #3}
 \newcommand{\uni}{\texttt{unit}}
 \newcommand{\inl}[1]{\texttt{inl}~#1}
 \newcommand{\inr}[1]{\texttt{inr}~#1}

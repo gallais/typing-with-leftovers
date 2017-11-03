@@ -1,9 +1,9 @@
 \begin{figure}[H]
 \begin{mathpar}
-\inferrule{ }{σ ∋ \texttt{v} \leadsto{} σ ∙ []}
+\inferrule{ }{σ ∋ \texttt{v} \leadsto{} [] ∙ σ}
 \and \inferrule{ }{\Unit{} ∋ \texttt{⟨\!⟩} \leadsto{} []}
 \and \inferrule{σ ∋ p \leadsto{} γ \and τ ∋ q \leadsto{} δ
-}{σ ⊗ τ ∋ (p \texttt{,} q) \leadsto{} δ \append γ
+}{σ ⊗ τ ∋ (p \texttt{,} q) \leadsto{} δ \append{} γ
 }
 \end{mathpar}
 \caption{Typing rules for \Pattern{}\label{figure:pattern}}

@@ -64,10 +64,11 @@
 
 \begin{abstract}
 We start from an untyped, well-scoped λ-calculus and introduce a bidirectional
-typing relation corresponding to an Intuitionistic Linear Logic. This
-relation is based on the idea that a linear term consumes some of the
-resources available in its context whilst leaving behind leftovers
-which can then be fed to another program.
+typing relation corresponding to an Intuitionistic Linear Logic. We depart from
+typical presentations to adopt one that is well-suited to the intensional setting
+of Martin-Löf Type Theory. This relation is based on the idea that a linear term
+consumes some of the resources available in its context whilst leaving behind
+leftovers which can then be fed to another program.
 
 Concretely, this means that typing derivations have both an input
 and an output context. This leads to a notion of weakening (the extra
@@ -112,6 +113,21 @@ In order to be able to use type theory to formally study the meta-theory
 of the programming languages whose type system includes notions of linearity,
 we need to have a good representation of such constraints.
 
+Section~\ref{sec:rawterms} introduces the well-scoped untyped λ-calculus
+we are going to use as our language of raw terms. Section~\ref{sec:typingrules}
+defines the linear typing rules for this language as relations which
+record the resources consumed by a program. The next Sections are dedicated
+to proving properties of this type system: Section~\ref{sec:framing}
+proves that the status of unused variables rightfully does not matter,
+Section~\ref{sec:weakening} (and respectively Section~\ref{sec:substitution})
+demonstrates that these typing relations are stable under weakening
+(respectively substitution), Section~\ref{sec:functional} demonstrates that
+these relations are functional, and Section~\ref{sec:typechecking} that
+they are decidable i.e. provides us with a typechecking algorithm. Finally
+Section~\ref{sec:equivalence} goes back to a more traditional presentation
+of Intuitionistic Linear Logic and demonstrates it is equivalent.
+
+
 \paragraph*{Notations} This whole development has been fully formalised
 in Agda. Rather than using Agda's syntax, the results are reformulated
 in terms of definitions, lemmas, theorems, and examples. However it is
@@ -133,7 +149,7 @@ no argument whilst \natsucc{\cdot} takes a \Nat{} $n$ and represents its success
 \and \constructor{n : \Nat{}}{\natsucc{n} : \Nat{}}
 \end{mathpar}
 
-\section{The Calculus of Raw Terms}
+\section{The Calculus of Raw Terms}\label{sec:rawterms}
 
 The calculus we study in this paper is meant to be a core language,
 even though it will be rather easy to write programs in it. As a
@@ -199,7 +215,7 @@ change of direction between inferring and checking.
 \begin{tabular}{lcl}
 ⟨\Inferable{n}⟩ & ::= & \var{⟨\Var{n}⟩} \\
                    &  |  & \app{⟨\Inferable{n}⟩}{⟨\Checkable{n}⟩} \\
-                   &  |  & \cas{⟨\Inferable{n}⟩}{⟨\Type{})}{⟨\Checkable{\natsucc{n}}⟩}{⟨\Checkable{\natsucc{n}}⟩} \\
+                   &  |  & \cas{⟨\Inferable{n}⟩}{⟨\Type{}⟩}{⟨\Checkable{\natsucc{n}}⟩}{⟨\Checkable{\natsucc{n}}⟩} \\
                    &  |  & \prl{⟨\Inferable{n}⟩} ~|~ \prr{⟨\Inferable{n}⟩} \\
                    &  |  & \exf{⟨\Type{}⟩}{⟨\Inferable{n}⟩} \\
                    &  |  & \cut{⟨\Checkable{n}⟩}{⟨\Type{}⟩} \\ \\
@@ -247,7 +263,7 @@ ones as the following examples demonstrate:
 an input and swapping its components. It corresponds to the mathematical
 function $(x, y) \mapsto (y, x)$.
 \begin{lstlisting}
-  swap = lam (let (v , v) ∷= var z
+  swap = lam (let (v , v) := var z
               in prd (neu (var (s z))) (neu (var z)))
 \end{lstlisting}
 \end{example}
@@ -257,7 +273,7 @@ function $(x, y) \mapsto (y, x)$.
 ill-typed: the let-binding it uses tries to break down a function as
 if it were a pair.
 \begin{lstlisting}
-  illTyped = let (v , v) ∷= cut (lam (neu (var z))) (a ⊸ a)
+  illTyped = let (v , v) := cut (lam (neu (var z))) (a ⊸ a)
              in prd (neu (var z)) (neu (var (s z)))
 \end{lstlisting}
 \end{example}
@@ -271,7 +287,7 @@ like $x \mapsto (x, x)$ does.
 \end{lstlisting}
 \end{example}
 
-\section{Linear Typing Rules}
+\section{Linear Typing Rules}\label{sec:typingrules}
 
 These observations demonstrate that we need to define a typing
 relation describing the rules terms need to abide by in order
@@ -418,11 +434,11 @@ the leftover resources. Formally:
 \begin{definition}
 \label{definition:typing}
 A \textbf{Typing Relation} for $T$ a \Nat{}-indexed inductive family is
-an indexed relation $\text{\𝓣{}}_n$ such that:
+an indexed relation \TR{n} such that:
 \begin{mathpar}
 \type
  {n : \Nat{} \and γ : \Context{n} \and Γ, Δ : \Usages{γ} \and t : T_n \and σ : \Type{}
-}{\text{\𝓣{}}_n(Γ, t, σ, Δ) : \Set{}
+}{\text{\TR{n}}(Γ, t, σ, Δ) : \Set{}
 }
 \end{mathpar}
 \end{definition}
@@ -451,7 +467,8 @@ The simplest instance of a Typing Relation is the one for de Bruijn
 indices: given an index $k$ and a usage annotation, it successfully
 associates a type $σ$ to that index if and only if the $k$th resource
 in context is of type $σ$ and fresh (i.e. its \Usage{σ} is \fresh{σ}).
-In the resulting leftovers, this resource will have turned stale (\stale{σ}):
+In the resulting leftovers, this resource will have turned stale (\stale{σ})
+because it has now been used:
 
 \begin{definition}
 The typing relation for \Var{} is presented in a sequent-style: Γ ⊢$_v$ $k$ ∈ σ ⊠ Δ
@@ -464,7 +481,7 @@ two constructors (cf. Figure~\ref{figure:deBruijn}).
 
 \begin{remark}The careful reader will have noticed that there is precisely
 one typing rule for each \Var{} constructor. It is not a coincidence. And
-if these typing rules are not named it's because in Agda, they can simply
+if these typing rules are not named it's because in Agda, they can
 be given the same name as their \Var{} counterpart and the typechecker will
 perform type-directed disambiguation. The same will be true for \Inferable{},
 \Checkable{} and \Pattern{} which means that writing down a typable program
@@ -473,7 +490,7 @@ to it depending on the author's intent.
 \end{remark}
 
 \begin{example}
-The de Bruijn index 1 has type τ in the context (γ ∙ σ ∙ τ) with
+The de Bruijn index 1 has type τ in the context (γ ∙ τ ∙ σ) with
 usage annotation (Γ ∙ \fresh{τ} ∙ \fresh{σ}), no matter what Γ
 actually is:
 \begin{mathpar}
@@ -552,8 +569,8 @@ Figure~\ref{figure:pattern}.
 \input{typing-rules-pattern}
 
 \begin{example}
-Given these rules, it is easy to see that the identity function
-can be checked at type (σ ⊸ σ) in an empty context:
+Given these rules, we see that the identity function can be checked
+at type (σ ⊸ σ) in an empty context:
 \begin{mathpar}
 \inferrule
  {\inferrule
@@ -585,7 +602,7 @@ or the following one in Agda which is quite a lot more readable:
 
 \begin{lstlisting}
   swapTyped : [] '⊢' ('σ' '⊗' 'τ') '⊸' ('τ' '⊗' 'σ') '∋' swap '⊠' []
-  swapTyped = lam (let (v , v) ∷= var z
+  swapTyped = lam (let (v , v) := var z
                    in prd (neu (var (s z))) (neu (var z))
 \end{lstlisting}
 \end{example}
@@ -594,23 +611,23 @@ or the following one in Agda which is quite a lot more readable:
 %% FRAMING %%
 %%%%%%%%%%%%%
 
-\section{Framing}
+\section{Framing}\label{sec:framing}
 
 The most basic property one can prove about this typing system is
 the fact that the state of the resources which are not used by a
 lambda term is irrelevant. We call this property the Framing
 Property because of the obvious analogy with the frame rule in
 separation logic. This can be reformulated as the fact that as
-long as two pairs of an input and an output usages exhibit the
+long as two pairs of an input and an output \Usages{} exhibit the
 same consumption pattern then if a derivation uses one of these,
 it can use the other one instead. Formally (postponing the
 definition of $Γ - Δ ≡ Θ - ξ$):
 
-\begin{definition}A Typing Relation \𝓣{} for a \Nat{}-indexed
+\begin{definition}A Typing Relation \TR{\cdot{}} for a \Nat{}-indexed
 family $T$ has the \textbf{Framing Property} if for all $k$ a \Nat{},
 γ a \Context{k}, Γ, Δ, Θ, ξ four \Usages{γ}, $t$ an element
-of $T_k$ and σ a Type, if Γ - Δ ≡ Θ - ξ and \𝓣{}(Γ, t, σ, Δ)
-then \𝓣{}(Θ, t, σ, ξ) also holds.
+of $T_k$ and σ a Type, if \mbox{Γ ─ Δ ≡ Θ ─ ξ} and \TR{k}(Γ, t, σ, Δ)
+then \TR{k}(Θ, t, σ, ξ) also holds.
 \end{definition}
 
 \begin{remark}This is purely a property of the type system as
@@ -637,35 +654,35 @@ on one side then it has to be on the other side too.
 }
 \and \constructor
  {
-}{[] - [] ≡ [] - []
+}{[] ─ [] ≡ [] ─ []
 }{
 }
 \\ \constructor
- {Γ - Δ ≡ Θ - ξ
-}{(Γ ∙ A) - (Δ ∙ A) ≡ (Θ ∙ B) - (ξ ∙ B)
+ {Γ ─ Δ ≡ Θ ─ ξ
+}{(Γ ∙ A) ─ (Δ ∙ A) ≡ (Θ ∙ B) ─ (ξ ∙ B)
 }{
 }
 \and \constructor
- {Γ - Δ ≡ Θ - ξ
-}{(Γ ∙ \fresh{σ}) - (Δ ∙ \stale{σ}) ≡ (Θ ∙ \fresh{σ}) - (ξ ∙ \stale{σ})
+ {Γ ─ Δ ≡ Θ ─ ξ
+}{(Γ ∙ \fresh{σ}) ─ (Δ ∙ \stale{σ}) ≡ (Θ ∙ \fresh{σ}) ─ (ξ ∙ \stale{σ})
 }{
 }
 \end{mathpar}
 \end{definition}
 
-\begin{definition}\textbf{Consumption Partial Order} Γ ⊆ Δ is defined as
-Γ - Δ ≡ Γ - Δ. It orders \Usages{} from least consumed to maximally consumed
+\begin{definition}The \textbf{Consumption Partial Order} Γ ⊆ Δ is defined as
+\mbox{Γ ─ Δ ≡ Γ ─ Δ}. It orders \Usages{} from least consumed to maximally consumed.
 \end{definition}
 
 \begin{lemma} The following properties on the Consumption relations hold:
 \begin{enumerate}
-  \item The consumption equivalence is a partial equivalence
+  \item The consumption equivalence is a partial equivalence~\cite{mitchell1996foundations}
   \item The consumption partial order is a partial order
   \item If there is a \Usages{} χ ``in between'' two others Γ and Δ according to
         the consumption partial order (i.e. $Γ ⊆ χ$ and $χ ⊆ Δ$), then any pair
-        of \Usages{} Θ, ξ consumption equal to Γ and Δ (i.e. $Γ - Δ ≡ Θ - ξ$)
+        of \Usages{} Θ, ξ consumption equal to Γ and Δ (i.e. \mbox{$Γ ─ Δ ≡ Θ ─ ξ$})
         can be split in a manner compatible with χ. In other words: one can find
-        ζ such that $Γ - χ ≡ Θ - ζ$ and $χ - Δ ≡ ζ - ξ$.
+        ζ such that \mbox{$Γ ─ χ ≡ Θ ─ ζ$} and \mbox{$χ ─ Δ ≡ ζ ─ ξ$}.
 \end{enumerate}
 \end{lemma}
 
@@ -680,17 +697,17 @@ The Typing Relation for \Var{} has the Framing Property.
 So do the ones for \Inferable{} and \Checkable{}.
 \end{theorem}
 \begin{proof}
-The proofs are by structural induction on the typing derivations.
-They rely on the previous lemmas to generate the inclusion evidence
-and use it to split up the witness of consumption equivalence and
-distribute it appropriately in the induction hypotheses.
+The proofs are by structural induction on the typing derivations. They rely on
+the previous lemmas to, when faced with a rule with multiple premisses and leftover
+threading, generate the inclusion evidence and use it to split up the witness
+of consumption equivalence and distribute it appropriately in the induction hypotheses.
 \end{proof}
 
 %%%%%%%%%%%%%%%
 %% WEAKENING %%
 %%%%%%%%%%%%%%%
 
-\section{Weakening}
+\section{Weakening}\label{sec:weakening}
 
 It is perhaps surprising to find a notion of weakening for a linear
 calculus: the whole point of linearity is precisely to ensure that
@@ -720,9 +737,14 @@ before giving, in Figure~\ref{figure:ope}, the formal definition of OPEs for
 
 In the following example, we prove that the source context $\gamma ∙ \tau$
 can be safely embedded into the target one $\gamma ∙ \sigma ∙ \tau ∙ \nu$,
-written $\gamma ∙ \tau \leq \gamma ∙ \sigma ∙ \tau ∙ \nu$.
-To do so, we use all three of the moves the inductive definition of OPEs
-offers: \opeinsert{\alpha} which introduces a new variable of type
+written $\gamma ∙ \tau \leq \gamma ∙ \sigma ∙ \tau ∙ \nu$. Because we read
+strategies left-to-right and it is easier to see how they act if contexts
+are also presented left-to-right, we temporarily switch to \emph{cons}-style
+(i.e. $\sigma , \gamma$) instead of the \emph{snoc}-style (i.e. $\gamma ∙ \sigma$)
+used in the rest of this paper.
+
+This example proof uses all three of the moves the inductive definition of
+OPEs offers: \opeinsert{\alpha} which introduces a new variable of type
 $\alpha$, \opecopy{} which embeds the source context's top variable,
 and \opedone{} which simply copies the source context. To clarify the
 effect of each move on the source context, we write it in \textit{cons}-style
@@ -765,18 +787,7 @@ generic enough to be applied to any context / usages of the right size.
 
 \begin{figure}[H]\centering
 \begin{tabular}{l|c|c|c}
-& \type
- {k, l : \Nat{}
-}{k ≤ l : \Set{}
-}
-& \type
- {o : k ≤ l
-}{\OPE{}(o) : \Set{}
-}
-& \type
- {o : k ≤ l \and O : \OPE{}(o)
-}{\OPE{}(O) : \Set{}
-} \\ & & \\
+& \Nat{} & \Context{} & \Usages{} \\
 \texttt{done}
 & \constructor
  {
@@ -784,37 +795,36 @@ generic enough to be applied to any context / usages of the right size.
 }
 & \constructor
  {
-}{\OPE{}(\texttt{done})
+}{\gamma ≤ \gamma
 }
 & \constructor
  {
-}{\OPE{}(\texttt{done})
+}{\Gamma ≤ \Gamma
 }\\ & & \\
 \texttt{copy}
 & \constructor
  {k ≤ l
-}{1+k ≤ 1+l
+}{\natsucc{k} ≤ \natsucc{l}
 }
 & \constructor
- {o : k ≤ l \and \OPE{}(o)
-}{\OPE{}(\texttt{copy}(o))
+ {\gamma ≤ \delta
+}{\gamma ∙ \sigma ≤ \delta ∙ \sigma
 }
 & \constructor
- {{\begin{array}{l}o : k ≤ l \\ O : \OPE{}(o)\end{array}} \and \OPE{}(O)
-}{\OPE{}(\texttt{copy}(O))
+ {\Gamma ≤ \Delta
+}{\Gamma ∙ S ≤ \Delta ∙ S
 }\\ & & \\
 \texttt{insert}
 & \constructor
  {k ≤ l
-}{k ≤ 1+l
+}{k ≤ \natsucc{l}
 }
 & \constructor
- {o : k ≤ l \and \OPE{}(o) \and \Type{}
-}{\OPE{}(\texttt{insert}(o))
-}
-& \constructor
- {{\begin{array}{l}o : k ≤ l \\ O : \OPE{}(o) \\ σ : \Type{}\end{array}} \and \OPE{}(O) \and S : \Usage{σ}
-}{\OPE{}(\texttt{insert}(O, σ))
+ {\gamma ≤ \delta
+}{\gamma ≤ \delta ∙ \sigma
+} & \constructor
+  {\Gamma ≤ \Delta
+}{\Gamma ≤ \Delta ∙ S
 }
 \end{tabular}
 \caption{Order Preserving Embeddings for \Nat{}, \Context{} and $\Usages{}$\label{figure:ope}}
@@ -873,14 +883,14 @@ raw terms which proves that given $k \leq l$ we can turn an \Inferable{k}
 by a simple structural induction on the terms themselves, using \opecopy{}
 to go under binders.
 
-\begin{definition}A Typing Relation \𝓣{} for a \Nat{}-indexed family $T$
+\begin{definition}A Typing Relation \TR{\cdot} for a \Nat{}-indexed family $T$
 such that we have a function $\texttt{weak}_T$ transporting proofs that
 $k ≤ l$ to functions $T_k → T_l$ is said to have the \textbf{Weakening Property}
 if for all $k, l$ in \Nat{}, $o$ a proof that $k ≤ l$, $O$ a proof that
 $\OPE{}(o)$ and $𝓞$ a proof that $\OPE{}(O)$ then for all γ a $\Context{k}$,
 Γ and Δ two $\Usages{γ}$, $t$ an element of $T_k$ and σ a \Type{}, if
-\𝓣{}$(Γ, t, σ, Δ)$ holds true then we also have
-\𝓣{}$(\texttt{patch}(𝓞, Γ), \texttt{weak}_T(o, t), σ, \texttt{patch}(𝓞, Δ))$.
+\TR{k}$(Γ, t, σ, Δ)$ holds true then we also have
+\TR{l}$(\texttt{patch}(𝓞, Γ), \texttt{weak}_T(o, t), σ, \texttt{patch}(𝓞, Δ))$.
 \end{definition}
 
 \begin{theorem}The Typing Relation for \Var{} has the Weakening Property.
@@ -900,7 +910,7 @@ binders.
 %% SUBSTITUTION %%
 %%%%%%%%%%%%%%%%%%
 
-\section{Substituting}
+\section{Substituting}\label{sec:substitution}
 
 Stability of the typing relation under substitution guarantees
 that the evaluation of programs will yield results which have
@@ -927,7 +937,7 @@ variable) instead of when pushing the substitution under a binder.
 \begin{definition}The environment \Env{} used to define substitution
 for raw terms is indexed by two \Nat{}s $k$ and $l$ where $k$ is the
 source's scope and $l$ is the target's scope. There are three constructors:
-one for the empty environment ([]), one for going under a binder (\texttt{∙v})
+one for the empty environment ([]), one for going under a binder (\envextend{})
 and one to extend an environment with an $\Inferable{l}$.
 \begin{mathpar}
 \type
@@ -938,13 +948,13 @@ and one to extend an environment with an $\Inferable{l}$.
  {
 }{[] : \Env{}(0, l)
 }
-\\ \constructor
+\and \constructor
  {ρ : \Env{}(k, l)
-}{ρ \envextend{} : \Env{}(\texttt{suc}(k), \texttt{suc}(l))
+}{ρ \envextend{} : \Env{}(\natsucc{k}, \natsucc{l})
 }
 \and \constructor
  {ρ : \Env{}(k, l) \and t : \Inferable{l}
-}{ρ ∙ t : \Env{} (\texttt{suc}(k), l)
+}{ρ ∙ t : \Env{} (\natsucc{k}, l)
 }
 \end{mathpar}
 \end{definition}
@@ -964,9 +974,9 @@ crafting fresh variables has not disappeared, it has been transferred to
 the auxiliary function looking up a value in $ρ$ given a $\Var{k}$.
 \end{proof}
 
-\begin{definition}The environments used when proving that Typing
+\begin{definition}The \textbf{environments} used when proving that Typing
 Relations are stable under substitution follow closely the ones
-for raw terms. $\Env{}(Θ₁, ρ, Θ₂, Γ)$ is a typing relation with
+for raw terms. \TEnv{Θ₁}{Γ}{ρ}{Θ₂} is a typing relation with
 input usages $Θ₁$ and output $Θ₂$ for the raw substitution $ρ$
 targeting the fresh variables in $Γ$. Unsurprisingly,
 the typing for the empty environment has the same input and output
@@ -975,20 +985,17 @@ usages annotation. Formally:
 \type
 {{\begin{array}{l}
    θ : \Context{l} \\
-   Θ₁ : \Usages{θ}
+   Θ₁ : \Usages{θ} \\
+   γ : \Context{k} \\
+   Γ : \Usages{γ} \\ \\
   \end{array}}
-  \and
- {\begin{array}{l}
-     ρ : \Env{}(k,l) \\
-     γ : \Context{k} \\
-     Γ : \Usages{γ}
-  \end{array}}
+ \and ρ : \Env{}(k,l)
  \and Θ₂ : \Usages{θ}
-}{\Env{}(Θ₁, ρ, Θ₂, Γ) : \Set{}
+}{\TEnv{Θ₁}{Γ}{ρ}{Θ₂} : \Set{}
 }
 \and \constructor
  {
-}{\Env{}(Θ₁, [], Θ₁, [])
+}{\TEnv{Θ₁}{[]}{[]}{Θ₁}
 }
 \end{mathpar}
 For fresh variables in Γ, there are two cases depending whether
@@ -999,12 +1006,12 @@ Otherwise, it does not carry anything extra but tracks in its input /
 output usages annotation the fact the variable has been consumed.
 \begin{mathpar}
 \constructor
- {Θ₁ ⊢ t ∈ σ ⊠ Θ₂ \and \Env{}(Θ₂, ρ, Θ₃, Γ)
-}{\Env{}(Θ₁, ρ ∙ t, Θ₃, Γ ∙ \fresh{σ})
+ {Θ₁ ⊢ t ∈ σ ⊠ Θ₂ \and \TEnv{Θ₂}{Γ}{ρ}{Θ₃}
+}{\TEnv{Θ₁}{Γ ∙ \fresh{σ}}{ρ ∙ t}{Θ₃}
 }
 \and \constructor
- {\Env{}(Θ₁, ρ, Θ₂, Γ)
-}{\Env{}(Θ₁ ∙ \fresh{σ}, ρ \envextend{}, Θ₂ ∙ \stale{σ}, Γ ∙ \fresh{σ})
+ {\TEnv{Θ₁}{Γ}{ρ}{Θ₂}
+}{\TEnv{Θ₁ ∙ \fresh{σ}}{Γ ∙ \fresh{σ}}{ρ \envextend{}}{Θ₂ ∙ \stale{σ}}
 }
 \end{mathpar}
 For stale variables, there are two cases too. They are however
@@ -1015,26 +1022,26 @@ enriched with an extra (now consumed) variable whereas it is not the case
 for the normal environment extension.
 \begin{mathpar}
 \constructor
- {\Env{}(Θ₁, ρ, Θ₂, Γ)
-}{\Env{}(Θ₁, ρ ∙ t, Θ₂, Γ ∙ \stale{σ})
+ {\TEnv{Θ₁}{Γ}{ρ}{Θ₂}
+}{\TEnv{Θ₁}{Γ∙ \stale{σ}}{ρ ∙ t}{Θ₂}
 }
 \and \constructor
- {\Env{}(Θ₁, ρ, Θ₂, Γ)
-}{\Env{}(Θ₁ ∙ \stale{σ}, ρ \envextend{}, Θ₂ ∙ \stale{σ}, Γ ∙ \stale{σ})
+ {\TEnv{Θ₁}{Γ}{ρ}{Θ₂}
+}{\TEnv{Θ₁ ∙ \stale{σ}}{Γ ∙ \stale{σ}}{ρ \envextend{}}{Θ₂ ∙ \stale{σ}}
 }
 \end{mathpar}
 \end{definition}
 
 \begin{definition}
-A Typing Relation \𝓣{} for a \Nat{}-indexed family $T$ equipped with
+A Typing Relation \TR{\cdot} for a \Nat{}-indexed family $T$ equipped with
 a function $\texttt{subst}_T$ which for all \Nat{}s $k, l$, given an
 element $T_k$ and an $\Env{}(k,l)$ returns an element $T_l$ is said to
 be \textbf{stable under substitution} if for all \Nat{}s $k$ and $l$, γ a $\Context{k}$,
 Γ and Δ two $\Usages{γ}$, $t$ an element of $T_k$, σ a Type, ρ an $\Env{}(k,l)$,
 $θ$ a $\Context{l}$ and $Θ₁$ and $Θ₃$ two $\Usages{θ}$ such that
-\𝓣{}$(Γ, t, σ, Δ)$ and $\Env{}(Θ₁, ρ, Θ₃, Γ)$ holds then there exists a $Θ₂$
-of type $\Usages{θ}$ such that \𝓣{}$(Θ₁, \texttt{subst}(t, ρ), σ, Θ₂)$ and
-$\Env{}(Θ₂, ρ, Θ₃, Δ)$.
+\TR{k}$(Γ, t, σ, Δ)$ and \TEnv{Θ₁}{Γ}{ρ}{Θ₃} holds then there exists a $Θ₂$
+of type $\Usages{θ}$ such that \TR{l}$(Θ₁, \texttt{subst}_T(t, ρ), σ, Θ₂)$ and
+\TEnv{Θ₂}{Δ}{ρ}{Θ₃}.
 \end{definition}
 
 \begin{theorem}\label{theorem:substituting}
@@ -1051,7 +1058,7 @@ in order to readjust the usages annotations.
 %% FUNCTONALITY %%
 %%%%%%%%%%%%%%%%%%
 
-\section{Functionality}
+\section{Functionality}\label{sec:functional}
 
 Although we did highlight that some of our relations' indices are meant
 to be seen as inputs whilst others are supposed to be outputs, we have
@@ -1087,7 +1094,7 @@ is uniquely determined.
 %% TYPECHECKING %%
 %%%%%%%%%%%%%%%%%%
 
-\section{Typechecking}
+\section{Typechecking}\label{sec:typechecking}
 
 \begin{theorem}[Decidability of Typechecking]
 \label{theorem:typechecking}
@@ -1095,9 +1102,9 @@ is uniquely determined.
 decidable. In other words, given a \Nat{} $k$, γ a \Context{k} and
 Γ a $\Usages{γ}$,
 \begin{enumerate}
-  \item for all \Inferable{k} $t$, it is decidable whether there is
+  \item for all \Inferable{k} $t$, we can decide if there is
         a \Type{} $σ$ and Δ a \Usages{γ} such that $Γ ⊢ t ∈ σ ⊠ Δ$
-  \item for all \Type{} σ and \Checkable{k}, it is decidable whether
+  \item for all \Type{} σ and \Checkable{k} t, we can decide if
         there is Δ a \Usages{γ} such that $Γ ⊢ σ ∋ t ⊠ Δ$.
 \end{enumerate}
 \end{theorem}
@@ -1131,7 +1138,7 @@ situation:
 %% EQUIVALENCE TO ILL %%
 %%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Equivalence to ILL}
+\section{Equivalence to ILL}\label{sec:equivalence}
 
 We have now demonstrated that the $\Usages{}$-based formulation of
 linear logic as a type system is amenable to mechanisation without
@@ -1142,7 +1149,7 @@ which are not cluttered with structural rules.
 
 However this presentation departs quite a lot from more traditional
 formulations of intuitionistic linear logic. This naturally raises
-the question of its correction. In this section we recall a typical
+the question of its correctness. In this section we recall a typical
 presentation of Intuitionistic Linear Logic using a Sequent Calculus.
 
 \subsection{A Sequent Calculus for Intuitionistic Linear Logic}
