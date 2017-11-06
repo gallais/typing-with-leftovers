@@ -1,0 +1,21 @@
+\begin{figure}[H]
+\begin{mathpar}
+\inferrule{ }{σ ⊢ σ}{ax}
+\and \inferrule{γ ⊢ σ \and σ , δ ⊢ τ}{γ , δ ⊢ τ}{cut}
+\and \inferrule{γ ⊢ σ \and δ ⊢ τ}{γ , δ ⊢ σ ⊗ τ}{⊗^R}
+\and \inferrule{τ , σ , γ ⊢ ν} {σ ⊗ τ , γ ⊢}{⊗^L}
+\and \inferrule{ }{⊢ 𝟙}{1^R}
+\and \inferrule{γ ⊢ σ}{𝟙 , γ ⊢ σ}{1^L}
+\and \inferrule{ }{𝟘 , γ ⊢ σ}{0^L}
+\and \inferrule{σ , γ ⊢ τ}{γ ⊢ σ ⊸ τ}{⊸^R}
+\and \inferrule{γ ⊢ σ \and τ , δ ⊢ ν}{(σ ⊸ τ) , γ , δ ⊢ ν}{⊸^L}
+\and \inferrule{γ ⊢ σ \and γ ⊢ τ}{γ ⊢ σ \& τ}{\&^R}
+\and \inferrule{σ , γ ⊢ ν}{σ \& τ , γ ⊢ ν}{\&_1^L}
+\and \inferrule{τ , γ ⊢ ν}{σ \& τ , γ ⊢ ν}{\&_2^L}
+\and \inferrule{γ ⊢ σ}{γ ⊢ σ ⊕ τ}{⊕_1^R}
+\and \inferrule{γ ⊢ τ}{γ ⊢ σ ⊕ τ}{⊕_2^R}
+\and \inferrule{σ , γ ⊢ ν \and τ , γ ⊢ ν}{σ ⊕ τ , γ ⊢ ν}{⊕^L}
+\and \inferrule{γ , δ ⊢ σ \and γ , δ ≅ θ}{θ ⊢ σ}{mix}
+\end{mathpar}
+\caption{Sequent Calculus for Intuitionistic Linear Logic}\label{sequent:ill}
+\end{figure}

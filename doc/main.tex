@@ -688,7 +688,7 @@ on one side then it has to be on the other side too.
 
 \begin{lemma}[Consumption]The Typing Relations for \Var{}, \Inferable{}
 and \Checkable{} all imply that if a typing derivation exists with input
-\Usages{} annotation Γ and output \Usages{} annotation Δ then $Γ ⊆ Δ$.
+\Usages{} annotation Γ and output \Usages{} annotation Δ then $Γ ⊆ Δ$.\label{lemma:consumption}
 \end{lemma}
 
 \begin{theorem}
@@ -904,7 +904,10 @@ structural inductions on the respective typing derivations. Using the
 binders.
 \end{proof}
 
-
+Unlike the framing property, this theorem is not purely about the
+type system: the term is indeed modified between the premisse and
+the conclusion. Now that we know that weakening is compatible with
+the typing relations, let us study substitution.
 
 %%%%%%%%%%%%%%%%%%
 %% SUBSTITUTION %%
@@ -912,7 +915,7 @@ binders.
 
 \section{Substituting}\label{sec:substitution}
 
-Stability of the typing relation under substitution guarantees
+Stability of the typing relations under substitution guarantees
 that the evaluation of programs will yield results which have
 the same type as well as preserve the linearity constraints.
 The notion of leftovers naturally extends to substitutions: the
@@ -933,6 +936,7 @@ simply peeled off on the way out of a binder. The values are still
 weakened to fit in the extended context they end up in but that happens
 at the point of use (i.e. when they are being looked up to replace a
 variable) instead of when pushing the substitution under a binder.
+
 
 \begin{definition}The environment \Env{} used to define substitution
 for raw terms is indexed by two \Nat{}s $k$ and $l$ where $k$ is the
@@ -961,7 +965,9 @@ and one to extend an environment with an $\Inferable{l}$.
 
 Environment are carrying \Inferable{} elements because, being in the
 same syntactical class as \Var{}s, they can be substituted for them
-without any issue.
+without any issue. We now state the substitution lemma on untyped terms
+because it is, unlike the one for weakening, non-standard by way of our
+definition of environments.
 
 \begin{lemma}Raw terms are stable under substitutions: for all $k$ and
 $l$, given $t$ a term $\Inferable{k}$ (resp. $\Checkable{k}$) and $ρ$
@@ -998,7 +1004,7 @@ usages annotation. Formally:
 }{\TEnv{Θ₁}{[]}{[]}{Θ₁}
 }
 \end{mathpar}
-For fresh variables in Γ, there are two cases depending whether
+For \textbf{f}resh variables in Γ, there are two cases depending whether
 they have been introduced by going under a binder or not. If it is
 not the case then the typing environment carries around a typing
 derivation for the term $t$ meant to be substituted for this variable.
@@ -1014,7 +1020,7 @@ output usages annotation the fact the variable has been consumed.
 }{\TEnv{Θ₁ ∙ \fresh{σ}}{Γ ∙ \fresh{σ}}{ρ \envextend{}}{Θ₂ ∙ \stale{σ}}
 }
 \end{mathpar}
-For stale variables, there are two cases too. They are however
+For \textbf{s}tale variables, there are two cases too. They are however
 a bit more similar: none of them carry around an extra typing derivation.
 The main difference is in the shape of the input and output context: in
 the case for the ``going under a binder'' constructor, they are clearly
@@ -1050,7 +1056,7 @@ The Typing Relations for \Inferable{} and \Checkable{} are stable under substitu
 \begin{proof}
 The proof by mutual structural induction on the typing derivations relies
 heavily on the fact that these Typing Relations enjoy the framing property
-in order to readjust the usages annotations.
+in order to adjust the \Usages{} annotations.
 \end{proof}
 
 
@@ -1150,11 +1156,111 @@ which are not cluttered with structural rules.
 However this presentation departs quite a lot from more traditional
 formulations of intuitionistic linear logic. This naturally raises
 the question of its correctness. In this section we recall a typical
-presentation of Intuitionistic Linear Logic using a Sequent Calculus.
+presentation of Intuitionistic Linear Logic using a Sequent Calculus,
+representing the multiset of assumptions as a list.
 
 \subsection{A Sequent Calculus for Intuitionistic Linear Logic}
 
+The definition of this calculus is directly taken from the Linear Logic
+Wiki~\cite{wiki:linearlogic} whose notations we follow to the letter.
+The interested reader will find more details in for instance Troelstra's
+lectures~\cite{troelstra1991lectures}. In the following figure, γ, δ,
+and θ are context variables while σ, τ , and ν range over types. We
+overload the comma to mean both consing a single type at the front
+of a list and appending two lists, as is customary.
+
+\input{ill}
+
+Our only departure from the traditional presentation is the \textit{mix}
+rule which is an artefact of our encoding multisets as lists. It allows
+the user to pick any interleaving θ of two lists γ and δ. This notion of
+interleaving is formalised by the following three place relation.
+
+\begin{definition} The \textbf{interleaving} relation is defined by three
+constructors: \textbf{[]} declares that interleaving two empty lists yields
+the empty-list whilst \textbf{$\cdot,_{l}\cdot$} (and \textbf{$\cdot,_{r}\cdot$}
+respectively) picks the head of the list on the left (the right respectively)
+as the head of the interleaving and the tail as the result of interleaving
+the rest.
+
+\begin{mathpar}
+\type{γ, δ, θ : \List{a}}{γ, δ ≅ θ : \Set{}}
+\and \constructor{ }{[] : [], [] ≅ []}
+\and \constructor{p : γ, δ ≅ θ}{σ ,_{l} p : (σ, γ), δ ≅ (σ, θ)}
+\and \constructor{p : γ, δ ≅ θ}{σ ,_{r} p : γ, (σ, δ) ≅ (σ, θ)}
+\end{mathpar}
+\end{definition}
+
+Now that we have our definition of the usual representation of Intuitionistic
+Linear Logic (ILL), we are left with proving that the linear typing relation
+we have defined is both sound and complete with respect to that logic.
+
 \subsection{Soundness}
+
+We start with the easiest part of the proof: soundness. This means that from
+a typing derivation, we can derive a proof in ILL of what is essentially the
+same statement. That is to say that if a term is said to have type σ in a fully
+fresh context γ and proceeds to consume all of the resources in that context
+during the typing derivation then it corresponds to a proof of γ ⊢ σ in ILL.
+
+This statement needs to be generalised to be proven. Indeed, even if we start
+with a context full of available resources, at the first split we encounter
+(e.g. a tensor introduction or a function application), it won't be the case
+anymore in one of the sub-terms. To formulate this more general formulation,
+we need to introduce a new notion: used assumptions.
+
+\begin{definition}The list of \textbf{used} assumptions in a proof Γ ⊆ Δ in
+the consumption partial order is the list of types which have turned from
+fresh in Γ to stale in Δ. The \used{\cdot} function is defined by recursion
+over the proof that Γ ⊆ Δ.
+\end{definition}
+
+\begin{definition}A Typing Relation \TR{} for terms $T$ is said to be \textbf{sound}
+with respect to ILL if, for $k$ a \Nat{}, γ a \Context{k}, Γ and Δ two \Usages{γ},
+t a term $T_k$ and σ a type, from the typing derivation \TR{}(Γ, t, σ, Δ) and p a
+proof that Γ ⊆ Δ we can derive $\used{p} ⊢ σ$.
+\end{definition}
+
+\begin{remark}The consumption lemma~\ref{lemma:consumption} guarantees that such
+a proof Γ ⊆ Δ always exists whenever the typing relation is either the one for
+\Var{}, \Inferable{} or \Checkable{}.
+\end{remark}
+
+Before we can prove the soudness theorem, we need two auxiliary lemmas allowing
+us to handle the mismatch we may have between the way the used assumptions of a
+derivation are computed and the way the ones for its subderivations are obtained.
+
+\begin{lemma}Given k a \Nat{}, γ a \Context{k} and Γ, Δ, and θ three \Usages{γ},
+we have:\begin{enumerate}
+\item if p and q are proofs that $Γ ⊆ Δ$ then \used{p} = \used{q}
+\item if p is a proof that $Γ ⊆ Δ$, q that $Δ ⊆ θ$ and pq that $Γ ⊆ θ$ then \used{pq}
+is an interleaving of \used{p} and \used{q}
+\end{enumerate}
+\end{lemma}
+
+The relation validating patterns is not a typing relation and as such it needs
+to be handled separately. This can be done by defining a procedure elaborating
+patterns away by showing that whenever $σ ∋ p \leadsto{} γ$, it is morally
+acceptable to replace σ on the left by γ. Which gives us the following \textit{cut}-like
+admissible rule:
+
+\begin{lemma}[Elaboration of Let-bindings] Provided k a \Nat{}, p a \Pattern{k},
+σ a \Type{} and γ a \Context{k} such that $σ ∋ p \leadsto{} γ$, we have that for
+all δ and θ two \List{\Type} and τ a \Type{}, if $δ ⊢ σ$ and $γ , θ ⊢ τ$ then $δ , θ ⊢ τ$.
+\end{lemma}
+
+We now have all the pieces to prove the soundness of our typing relations.
+
+\begin{theorem}[Soundness]The typing relations for \Var{}, \Inferable{}
+and \Checkable{} are all sound.
+\end{theorem}
+\begin{proof}
+The proof is by mutual induction on the typing derivations. ILL's right
+rules are in direct correspondence with our introduction rules. The
+eliminators in our languages are translated by using ILL's \textit{cut}
+together with left rules. The \textit{mix} rule is crucial to rewrite
+the derivations' contexts on the fly.
+\end{proof}
 
 
 \subsection{Completeness}
@@ -1268,6 +1374,8 @@ currently an open question.
 %% .. or use the thebibliography environment explicitely
 
 \appendix
+
+\section{Fully-expanded Typing Derivation for \texttt{swap}}
 \input{typing-swap}
 
 \end{document}
