@@ -1297,17 +1297,33 @@ interleaving we can find a term and a typing derivation for that term.
 
 \section{Related Work}
 
+Benton, Bierman, de Paiva, and Hyland~\cite{benton1993term} did devise a
+term assignment system for Intuitionistic Linear Logic which was stable
+under substitution. Their system focuses on multiplicative linear logic
+only when ours also encompasses additive connectives \emph{but} it gives
+a thourough treatment of the \textit{!} modality. This is still an open
+problem for us because we do not want to have the explicit handling of
+\textit{!}'s weakening, contraction, dereliction, and promotion rules
+pollute the raw terms.
+
 Rand, Paykin and Zdancewic's work on modelling quantum circuits in
 Coq~\cite{rand17qwire} necessarily includes a treatment of linearity
-as qbits cannot be duplicated. Their focus is mostly on the quantum
-aspect and they are happy relying on the Coq's scripting capabilities
-to cope with the traditional, extensional presentation.
+as qbits cannot be duplicated. And because it is mechanised, they have
+to deal with the representation of contexts. Their focus is mostly on
+the quantum aspect and they are happy relying on the Coq's scripting
+capabilities to cope with the traditional, extensional presentation.
 
-Polakow faced with the task of embedding a λ-linear calculus in
+Polakow faced with the task of embedding a linear λ-calculus in
 Haskell~\cite{polakow2016embedding} used a typed-tagless
-approach~\cite{kiselyov2012typed} making the context of assumptions
-explicit as a parameter of the typeclass and using threading as a way
-to deal with rules which have multiple premisses.
+approach~\cite{kiselyov2012typed} and tried to get as much automation
+from typeclass resolution as possible. Seeing Haskell's typeclass
+resolution mechanism as a Prolog-style proof search engine, he opted
+for a relational description and thus an input-output presentation.
+This system can handle multiplicatives, additives and is even extended
+to a Dual Intuitionistic Linear Logic~\cite{barber1996dual} to accomodate
+for values which can be duplicated. Focusing on the applications, it is
+not proven to be stable under substitution or that the typechecking process
+will always succeed.
 
 The proof search community has been confronted with the inefficiency
 of randomly splitting up the multiset of assumption when applying a
@@ -1331,8 +1347,8 @@ This leads to the need for a context \emph{shared} across all
 subterms and consumption annotations ensuring that the linear
 resources are never used more than once.
 
-We can find a very concrete motivation for a predicate similar to
-our $\Usage{}$ in Robbert Krebbers' thesis~\cite{krebbers2015thesis}.
+Finally, we can find a very concrete motivation for a predicate similar
+to our $\Usage{}$ in Robbert Krebbers' thesis~\cite{krebbers2015thesis}.
 In section 2.5.9, he describes one source of undefined behaviours
 in the C standard: the execution order of expressions is unspecified
 thus leaving the implementers with absolute freedom to pick any order
