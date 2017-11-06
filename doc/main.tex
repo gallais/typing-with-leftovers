@@ -1262,17 +1262,33 @@ together with left rules. The \textit{mix} rule is crucial to rewrite
 the derivations' contexts on the fly.
 \end{proof}
 
-
 \subsection{Completeness}
 
 Completeness is a trickier thing to prove: given a derivation in
 the traditional sequent calculus, we need to build a corresponding
-term and its typing derivation.
+term and its typing derivation. However, unlike the soundness one
+it does not give us any insight as to what the meaning of \Usages{}
+and typing derivations is. So we only state the result and give
+an idea of the proof.
 
-The hardest rule to handle is the \texttt{mix} rule which reorganises
-the context. Indeed, its use means that both the term and the
-corresponding derivation built by the induction hypothesis need to
-be altered in a radical manner.
+\begin{theorem}[Completeness] Given γ a \List{\Type{}} and σ a type,
+from a proof $γ ⊢ σ$ we can derive an \Inferable{} t and a proof that
+$\fresh{γ} ⊢ t ∈ σ ⊠ \stale{γ}$.
+\end{theorem}
+\begin{proof}
+The proof is by induction over the derivation in ILL. The right rules
+match our introduction rules well enough that they do not pose any
+issue. Weakening lets us extend the \Usages{} of the sequents obtained
+by induction hypothesis in the case of multi-premisses rules. Left rules
+are systematically translated as \cut{}s.
+
+Finally, the hardest rule to handle is the \texttt{mix} rule which
+reorganises the context. It is handled by a technical lemma which we
+have left out of this paper. Informally: it states that if the input
+and output \Usages{} of a typing derivation are obtained by the same
+interleaving of two distinct pairs of \Usages{}, then for any other
+interleaving we can find a term and a typing derivation for that term.
+\end{proof}
 
 
 %%%%%%%%%%%%%%%%%%
