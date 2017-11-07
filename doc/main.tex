@@ -9,7 +9,6 @@
 \usepackage{agda}
 \usepackage{float}
 \usepackage{mathpartir, lscape}
-\usepackage{todonotes}
 \usepackage{microtype}
 \usepackage{catchfilebetweentags}
 \lstset{
@@ -76,7 +75,8 @@ resources added to the input context come out unchanged in the output
 one), a rather direct proof of stability under substitution, an
 analogue of the frame rule of separation logic showing that the
 state of unused resources can be safely ignored, and a proof that
-typechecking is decidable.\todo{Equivalence with ILL + Surface language}
+typechecking is decidable. Finally, we demonstrate that this alternative
+presentation is sound and complete with respect to Intuitionistic Linear Logic.
 
 The work has been fully formalised in Agda, commented source files
 are provided as additional material available at~\url{https://github.com/gallais/typing-with-leftovers}.
@@ -779,11 +779,10 @@ side by side in one table: the first column lists the names of the
 constructors associated to each move whilst the other ones give their
 corresponding types for each category. It is worth noting that \OPE{}s for
 \Context{} are indexed over the ones for \Nat{} and the \OPE{}s for \Usages{}
-are indexed by both.
-
-The \Context{} and \Usages{} case are a bit special: they do not mention
-the source and target sets in their indices because they are in fact
-generic enough to be applied to any context / usages of the right size.
+are indexed by both. The latter definitions are effectively algebraic
+\emph{ornaments}~\cite{dagand2014transporting, mcbride2010ornamental} over
+the previous ones, that is to say they have the same structure only storing
+additional information.
 
 \begin{figure}[H]\centering
 \begin{tabular}{l|c|c|c}
@@ -811,7 +810,7 @@ generic enough to be applied to any context / usages of the right size.
 }{\gamma ∙ \sigma ≤ \delta ∙ \sigma
 }
 & \constructor
- {\Gamma ≤ \Delta
+ {\Gamma ≤ \Delta  \and S : \Usages{\sigma}
 }{\Gamma ∙ S ≤ \Delta ∙ S
 }\\ & & \\
 \texttt{insert}
@@ -823,65 +822,54 @@ generic enough to be applied to any context / usages of the right size.
  {\gamma ≤ \delta
 }{\gamma ≤ \delta ∙ \sigma
 } & \constructor
-  {\Gamma ≤ \Delta
+  {\Gamma ≤ \Delta \and S : \Usages{\sigma}
 }{\Gamma ≤ \Delta ∙ S
 }
 \end{tabular}
 \caption{Order Preserving Embeddings for \Nat{}, \Context{} and $\Usages{}$\label{figure:ope}}
 \end{figure}
 
-The first row defines the move \opedone{}. It is the strategy
-corresponding to the trivial embedding of a set into itself by
-the identity function and serves as a base case. For \Nat{} this
-corresponds to the proof that $k \leq k$ for the $k$ at hand whilst
-for \Context{} and \Usage{} it will respectively yield
-$\gamma \leq \gamma$ and $\Gamma \leq \Gamma$ for \emph{all} \Context{k}
-$\gamma$ and \Usages{\gamma} $\Gamma$.
+\begin{itemize}
 
-The second row corresponds to the \texttt{copy} move which extends
+\item The first row defines the move \opedone{}. It is the strategy
+corresponding to the trivial embedding of a set into itself by
+the identity function and serves as a base case.
+
+\item The second row corresponds to the \texttt{copy} move which extends
 an existing embedding by copying the current $0$th variable from
 source to target. The corresponding cases for \Context{}s and
 $\Usages{}$ are purely structural: no additional content is required
 to be able to perform a \texttt{copy} move.
 
-Last but not least, the third row describes the move \texttt{insert}
+\item Last but not least, the third row describes the move \texttt{insert}
 which introduces an extra variable in the target set. This is the
 move used to extend an existing context, i.e. to weaken it. In this
 case, it is paramount that the OPE for \Context{}s should take a
 type σ as an extra argument (it will be the type of the newly introduced
 variable) whilst the OPE for $\Usages{}$ takes a $\Usage{σ}$ (it will
 be the usage associated to that newly introduced variable of type σ).
+\end{itemize}
 
+Now that the structure of these OPEs is clear, we have to introduce a caveat
+regarding this description: the \Context{} and \Usages{} case are a bit special.
+They do not in fact mention the source and target sets in their indices. This
+is a feature: when weakening a typing relation, the OPE for \Usages{} will be
+applied simultaneously to the input \emph{and} the output \Usages{} which,
+although of a similar structure because of their shared \Context{} index,
+will be different.
 
-\begin{example}
-\label{example:ope}
-We may define three embeddings corresponding to the introduction of a
-fresh variable for scopes, contexts and usages respectively. The
-body of these three declarations looks the same because we overload
-the constructors' names but they build different objects. As can be
-seen in the types, the latter ones depend on the former ones. This
-type of embedding is very much grounded in reality: it is precisely
-what pushing a substitution under a lambda abstraction calls for.
-\begin{lstlisting}
-  scopeWithFV : n '≤' s n
-  scopeWithFV = insert done
+\begin{definition}The \textbf{semantics of an OPE} is defined by induction
+over the proof object. We use the overloaded function name \ope{\cdot} for it.
+They behave as the simplified view given in Figure~\ref{figure:ope} where
+$\gamma$ / $\Gamma$ is seen as the input, $\sigma$ / $S$ the additional
+information stored into the proof object and $\delta$ / $\Delta$ the output.
+\end{definition}
 
-  contextWithFV : Type '→' Context.OPE scopeWithFV
-  contextWithFV 'σ' = insert done 'σ'
-
-  usagesWithFV : ('σ' : Type) '→' Usage σ '→' Usages.OPE (contextWithFV 'σ')
-  usagesWithFV 'σ' S = insert done S
-\end{lstlisting}
-\end{example}
-
-We leave out the definitions of the two functions (called \texttt{patch})
-applying an OPE to respectively a \Context{} or a \Usages{} annotation.
-They are structural in the OPE. The interested reader will find them in the
-formal development in Agda. We also leave out the definition of weakening for
-raw terms which proves that given $k \leq l$ we can turn an \Inferable{k}
-(resp. \Checkable{k}) into an \Inferable{l} (resp. \Checkable{l}). It is given
-by a simple structural induction on the terms themselves, using \opecopy{}
-to go under binders.
+We leave out the definition of weakening for raw terms which is the standard
+definition for the untyped λ-calculus. It proves that given $k \leq l$ we can
+turn an \Inferable{k} (respectively \Checkable{k}) into an \Inferable{l}
+(respectively \Checkable{l}). It is given by a simple structural induction on
+the terms themselves, using \opecopy{} to go under binders.
 
 \begin{definition}A Typing Relation \TR{\cdot} for a \Nat{}-indexed family $T$
 such that we have a function $\texttt{weak}_T$ transporting proofs that
@@ -890,7 +878,7 @@ if for all $k, l$ in \Nat{}, $o$ a proof that $k ≤ l$, $O$ a proof that
 $\OPE{}(o)$ and $𝓞$ a proof that $\OPE{}(O)$ then for all γ a $\Context{k}$,
 Γ and Δ two $\Usages{γ}$, $t$ an element of $T_k$ and σ a \Type{}, if
 \TR{k}$(Γ, t, σ, Δ)$ holds true then we also have
-\TR{l}$(\texttt{patch}(𝓞, Γ), \texttt{weak}_T(o, t), σ, \texttt{patch}(𝓞, Δ))$.
+\TR{l}$(\ope{𝓞, Γ}, \texttt{weak}_T(o, t), σ, \ope{𝓞, Δ})$.
 \end{definition}
 
 \begin{theorem}The Typing Relation for \Var{} has the Weakening Property.
