@@ -1299,7 +1299,13 @@ Coq~\cite{rand17qwire} necessarily includes a treatment of linearity
 as qbits cannot be duplicated. And because it is mechanised, they have
 to deal with the representation of contexts. Their focus is mostly on
 the quantum aspect and they are happy relying on the Coq's scripting
-capabilities to cope with the traditional, extensional presentation.
+capabilities to cope with the extensional presentation.
+
+Bob Atkey and James Wood~\cite{bob:sortingtypes} have been experimenting
+with using a deep embedding of a linear lambda calculus in Agda as a way
+to certify common algorithms. Being able to encode insertion sort as a
+term in this deep embedding is indeed sufficient to conclude that the
+output of the algorithm is a permutation of its input.
 
 Polakow faced with the task of embedding a linear λ-calculus in
 Haskell~\cite{polakow2016embedding} used a typed-tagless
