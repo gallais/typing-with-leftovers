@@ -5,6 +5,7 @@ open import Data.Fin
 open import Data.Product
 open import Data.Vec as V using ([] ; _∷_ ; toList)
 open import Data.List as L using (List ; [] ; _∷_)
+open import Data.List.Properties using (++-monoid)
 open import Function
 open import Algebra
 open import Algebra.Structures
@@ -27,9 +28,8 @@ coerce : {n : ℕ} {γ : Context n} {Γ Δ : Usages γ} (𝓜 : Model) (p q : Γ
          𝓜 (used p) σ → 𝓜 (used q) σ
 coerce 𝓜 p q {σ} = subst (flip 𝓜 σ ∘′ used) (irrelevance p q)
 
-open Monoid (L.monoid Type)
+open Monoid (++-monoid Type)
 
- 
 record Linear (𝓜^C 𝓜^I : Model)
   : Set where
   field
@@ -118,7 +118,7 @@ module LINEAR {𝓜^C 𝓜^I : Model} (𝓜 : Linear 𝓜^C 𝓜^I) where
   linearInfer (`exfalso σ t) inc = exfalso (linearInfer t inc)
   linearInfer (`cut t)       inc = cut (linearCheck t inc)
 
-  
+
   linearCheck (`lam t) inc = lam (linearCheck t (_ ∷ inc))
   linearCheck (`let p ∷= t `in u) inc =
     let γ   = consumptionInfer t ; T = linearInfer t γ

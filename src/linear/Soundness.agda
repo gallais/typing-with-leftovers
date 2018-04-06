@@ -3,6 +3,7 @@ module linear.Soundness where
 open import Data.Nat
 open import Data.Product
 open import Data.List
+open import Data.List.Properties
 open import Data.Vec
 open import Function
 open import Algebra
@@ -21,7 +22,7 @@ open import linear.Usage.Erasure as UE
 open import linear.Utils
 
 ILL : Linear _⊢_ _⊢_
-ILL = let open Monoid (monoid Type) in record
+ILL = let open Monoid (++-monoid Type) in record
   { var     = ax
   ; app     = λ f t inc →
               let F = cut f (─oL t ax)

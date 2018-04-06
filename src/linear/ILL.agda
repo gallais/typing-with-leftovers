@@ -1,6 +1,7 @@
 module linear.ILL where
 
 open import Data.List hiding (_∷ʳ_)
+open import Data.List.Properties
 open import linear.Type
 open import linear.Usage.Erasure
 open import Function
@@ -35,5 +36,5 @@ data _⊢_ : List Type → Type → Set where
 -- from the `mix` constructor provided here.
 swap : ∀ {γ δ σ τ ν} → γ ++ σ ∷ τ ∷ δ ⊢ ν → γ ++ τ ∷ σ ∷ δ ⊢ ν
 swap {γ} {δ} {σ} {τ} p
-  rewrite PEq.sym (Monoid.assoc (monoid Type) γ (σ ∷ []) (τ ∷ δ))
+  rewrite PEq.sym (++-assoc γ [ σ ] (τ ∷ δ))
   = mix p $ γ ++ˡ τ ∷ʳ trivial

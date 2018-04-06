@@ -166,7 +166,7 @@ complete (cut {γ} {δ} {σ} {τ} t u)  =
 complete (⊗R {γ} {δ} {σ} {τ} t u)   =
   let (rT , T) = complete t
       (rU , U) = complete u
-      
+
       T′ : [[ V.fromList δ ]] U.⋈ 𝓛emma₁ δ γ [[ V.fromList γ ]]
            ⊢ σ ∋ _ ⊠
            [[ V.fromList δ ]] U.⋈ 𝓛emma₁ δ γ ]] V.fromList γ [[
@@ -174,7 +174,7 @@ complete (⊗R {γ} {δ} {σ} {τ} t u)   =
            (UP.irrelevance _ (UP.sym (𝓛emma₂₁-[[eq]] γ δ)))
            (𝓛emma₂₁-]]eq[[ γ δ)
          $ T.weakCheck (𝓛emma₂ γ δ [[ V.fromList δ ]]) T
-      
+
       U′ : [[ V.fromList δ ]] U.⋈ 𝓛emma₁ δ γ ]] V.fromList γ [[
            ⊢ τ ∋ _ ⊠
            ]] V.fromList δ [[ U.⋈ 𝓛emma₁ δ γ ]] V.fromList γ [[
