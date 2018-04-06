@@ -1,7 +1,7 @@
 #!/bin/sh
 if ! type "agda" > /dev/null || [ ! `agda -V | sed "s/[^2]*//"` = "2.5.1" ]; then
   cabal update
-  cabal install alex happy
+  cabal install alex happy cpphs
   cabal install Agda
   mkdir -p $HOME/.agda
   cp libraries-2.5.3 $HOME/.agda/
