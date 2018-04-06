@@ -7,5 +7,5 @@ Typing with Leftovers - A Mechanization of Intuitionistic Linear Logic
 
 The development has been typechecked with:
 
-* [Agda version 2.5.1](http://hackage.haskell.org/package/Agda-2.5.1)
-* The [Standard Library version 0.12](https://github.com/agda/agda-stdlib/archive/v0.12.tar.gz)
+* [Agda version 2.5.3](http://hackage.haskell.org/package/Agda-2.5.1)
+* The [Standard Library version 0.15](https://github.com/agda/agda-stdlib/archive/v0.12.tar.gz)

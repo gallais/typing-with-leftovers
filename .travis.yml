@@ -4,8 +4,8 @@ sudo: false
 addons:
   apt:
     packages:
-      - cabal-install-1.22
-      - ghc-7.10.3
+      - cabal-install-2.0
+      - ghc-8.2.2
     sources:
       - hvr-ghc
 
@@ -16,7 +16,6 @@ cache:
     - $HOME/.agda/
 
 install:
-  - export PATH=$HOME/.cabal/bin:/opt/ghc/7.10.3/bin:/opt/cabal/1.22/bin:$PATH;
   - cd travis/
   - ./install_agda.sh
 
