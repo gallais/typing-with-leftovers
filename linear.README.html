@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html><head><meta charset="utf-8"><title>linear.README</title><link rel="stylesheet" href="Agda.css"></head><body><pre><a id="1" class="Keyword">module</a> <a id="8" href="linear.README.html" class="Module">linear.README</a> <a id="22" class="Keyword">where</a>
+
+<a id="29" class="Comment">-- Raw terms</a>
+<a id="42" class="Keyword">open</a> <a id="47" class="Keyword">import</a> <a id="54" href="linear.Scope.html" class="Module">linear.Scope</a>
+<a id="67" class="Keyword">open</a> <a id="72" class="Keyword">import</a> <a id="79" href="linear.Language.html" class="Module">linear.Language</a>
+
+<a id="96" class="Comment">-- Types, typing Contexts and Usage annotations</a>
+<a id="144" class="Keyword">open</a> <a id="149" class="Keyword">import</a> <a id="156" href="linear.Type.html" class="Module">linear.Type</a>
+<a id="168" class="Keyword">open</a> <a id="173" class="Keyword">import</a> <a id="180" href="linear.Context.html" class="Module">linear.Context</a>
+<a id="195" class="Keyword">open</a> <a id="200" class="Keyword">import</a> <a id="207" href="linear.Usage.html" class="Module">linear.Usage</a>
+
+<a id="221" class="Comment">-- Typing relation and basic properties</a>
+<a id="261" class="Keyword">open</a> <a id="266" class="Keyword">import</a> <a id="273" href="linear.Typing.html" class="Module">linear.Typing</a>
+<a id="287" class="Keyword">open</a> <a id="292" class="Keyword">import</a> <a id="299" href="linear.Typing.Inversion.html" class="Module">linear.Typing.Inversion</a>
+<a id="323" class="Keyword">open</a> <a id="328" class="Keyword">import</a> <a id="335" href="linear.Typing.Functional.html" class="Module">linear.Typing.Functional</a>
+
+<a id="361" class="Comment">-- Frame rule and stability of Typing under Weakening and Substitution</a>
+<a id="432" class="Keyword">open</a> <a id="437" class="Keyword">import</a> <a id="444" href="linear.Typing.Consumption.html" class="Module">linear.Typing.Consumption</a>
+<a id="470" class="Keyword">open</a> <a id="475" class="Keyword">import</a> <a id="482" href="linear.Typing.Substitution.html" class="Module">linear.Typing.Substitution</a>
+
+<a id="510" class="Comment">-- Decidability of Typing inference / checking</a>
+<a id="557" class="Keyword">open</a> <a id="562" class="Keyword">import</a> <a id="569" href="linear.Typecheck.Problem.html" class="Module">linear.Typecheck.Problem</a>
+<a id="594" class="Keyword">open</a> <a id="599" class="Keyword">import</a> <a id="606" href="linear.Typecheck.html" class="Module">linear.Typecheck</a>
+
+<a id="624" class="Comment">-- Thinning</a>
+<a id="636" class="Keyword">open</a> <a id="641" class="Keyword">import</a> <a id="648" href="linear.Usage.Erasure.html" class="Module">linear.Usage.Erasure</a>
+<a id="669" class="Keyword">open</a> <a id="674" class="Keyword">import</a> <a id="681" href="linear.Typing.Thinning.html" class="Module">linear.Typing.Thinning</a>
+
+<a id="705" class="Comment">-- More traditional presentation and Model</a>
+<a id="748" class="Keyword">open</a> <a id="753" class="Keyword">import</a> <a id="760" href="linear.ILL.html" class="Module">linear.ILL</a>
+<a id="771" class="Keyword">open</a> <a id="776" class="Keyword">import</a> <a id="783" href="linear.Model.html" class="Module">linear.Model</a>
+
+<a id="797" class="Comment">-- Mix aka context permutations (needed for completeness)</a>
+<a id="855" class="Keyword">open</a> <a id="860" class="Keyword">import</a> <a id="867" href="linear.Mix.html" class="Module">linear.Mix</a>
+<a id="878" class="Keyword">open</a> <a id="883" class="Keyword">import</a> <a id="890" href="linear.Context.Mix.html" class="Module">linear.Context.Mix</a>
+<a id="909" class="Keyword">open</a> <a id="914" class="Keyword">import</a> <a id="921" href="linear.Usage.Mix.html" class="Module">linear.Usage.Mix</a>
+<a id="938" class="Keyword">open</a> <a id="943" class="Keyword">import</a> <a id="950" href="linear.Typing.Mix.html" class="Module">linear.Typing.Mix</a>
+
+<a id="969" class="Comment">-- Soundness and Completeness</a>
+<a id="999" class="Keyword">open</a> <a id="1004" class="Keyword">import</a> <a id="1011" href="linear.Soundness.html" class="Module">linear.Soundness</a>
+<a id="1028" class="Keyword">open</a> <a id="1033" class="Keyword">import</a> <a id="1040" href="linear.Completeness.html" class="Module">linear.Completeness</a>
+
+<a id="1061" class="Comment">-- Examples</a>
+<a id="1073" class="Keyword">open</a> <a id="1078" class="Keyword">import</a> <a id="1085" href="linear.Language.Examples.html" class="Module">linear.Language.Examples</a>
+<a id="1110" class="Keyword">open</a> <a id="1115" class="Keyword">import</a> <a id="1122" href="linear.Typing.Examples.html" class="Module">linear.Typing.Examples</a>
+<a id="1145" class="Keyword">open</a> <a id="1150" class="Keyword">import</a> <a id="1157" href="linear.Typecheck.Examples.html" class="Module">linear.Typecheck.Examples</a>
+
+<a id="1184" class="Comment">-- A surface language with named variables (using String)</a>
+<a id="1242" class="Keyword">open</a> <a id="1247" class="Keyword">import</a> <a id="1254" href="linear.Surface.Surface.html" class="Module">linear.Surface.Surface</a>
+
+<a id="1278" class="Comment">-- An executable combining our scope and type checkers with a</a>
+<a id="1340" class="Comment">-- parser written in Haskell</a>
+<a id="1369" class="Comment">-- (cf. linear/Type/Parser.hs and linear/Surface/Parser.hs)</a>
+<a id="1429" class="Keyword">open</a> <a id="1434" class="Keyword">import</a> <a id="1441" href="linear.Main.html" class="Module">linear.Main</a>
+</pre></body></html>
