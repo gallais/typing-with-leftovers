@@ -1,5 +1,5 @@
 %%
-%% This is file `lipics.cls',
+%% This is file `lipics-v2018.cls',
 %% generated with the docstrip utility.
 %%
 %% The original source files were:
@@ -12,11 +12,12 @@
 %% This file is part of the lipics package for preparing
 %% LIPICS articles.
 %% 
-%%       Copyright (C) 2010 Schloss Dagstuhl
+%%       Copyright (C) 2010--2018 Schloss Dagstuhl
 %% -----------------------------------------------------------------
-\NeedsTeXFormat{LaTeX2e}[2005/12/01]
-\ProvidesClass{lipics-v2016}
-    [2016/02/16 v1.1 LIPIcs articles]
+%% 
+\ProvidesClass{lipics-v2018}
+    [2018/04/09 v1.5 LIPIcs articles]
+\NeedsTeXFormat{LaTeX2e}[2015/01/01]
 \emergencystretch1em
 \advance\hoffset-1in
 \advance\voffset-1in
@@ -81,6 +82,7 @@
       \def\makelabel##1{\hss\llap{##1}}}%
   \fi}
 \def\enditemize{\ifnum\@listdepth=\@ne\global\@nobotseplisttrue\fi\endlist}
+\def\@title{\textcolor{red}{Author: Please provide a title}}
 \def\@sect#1#2#3#4#5#6[#7]#8{%
   \ifnum #2>\c@secnumdepth
     \let\@svsec\@empty
@@ -120,58 +122,32 @@
   \@xsect{#5}}
 \def\@seccntformat#1{\csname the#1\endcsname}
 \def\@biblabel#1{\textcolor{darkgray}{\sffamily\bfseries#1}}
-
-\def\EventLogo#1{\gdef\@EventLogo{#1}}
-\EventLogo{}
-\def\EventEditors#1{\gdef\@EventEditors{#1}}
-\EventEditors{}
-\def\EventNoEds#1{\gdef\@EventNoEds{#1}\ifnum #1>1 \gdef\@Eds{Editors}\fi }    
-\EventNoEds{1}
-\gdef\@Eds{Editor}
-\def\EventLongTitle#1{\gdef\@EventLongTitle{#1}}
-\EventLongTitle{}
-\def\EventShortTitle#1{\gdef\@EventShortTitle{#1}}
-\EventShortTitle{}
-\def\EventAcronym#1{\gdef\@EventAcronym{#1}}
-\EventAcronym{}
-\def\EventYear#1{\gdef\@EventYear{#1}}
-\EventYear{}
-\def\EventDate#1{\gdef\@EventDate{#1}}
-\EventDate{}
-\def\EventLocation#1{\gdef\@EventLocation{#1}}
-\EventLocation{}
-\def\SeriesVolume#1{\gdef\@SeriesVolume{#1}}
-\SeriesVolume{}
-\def\ArticleNo#1{\gdef\@ArticleNo{#1}}
-\ArticleNo{}
-\def\DOIPrefix#1{\gdef\@DOIPrefix{#1}}
-\DOIPrefix{10.4230/LIPIcs}
-
-
 \def\copyrightline{%
-  \ifx\@EventLogo\@empty
-  \else
-    \setbox\@tempboxa\hbox{\includegraphics[height=42\p@]{\@EventLogo}}%
-    \rlap{\hspace\textwidth\hspace{-\wd\@tempboxa}\hspace{\z@}%
-          \vtop to\z@{\vskip-0mm\unhbox\@tempboxa\vss}}%
-  \fi
-  \scriptsize
-  \vtop{\hsize\textwidth
-    \nobreakspace\\
-    \@Copyright
-    \ifx\@EventLongTitle\@empty\else\@EventLongTitle.\\\fi
-    \ifx\@EventEditors\@empty\else
-      \@Eds: \@EventEditors
-      ; Article~No.\,\@ArticleNo; pp.\,\@ArticleNo:\thepage--\@ArticleNo:\pageref{LastPage}%
-      \\
+  \ifx\@hideLIPIcs\@undefined
+    \ifx\@EventLogo\@empty
+    \else
+      \setbox\@tempboxa\hbox{\includegraphics[height=42\p@]{\@EventLogo}}%
+      \rlap{\hspace\textwidth\hspace{-\wd\@tempboxa}\hspace{\z@}%
+            \vtop to\z@{\vskip-0mm\unhbox\@tempboxa\vss}}%
     \fi
-    \setbox\@tempboxa\hbox{\includegraphics[height=14\p@,trim=0 15 0 0]{lipics-logo-bw}}%
-    \hspace*{\wd\@tempboxa}\enskip
-    \href{http://www.dagstuhl.de/lipics/}%
-         {Leibniz International Proceedings in Informatics}\\
-    \smash{\unhbox\@tempboxa}\enskip
-    \href{http://www.dagstuhl.de}%
-         {Schloss Dagstuhl -- Leibniz-Zentrum f{\"u}r Informatik, Dagstuhl Publishing, Germany}}}
+    \scriptsize
+    \vtop{\hsize\textwidth
+      \nobreakspace\par
+      \@Copyright
+      \ifx\@EventLongTitle\@empty\else\@EventLongTitle.\\\fi
+      \ifx\@EventEditors\@empty\else
+        \@Eds: \@EventEditors
+        ; Article~No.\,\@ArticleNo; pp.\,\@ArticleNo:\thepage--\@ArticleNo:\pageref{LastPage}%
+        \\
+      \fi
+      \setbox\@tempboxa\hbox{\includegraphics[height=14\p@,trim=0 15 0 0]{lipics-logo-bw}}%
+      \hspace*{\wd\@tempboxa}\enskip
+      \href{http://www.dagstuhl.de/lipics/}%
+           {Leibniz International Proceedings in Informatics}\\
+      \smash{\unhbox\@tempboxa}\enskip
+      \href{http://www.dagstuhl.de}%
+           {Schloss Dagstuhl -- Leibniz-Zentrum f{\"u}r Informatik, Dagstuhl Publishing, Germany}}%
+  \fi}
 \def\ps@plain{\let\@mkboth\@gobbletwo
   \let\@oddhead\@empty
   \let\@evenhead\@empty
@@ -278,10 +254,12 @@
                                      \advance\@tempdima1in
                                      \advance\@tempdima\hoffset
                                      \hb@xt@\@tempdima{%
-                                       \textcolor{darkgray}{\normalsize\sffamily
-                                       \bfseries\quad
-                                       \expandafter\textsolittle
-                                       \expandafter{\@EventShortTitle}}%
+                                       \ifx\@hideLIPIcs\@undefined
+                                         \textcolor{darkgray}{\normalsize\sffamily
+                                         \bfseries\quad
+                                         \expandafter\textsolittle
+                                         \expandafter{\@EventShortTitle}}%
+                                       \fi
                                      \strut\hss}}}}}
     \let\@evenfoot\@empty
     \let\@mkboth\markboth
@@ -290,6 +268,7 @@
 \pagestyle{headings}
 \renewcommand\maketitle{\par
   \begingroup
+    \thispagestyle{plain}
     \renewcommand\thefootnote{\@fnsymbol\c@footnote}%
     \if@twocolumn
       \ifnum \col@number=\@ne
@@ -304,7 +283,6 @@
     \fi
     \thispagestyle{plain}\@thanks
   \endgroup
-  \setcounter{footnote}{0}%
   \global\let\thanks\relax
   \global\let\maketitle\relax
   \global\let\@maketitle\relax
@@ -324,27 +302,31 @@
   \vskip-\headsep
   \@titlerunning
   \@authorrunning
-  \let \footnote \thanks
+  %%\let \footnote \thanks
   \parindent\z@ \raggedright
+  \if!\@title!\def\@title{\textcolor{red}{Author: Please fill in a title}}\fi
     {\LARGE\sffamily\bfseries\mathversion{bold}\@title \par}%
-    \vskip 1.5em%
-    \ifnum\c@authors=0 %
-      \@latexerr{No \noexpand\author given}%
-        {Provide at least one author. See the LIPIcs class documentation.}%
+    \vskip 1.5em
+    \ifx\@author\orig@author
+      \textcolor{red}{Author: Please provide author information}%
     \else
-      \@author
+      {\def\thefootnote{\@arabic\c@footnote}%
+       \setcounter{footnote}{0}%
+       \fontsize{9.5}{12}\selectfont\@author}%
     \fi
     \bgroup
-      \let\footnote\@gobble
       \immediate\openout\tocfile=\jobname.vtc
-      \protected@write\tocfile{}{%
+      \protected@write\tocfile{\let\footnote\@gobble}{%
         \string\contitem
         \string\title{\@title}%
-        \string\author{\AB@authfortoc}%
+        \string\author{\@authorsfortoc}%
         \string\page{\@ArticleNo:\thepage--\@ArticleNo:\number\numexpr\getpagerefnumber{LastPage}}}%
       \closeout\tocfile
     \egroup
   \par}
+\renewcommand\tableofcontents{%
+  \section*{\contentsname}%
+  \@starttoc{toc}}
 \setcounter{secnumdepth}{4}
 \renewcommand\section{\@startsection {section}{1}{\z@}%
                                    {-3.5ex \@plus -1ex \@minus -.2ex}%
@@ -373,13 +355,13 @@
 \setlength\leftmarginv  {1.2em}
 \setlength\leftmarginvi {1.2em}
 \renewcommand\labelenumi{%
-  \textcolor{darkgray}{\sffamily\bfseries\mathversion{bold}\theenumi.}}
+  \textcolor{darkgray}{\sffamily\bfseries\upshape\mathversion{bold}\theenumi.}}
 \renewcommand\labelenumii{%
-  \textcolor{darkgray}{\sffamily\bfseries\mathversion{bold}\theenumii.}}
+  \textcolor{darkgray}{\sffamily\bfseries\upshape\mathversion{bold}\theenumii.}}
 \renewcommand\labelenumiii{%
-  \textcolor{darkgray}{\sffamily\bfseries\mathversion{bold}\theenumiii.}}
+  \textcolor{darkgray}{\sffamily\bfseries\upshape\mathversion{bold}\theenumiii.}}
 \renewcommand\labelenumiv{%
-  \textcolor{darkgray}{\sffamily\bfseries\mathversion{bold}\theenumiv.}}
+  \textcolor{darkgray}{\sffamily\bfseries\upshape\mathversion{bold}\theenumiv.}}
 \renewcommand\labelitemi{%
   \textcolor[rgb]{0.6,0.6,0.61}{\ifnum\@listdepth=\@ne
                                   \rule{0.67em}{0.33em}%
@@ -408,17 +390,45 @@
   \vskip3\p@
   \fontsize{9.5}{12.5}\selectfont
   \noindent\ignorespaces}
-  {\ifx\@subjclass\@empty\else
-     \vskip\baselineskip\noindent
-     \subjclassHeading\@subjclass
+  {\vskip\baselineskip\noindent
+   \subjclassHeading
+   \ifx\@subjclass\@empty
+     \textcolor{red}{Author: Please fill in \string\subjclass\space macro}%
+   \else
+     \@subjclass
    \fi
-   \ifx\@keywords\@empty\else
-     \vskip\baselineskip\noindent
-     \keywordsHeading\@keywords
+   \vskip\baselineskip
+   \noindent\keywordsHeading
+   \ifx\@keywords\@empty
+     \textcolor{red}{Author: Please fill in \string\keywords\space macro}%
+   \else
+     \@keywords
    \fi
-   \ifx\@DOIPrefix\@empty\else
+   \ifx\@hideLIPIcs\@undefined
+     \ifx\@DOIPrefix\@empty\else
+       \vskip\baselineskip\noindent
+       \doiHeading\doi{\@DOIPrefix.\@EventAcronym.\@EventYear.\@ArticleNo}%
+     \fi
+   \fi
+   \ifx\@category\@empty\else
      \vskip\baselineskip\noindent
-     \doiHeading\doi{\@DOIPrefix.\@EventAcronym.\@EventYear.\@ArticleNo}
+     \categoryHeading\@category
+   \fi
+   \ifx\@relatedversion\@empty\else
+     \vskip\baselineskip\noindent
+     \relatedversionHeading\@relatedversion
+   \fi
+   \ifx\@supplement\@empty\else
+     \vskip\baselineskip\noindent
+     \supplementHeading\@supplement
+   \fi
+   \ifx\@funding\@empty\else
+     \vskip\baselineskip\noindent
+     \fundingHeading\@funding
+   \fi
+   \ifx\@acknowledgements\@empty\else
+     \vskip\baselineskip\noindent
+     \acknowledgementsHeading\@acknowledgements
    \fi}
 \renewenvironment{thebibliography}[1]
   {\if@noskipsec \leavevmode \fi
@@ -467,6 +477,11 @@
 \RequirePackage{textcomp}
 \RequirePackage[mathscr]{eucal}
 \RequirePackage{amssymb}
+\PassOptionsToPackage{retainmissing}{MnSymbol}
+\AtBeginDocument{\@ifpackageloaded{MnSymbol}%
+    {\expandafter\let\csname ver@amssymb.sty\endcsname\relax
+     \let\complement\@undefined
+     \RequirePackage{amssymb}}{}}
 \RequirePackage{soul}
 \sodef\textsolittle{}{.12em}{.5em\@plus.08em\@minus.06em}%
         {.4em\@plus.275em\@minus.183em}
@@ -474,6 +489,17 @@
 \definecolor{darkgray}{rgb}{0.31,0.31,0.33}
 \RequirePackage{babel}
 \RequirePackage[tbtags,fleqn]{amsmath}
+\RequirePackage{enumerate}
+\def\@enum@{\list{\textcolor{darkgray}{\sffamily\bfseries\upshape\mathversion{bold}\csname label\@enumctr\endcsname}}%
+           {\advance\partopsep\topsep
+            \topsep\z@\@plus\p@
+            \usecounter{\@enumctr}\def\makelabel##1{\hss\llap{##1}}}}
+\def\romanenumerate{\enumerate[(i)]}
+\let\endromanenumerate\endenumerate
+\def\alphaenumerate{\enumerate[(a)]}
+\let\endalphaenumerate\endenumerate
+\def\bracketenumerate{\enumerate[(1)]}
+\let\endbracketenumerate\endenumerate
 \RequirePackage{amsthm}
 \thm@headfont{%
   \textcolor{darkgray}{$\blacktriangleright$}\nobreakspace\sffamily\bfseries}
@@ -507,7 +533,8 @@
 \newtheorem*{remark}{Remark}
 \ifx\numberwithinsect\relax
   \@addtoreset{theorem}{section}
-  \edef\thetheorem{\expandafter\noexpand\thesection\@thmcountersep\@thmcounter{theorem}}
+  \expandafter\def\expandafter\thetheorem\expandafter{%
+    \expandafter\thesection\expandafter\@thmcountersep\thetheorem}
 \fi
 \RequirePackage{graphicx}
 \RequirePackage{array}
@@ -528,6 +555,27 @@
 \lstset{basicstyle=\small\ttfamily,%
         backgroundcolor=\color[rgb]{0.85,0.85,0.86},%
         frame=single,framerule=0pt,xleftmargin=\fboxsep,xrightmargin=\fboxsep}
+\RequirePackage[left,mathlines]{lineno}
+\linenumbers
+\renewcommand\linenumberfont{\normalfont\tiny\sffamily}
+%%%% patch to cope with amsmath
+%%%% http://phaseportrait.blogspot.de/2007/08/lineno-and-amsmath-compatibility.html
+\newcommand*\patchAmsMathEnvironmentForLineno[1]{%
+  \expandafter\let\csname old#1\expandafter\endcsname\csname #1\endcsname
+  \expandafter\let\csname oldend#1\expandafter\endcsname\csname end#1\endcsname
+  \renewenvironment{#1}%
+     {\linenomath\csname old#1\endcsname}%
+     {\csname oldend#1\endcsname\endlinenomath}}%
+\newcommand*\patchBothAmsMathEnvironmentsForLineno[1]{%
+  \patchAmsMathEnvironmentForLineno{#1}%
+  \patchAmsMathEnvironmentForLineno{#1*}}%
+\AtBeginDocument{%
+  \patchBothAmsMathEnvironmentsForLineno{equation}%
+  \patchBothAmsMathEnvironmentsForLineno{align}%
+  \patchBothAmsMathEnvironmentsForLineno{flalign}%
+  \patchBothAmsMathEnvironmentsForLineno{alignat}%
+  \patchBothAmsMathEnvironmentsForLineno{gather}%
+  \patchBothAmsMathEnvironmentsForLineno{multline}}
 \RequirePackage{lastpage}
 \IfFileExists{doi.sty}
   {\RequirePackage{doi}%
@@ -547,103 +595,91 @@
 \captionsetup{labelformat=boxed}
 \captionsetup[table]{position=top}
 \RequirePackage[figuresright]{rotating}
-\RequirePackage{subcaption} % subfig
+\caption@AtBeginDocument{\@ifpackageloaded{subfig}{\ClassError{lipics}{%
+  Do not load the subfig package}{The more recent subcaption package is already loaded}}{}}
+\RequirePackage{subcaption}
+\usepackage{xstring}
+\newcommand\ccsdesc[2][100]{\StrSubstitute{#2}{~}{ $\rightarrow$ }}
 \def\titlerunning#1{\gdef\@titlerunning{{\let\footnote\@gobble\markboth{#1}{#1}}}}
 \def\authorrunning#1{%
-  \gdef\@authorrunning{\expandafter\def\expandafter\@tempa\expandafter{#1}%
-                       \ifx\@tempa\@empty\else\markright{#1}\fi}}
+  \gdef\@authorrunning{\markright{\if!#1!\textcolor{red}{Author: Please fill in the \string\authorrunning\space macro}\else#1\fi}}}
 \titlerunning{\@title}
-\authorrunning{\AB@authrunning}
-\RequirePackage{authblk}
-\renewcommand*\Authand{{ and }}
-\renewcommand*\Authfont{\Large\bfseries\mathversion{bold}}
-\renewcommand*\AB@authnote[1]{\textsuperscript{#1}}
-\renewcommand*\AB@affilnote[1]{\protect\item[#1]}
-\renewcommand*\Affilfont{\fontsize{9.5}{12}\selectfont}
-\setlength\affilsep{\baselineskip}
-\newcommand\AB@authrunning{}
-\newcommand\AB@authfortoc{}
-\renewcommand\author[2][]%
-      {\ifnewaffil\addtocounter{affil}{1}%
-       \edef\AB@thenote{\arabic{affil}}\fi
-      \if\relax#1\relax\def\AB@note{\AB@thenote}\else\def\AB@note{#1}%
-        \setcounter{Maxaffil}{0}\fi
-      \ifnum\value{authors}>1\relax
-      \@namedef{@sep\number\c@authors}{\Authsep}\fi
-      \addtocounter{authors}{1}%
-      \begingroup
-          \let\protect\@unexpandable@protect \let\and\AB@pand
-          \def\thanks{\protect\thanks}\def\footnote{\protect\footnote}%
-         \@temptokena=\expandafter{\AB@authors}%
-         {\def\\{\protect\\[\@affilsep]\protect\Affilfont
-              \protect\AB@resetsep}%
-              \xdef\AB@author{\AB@blk@and#2}%
-       \ifnewaffil\gdef\AB@las{}\gdef\AB@lasx{\protect\Authand}\gdef\AB@as{}%
-           \xdef\AB@authors{\the\@temptokena\AB@blk@and}%
-       \else
-          \xdef\AB@authors{\the\@temptokena\AB@as\AB@au@str}%
-          \global\let\AB@las\AB@lasx\gdef\AB@lasx{\protect\Authands}%
-          \gdef\AB@as{\Authsep}%
-       \fi
-       \gdef\AB@au@str{#2}}%
-         \@temptokena=\expandafter{\AB@authlist}%
-         \let\\=\authorcr
-         \xdef\AB@authlist{\the\@temptokena
-           \protect\@nameuse{@sep\number\c@authors}%
-           \protect\Authfont#2\AB@authnote{\AB@note}}%
-         %new
-         \@temptokena=\expandafter{\AB@authrunning}%
-         \let\\=\authorcr
-         \xdef\AB@authrunning{\the\@temptokena
-           \protect\@nameuse{@sep\number\c@authors}#2}%
-         %
-         %new
-         \@temptokena=\expandafter{\AB@authfortoc}%
-         \let\\=\authorcr
-         \xdef\AB@authfortoc{\the\@temptokena
-           \expandafter\noexpand\csname @sep\number\c@authors\endcsname#2}%
-         %
-      \endgroup
-      \ifnum\value{authors}>2\relax
-      \@namedef{@sep\number\c@authors}{\Authands}\fi
-      \newaffilfalse
-}
-\renewcommand\affil[2][]%
-   {\newaffiltrue\let\AB@blk@and\AB@pand
-      \if\relax#1\relax\def\AB@note{\AB@thenote}\else\def\AB@note{#1}%
-        \setcounter{Maxaffil}{0}\fi
-      \begingroup
-        \let\protect\@unexpandable@protect
-        \def\thanks{\protect\thanks}\def\footnote{\protect\footnote}%
-        \@temptokena=\expandafter{\AB@authors}%
-        {\def\\{\protect\\\protect\Affilfont}\xdef\AB@temp{#2}}%
-         \xdef\AB@authors{\the\@temptokena\AB@las\AB@au@str
-         \protect\\[\affilsep]\protect\Affilfont\AB@temp}%
-         \gdef\AB@las{}\gdef\AB@au@str{}%
-        {\xdef\AB@temp{#2}}%
-        \@temptokena=\expandafter{\AB@affillist}%
-        \xdef\AB@affillist{\the\@temptokena \AB@affilsep
-          \AB@affilnote{\AB@note}\protect\Affilfont\AB@temp}%
-      \endgroup
-       \let\AB@affilsep\AB@affilsepx}
-\renewcommand\@author{\ifx\AB@affillist\AB@empty\AB@authrunning\else
-      \ifnum\value{affil}>\value{Maxaffil}\def\rlap##1{##1}%
-    \AB@authlist\\[\affilsep]
-    \labelwidth1.5em\labelsep\z@\leftmargini\labelwidth
-    \edef\@enumctr{enumi}%
-    \list\theenumi{\usecounter\@enumctr\def\makelabel##1{\rlap{##1}\hss}}%
-      \AB@affillist
-    \endlist
-    \else  \AB@authors\fi\fi}
+\authorrunning{\textcolor{red}{Author: Please use the \string\authorrunning\space macro}}
+\def\EventLongTitle#1{\gdef\@EventLongTitle{#1}}
+\EventLongTitle{}
+\def\EventShortTitle#1{\gdef\@EventShortTitle{#1}}
+\EventShortTitle{}
+\def\EventEditors#1{\gdef\@EventEditors{#1}}
+\EventEditors{}
+\def\EventNoEds#1{\gdef\@EventNoEds{#1}\xdef\@Eds{Editor\ifnum#1>1s\fi}}
+\EventNoEds{1}
+\def\EventLogo#1{\gdef\@EventLogo{#1}}
+\EventLogo{}
+\def\EventAcronym#1{\gdef\@EventAcronym{#1}}
+\EventAcronym{}
+\def\EventYear#1{\gdef\@EventYear{#1}}
+\EventYear{}
+\def\EventDate#1{\gdef\@EventDate{#1}}
+\EventDate{}
+\def\EventLocation#1{\gdef\@EventLocation{#1}}
+\EventLocation{}
+\def\SeriesVolume#1{\gdef\@SeriesVolume{#1}}
+\SeriesVolume{}
+\def\ArticleNo#1{\gdef\@ArticleNo{#1}}
+\ArticleNo{}
+\def\DOIPrefix#1{\gdef\@DOIPrefix{#1}}
+\DOIPrefix{10.4230/LIPIcs}
+\let\orig@author\@author
+\let\@authorsfortoc\@empty
+\newcount\c@author
+\def\@authornum{0}
+\def\author#1#2#3#4#5{%
+  \ifx\@author\orig@author\let\@author\@empty\fi
+  \g@addto@macro\@author{%
+    \addvspace{0.5\baselineskip}%
+    {\Large\bfseries
+     \if!#1!%
+       \textcolor{red}{Author: Please enter author name}%
+     \else
+       #1%
+       \if!#5!\else\footnote{#5}\fi
+     \fi
+     \par}\nobreak
+    \if!#2!\textcolor{red}{Author: Please enter affiliation as second parameter of the author macro}\else#2\fi
+    \if!#3!\else\\*\href{mailto:#3}{#3}\fi
+    \if!#4!\else\\*\href{#4}{\lower2\p@\hbox{\includegraphics[height=10\p@]{orcid}}\;#4}\fi
+    \par\nobreak}%
+  \global\advance\c@author\@ne
+  \protected@write\@auxout{}{\string\gdef\string\@authornum{\the\c@author}}
+  \ifnum\c@author=\@ne
+    \gdef\@authorsfortoc{#1}%
+  \else
+    \expandafter\g@addto@macro\expandafter\@authorsfortoc\expandafter{\expandafter\csname\the\c@author authand\endcsname#1}%
+    \@namedef{\the\c@author authand}{,\space}%
+    \AtBeginDocument{%
+      \expandafter\ifnum\@authornum=2
+        \@namedef{2authand}{\space and\space}%
+      \else
+        \@namedef{\@authornum authand}{,\space and\space}%
+      \fi}
+  \fi}
+\newcommand*\affil[2][]{%
+  \ClassError{lipics}
+    {Deprecated: Please enter affiliation as second parameter of the author macro}
+    {Since 2017, \string\affil\space is obsolete in lipics.}}
 \newcommand*\Copyright[1]{%
   \def\@Copyright{%
-      \setbox\@tempboxa\hbox{\includegraphics[height=14\p@,clip]{cc-by}}%
-      \hspace*{\wd\@tempboxa}\enskip\ifx#1\@empty \else \textcopyright\ #1;\\\fi
-      \href{http://creativecommons.org/licenses/by/3.0/}%
-           {\smash{\unhbox\@tempboxa}}\enskip
-            licensed under Creative Commons License CC-BY\\
-    }}
-\Copyright{\@empty}
+    \setbox\@tempboxa\hbox{\includegraphics[height=14\p@,clip]{cc-by}}%
+    \@rightskip\@flushglue \rightskip\@rightskip
+    \hangindent\dimexpr\wd\@tempboxa+0.5em\relax
+    \href{http://creativecommons.org/licenses/by/3.0/}%
+         {\smash{\lower\baselineskip\hbox{\unhcopy\@tempboxa}}}\enskip
+    \textcopyright\ %
+    \ifx!#1!\textcolor{red}{Author: Please fill in the \string\Copyright\space macro}\else#1\fi
+    ;\\%
+    licensed under Creative Commons License CC-BY\ifx!#1!\\\null\fi\par}}
+\Copyright{\textcolor{red}{Author: Please provide a copyright holder}}
+\def\hideLIPIcs{\let\@hideLIPIcs\relax}
 \def\keywords#1{\def\@keywords{#1}}
 \let\@keywords\@empty
 \def\keywordsHeading{%
@@ -653,15 +689,35 @@
 \let\@subjclass\@empty
 \def\subjclassHeading{%
   \textcolor{darkgray}{\fontsize{9.5}{12.5}\sffamily\bfseries
-                       1998 ACM Subject Classification\enskip}}
+                       2012 ACM Subject Classification\enskip}}
 \def\doiHeading{%
   \textcolor{darkgray}{\fontsize{9.5}{12.5}\sffamily\bfseries
                        Digital Object Identifier\enskip}}
-\setcounter{page}{1}
-
-      
-\def\DOI#1{\gdef\@DOI{#1}}
-\DOI{}
+\def\category#1{\def\@category{#1}}
+\let\@category\@empty
+\def\categoryHeading{%
+  \textcolor{darkgray}{\fontsize{9.5}{12.5}\sffamily\bfseries
+                       Category\enskip}}
+\def\relatedversion#1{\def\@relatedversion{#1}}
+\let\@relatedversion\@empty
+\def\relatedversionHeading{%
+  \textcolor{darkgray}{\fontsize{9.5}{12.5}\sffamily\bfseries
+                       Related Version\enskip}}
+\def\supplement#1{\def\@supplement{#1}}
+\let\@supplement\@empty
+\def\supplementHeading{%
+  \textcolor{darkgray}{\fontsize{9.5}{12.5}\sffamily\bfseries
+                       Supplement Material\enskip}}
+\def\funding#1{\def\@funding{#1}}
+\let\@funding\@empty
+\def\fundingHeading{%
+ \textcolor{darkgray}{\fontsize{9.5}{12.5}\sffamily\bfseries
+                      Funding\enskip}}
+\def\acknowledgements#1{\def\@acknowledgements{#1}}
+\let\@acknowledgements\@empty
+\def\acknowledgementsHeading{%
+ \textcolor{darkgray}{\fontsize{9.5}{12.5}\sffamily\bfseries
+                      Acknowledgements\enskip}}
 \endinput
 %%
-%% End of file `lipics.cls'.
+%% End of file `lipics-v2018.cls'.
