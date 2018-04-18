@@ -58,7 +58,7 @@ we need to have a good representation of such constraints.
 Section~\ref{sec:rawterms} introduces the well-scoped untyped λ-calculus
 we are going to use as our language of raw terms. Section~\ref{sec:typingrules}
 defines the linear typing rules for this language as relations which
-record the resources consumed by a program. The next Sections are dedicated
+record the resources consumed by a program. The next sections are dedicated
 to proving properties of this type system: Section~\ref{sec:framing}
 proves that the status of unused variables rightfully does not matter,
 Section~\ref{sec:weakening} (and respectively Section~\ref{sec:substitution})
@@ -67,7 +67,8 @@ demonstrates that these typing relations are stable under weakening
 these relations are functional, and Section~\ref{sec:typechecking} that
 they are decidable i.e. provides us with a typechecking algorithm. Finally
 Section~\ref{sec:equivalence} goes back to a more traditional presentation
-of Intuitionistic Linear Logic and demonstrates it is equivalent.
+of Intuitionistic Multiplicative-Additive Linear Logic and demonstrates it is
+equivalent to our type system.
 
 
 \paragraph*{Notations} This whole development has been fully formalised
@@ -87,7 +88,7 @@ The inductive type is called \Nat{} and it has two constructors: $0$ takes
 no argument whilst \natsucc{\cdot} takes a \Nat{} $n$ and represents its successor.
 \begin{mathpar}
 \type{ }{\Nat{} : \Set{}}
-\and \constructor{ }{0 : \Nat{}}
+\and \constructor{ }{\texttt{\natzero} : \Nat{}}
 \and \constructor{n : \Nat{}}{\natsucc{n} : \Nat{}}
 \end{mathpar}
 
@@ -231,7 +232,7 @@ like $x \mapsto (x, x)$ does.
 
 \section{Linear Typing Rules}\label{sec:typingrules}
 
-These observations demonstrate that we need to define a typing
+These examples demonstrate that we need to define a typing
 relation describing the rules terms need to abide by in order
 to qualify as well-typed linear programs. We start by defining
 the types our programs may have using the grammar in Figure~\ref{fig:types}.
@@ -563,13 +564,13 @@ separation logic. This can be reformulated as the fact that as
 long as two pairs of an input and an output \Usages{} exhibit the
 same consumption pattern then if a derivation uses one of these,
 it can use the other one instead. Formally (postponing the
-definition of $Γ - Δ ≡ Θ - ξ$):
+definition of $Γ - Δ ≡ Θ - Ξ$):
 
 \begin{definition}A Typing Relation \TR{\cdot{}} for a \Nat{}-indexed
 family $T$ has the \textbf{Framing Property} if for all $k$ a \Nat{},
-γ a \Context{k}, Γ, Δ, Θ, ξ four \Usages{γ}, $t$ an element
-of $T_k$ and σ a Type, if \mbox{Γ ─ Δ ≡ Θ ─ ξ} and \TR{k}(Γ, t, σ, Δ)
-then \TR{k}(Θ, t, σ, ξ) also holds.
+γ a \Context{k}, Γ, Δ, Θ, Ξ four \Usages{γ}, $t$ an element
+of $T_k$ and σ a Type, if \mbox{Γ ─ Δ ≡ Θ ─ Ξ} and \TR{k}(Γ, t, σ, Δ)
+then \TR{k}(Θ, t, σ, Ξ) also holds.
 \end{definition}
 
 \begin{remark}This is purely a property of the type system as
@@ -591,8 +592,8 @@ respectively). On the other hand, if the resource has been consumed
 on one side then it has to be on the other side too.
 \begin{mathpar}
 \type
- {Γ, Δ, Θ, ξ : \Usages{γ}
-}{Γ ─ Δ ≡ Θ ─ ξ : \Set{}
+ {Γ, Δ, Θ, Ξ : \Usages{γ}
+}{Γ ─ Δ ≡ Θ ─ Ξ : \Set{}
 }
 \and \constructor
  {
@@ -600,13 +601,13 @@ on one side then it has to be on the other side too.
 }{
 }
 \\ \constructor
- {Γ ─ Δ ≡ Θ ─ ξ
-}{(Γ ∙ A) ─ (Δ ∙ A) ≡ (Θ ∙ B) ─ (ξ ∙ B)
+ {Γ ─ Δ ≡ Θ ─ Ξ
+}{(Γ ∙ A) ─ (Δ ∙ A) ≡ (Θ ∙ B) ─ (Ξ ∙ B)
 }{
 }
 \and \constructor
- {Γ ─ Δ ≡ Θ ─ ξ
-}{(Γ ∙ \fresh{σ}) ─ (Δ ∙ \stale{σ}) ≡ (Θ ∙ \fresh{σ}) ─ (ξ ∙ \stale{σ})
+ {Γ ─ Δ ≡ Θ ─ Ξ
+}{(Γ ∙ \fresh{σ}) ─ (Δ ∙ \stale{σ}) ≡ (Θ ∙ \fresh{σ}) ─ (Ξ ∙ \stale{σ})
 }{
 }
 \end{mathpar}
@@ -618,13 +619,13 @@ on one side then it has to be on the other side too.
 
 \begin{lemma} The following properties on the Consumption relations hold:
 \begin{enumerate}
-  \item The consumption equivalence is a partial equivalence~\cite{mitchell1996foundations}
-  \item The consumption partial order is a partial order
-  \item If there is a \Usages{} χ ``in between'' two others Γ and Δ according to
-        the consumption partial order (i.e. $Γ ⊆ χ$ and $χ ⊆ Δ$), then any pair
-        of \Usages{} Θ, ξ consumption equal to Γ and Δ (i.e. \mbox{$Γ ─ Δ ≡ Θ ─ ξ$})
-        can be split in a manner compatible with χ. In other words: one can find
-        ζ such that \mbox{$Γ ─ χ ≡ Θ ─ ζ$} and \mbox{$χ ─ Δ ≡ ζ ─ ξ$}.
+  \item The consumption equivalence is a partial equivalence~\cite{mitchell1996foundations}.
+  \item The consumption partial order is a partial order.
+  \item If there is a \Usages{} Χ ``in between'' two others Γ and Δ according to
+        the consumption partial order (i.e. $Γ ⊆ Χ$ and $Χ ⊆ Δ$), then any pair
+        of \Usages{} Θ, Ξ consumption equal to Γ and Δ (i.e. \mbox{$Γ ─ Δ ≡ Θ ─ Ξ$})
+        can be split in a manner compatible with Χ. In other words: one can find
+        Ζ such that \mbox{$Γ ─ Χ ≡ Θ ─ Ζ$} and \mbox{$Χ ─ Δ ≡ Ζ ─ Ξ$}.
 \end{enumerate}
 \end{lemma}
 
@@ -653,12 +654,12 @@ of consumption equivalence and distribute it appropriately in the induction hypo
 
 It is perhaps surprising to find a notion of weakening for a linear
 calculus: the whole point of linearity is precisely to ensure that
-all the resources are used. However when opting for a system based
-on consumption annotations it becomes necessary, in order to define
-substitution for instance, to be able to extend the underlying
-context a term is defined with respect to. Linearity is guaranteed
-by ensuring that the inserted variables are left untouched by the
-term.
+all the resources are used. However, when opting for a system based
+on consumption annotations it becomes necessary to be able to extend
+the context a term lives in. This will typically be used in the definition
+of parallel substitution to push the substitution under a binder. Linearity
+is guaranteed by ensuring that the inserted variables are left untouched by
+the term.
 
 Weakening arises from a notion of inclusion. The appropriate type
 theoretical structure to describe these inclusions is well-known

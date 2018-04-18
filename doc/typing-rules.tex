@@ -1,6 +1,6 @@
 \begin{figure}[H]
 \begin{mathpar}
-\type
+\type[\Var{}]
  {{\begin{array}{l}
     γ : \Context{n} \\
     Γ : \Usages{γ} \\ \\
@@ -12,7 +12,7 @@
   \end{array}}
 }{Γ ⊢_v k ∈ σ \andalso{} Δ : \Set{}
 }
-\and \type
+\and \type[\Inferable{}]
  {{\begin{array}{l}
     γ : \Context{n} \\
     Γ : \Usages{γ} \\ \\
@@ -24,7 +24,7 @@
   \end{array}}
 }{Γ ⊢ t ∈ σ \andalso{} Δ : \Set{}
 }
-\and \type
+\and \type[\Checkable{}]
  {{\begin{array}{l}
     γ : \Context{n} \\
     Γ : \Usages{γ} \\
@@ -34,7 +34,7 @@
   \and Δ : \Usages{γ}
 }{Γ ⊢ σ  ∋ t \andalso{} Δ : \Set{}
 }
-\and \type
+\and \type[\Pattern{}]
 { σ : \Type{}
   \and p : \Pattern{n}
   \and γ : \Context{n}

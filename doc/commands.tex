@@ -28,7 +28,9 @@
 
 \newcommand{\Set}{\mathcal{\textit{Set}}}
 
-\newcommand{\natsucc}[1]{\ensuremath{\text{1\!+} #1}}
+\newcommand{\natzero}{\ensuremath{\texttt{0}}}
+\newcommand{\natsucc}[1]{\ensuremath{\texttt{1\!+} #1}}
+
 \newcommand{\used}[1]{\ensuremath{\text{used}(#1)}}
 \newcommand{\ope}[1]{\ensuremath{\text{ope}(#1)}}
 
@@ -66,5 +68,5 @@
 \newcommand{\With}[2]{#1 \,\&\, #2}
 \newcommand{\Zero}{\ensuremath{\mathbb{0}}}
 
-\newcommand{\type}[2]{\mprset{fraction={===}}\inferrule{#1}{#2}{}}
+\newcommand{\type}[3][]{\mprset{fraction={===}}\inferrule{#2}{#3}{#1}}
 \newcommand{\constructor}[2]{\mprset{fraction={---}}\inferrule{#1}{#2}{}}
