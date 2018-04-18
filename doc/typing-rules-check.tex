@@ -1,38 +1,38 @@
 \begin{figure}[H]
 \begin{mathpar}
 \inferrule
- {Γ ∙ \fresh{σ} ⊢ τ ∋ b ⊠ Δ ∙ \stale{σ}
-}{Γ ⊢ σ ⊸ τ ∋ \lam{b} ⊠ Δ
+ {Γ ∙ \fresh{σ} ⊢ τ ∋ b \andalso{} Δ ∙ \stale{σ}
+}{Γ ⊢ σ ⊸ τ ∋ \lam{b} \andalso{} Δ
 }
 \and \inferrule
- {Γ ⊢ σ ∋ a ⊠ Δ \and Δ ⊢ τ ∋ b ⊠ Θ
-}{Γ ⊢ σ ⊗ τ ∋ \prd{a}{b} ⊠ Θ
+ {Γ ⊢ σ ∋ a \andalso{} Δ \and Δ ⊢ τ ∋ b \andalso{} Θ
+}{Γ ⊢ σ ⊗ τ ∋ \prd{a}{b} \andalso{} Θ
 }
 \\
 \and \inferrule
- {Γ ⊢ σ ∋ t ⊠ Δ
-}{Γ ⊢ σ ⊕ τ ∋ \inl{t} ⊠ Δ
+ {Γ ⊢ σ ∋ t \andalso{} Δ
+}{Γ ⊢ σ ⊕ τ ∋ \inl{t} \andalso{} Δ
 }
 \and \inferrule
- {Γ ⊢ τ ∋ t ⊠ Δ
-}{Γ ⊢ σ ⊕ τ ∋ \inr{t} ⊠ Δ
+ {Γ ⊢ τ ∋ t \andalso{} Δ
+}{Γ ⊢ σ ⊕ τ ∋ \inr{t} \andalso{} Δ
 }
 \and \inferrule
- {Γ ⊢ σ ∋ a ⊠ Δ \and Γ ⊢ τ ∋ b ⊠ Δ
-}{Γ ⊢ σ \& τ ∋ \prd{a}{b} ⊠ Δ
+ {Γ ⊢ σ ∋ a \andalso{} Δ \and Γ ⊢ τ ∋ b \andalso{} Δ
+}{Γ ⊢ σ \& τ ∋ \prd{a}{b} \andalso{} Δ
 }
 \\
 \and \inferrule
  {
-}{Γ ⊢ \Unit ∋ \uni ⊠ Γ
+}{Γ ⊢ \Unit ∋ \uni \andalso{} Γ
 } \and \inferrule
- {Γ ⊢ t ∈ σ ⊠ Δ \and σ ∋ p \leadsto{} δ
-  \\\\ Δ \append{} \fresh{δ} ⊢ τ ∋ u ⊠ Θ \append{} \stale{δ}
-}{Γ ⊢ τ ∋ \letin{p}{t}{u} ⊠ Θ
+ {Γ ⊢ t ∈ σ \andalso{} Δ \and σ ∋ p \leadsto{} δ
+  \\\\ Δ \append{} \fresh{δ} ⊢ τ ∋ u \andalso{} Θ \append{} \stale{δ}
+}{Γ ⊢ τ ∋ \letin{p}{t}{u} \andalso{} Θ
 }
 \and \inferrule
- {Γ ⊢ t ∈ σ ⊠ Δ
-}{Γ ⊢ σ ∋ \neu{t} ⊠ Δ
+ {Γ ⊢ t ∈ σ \andalso{} Δ
+}{Γ ⊢ σ ∋ \neu{t} \andalso{} Δ
 }
 \end{mathpar}
 \caption{Typing rules for \Checkable{}\label{figure:check}}

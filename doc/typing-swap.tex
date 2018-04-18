@@ -9,10 +9,10 @@
       \inferrule
        { % premise 4
       }{ % conclusion 4
-        [] ∙ \fresh{σ ⊗ τ} ⊢_v \texttt{0} ∈ σ ⊗ τ ⊠ [] ∙ \stale{σ ⊗ τ}
+        [] ∙ \fresh{σ ⊗ τ} ⊢_v \texttt{0} ∈ σ ⊗ τ \andalso{} [] ∙ \stale{σ ⊗ τ}
       }
     }{ % conclusion 3
-       [] ∙ \fresh{σ ⊗ τ} ⊢ \texttt{var}(\texttt{0}) ∈ σ ⊗ τ ⊠ [] ∙ \stale{σ ⊗ τ}
+       [] ∙ \fresh{σ ⊗ τ} ⊢ \texttt{var}(\texttt{0}) ∈ σ ⊗ τ \andalso{} [] ∙ \stale{σ ⊗ τ}
      }
    \and % premise 2
     \inferrule
@@ -39,10 +39,10 @@
       \texttt{let}~(\texttt{v, v})~∷=~\texttt{var}~\texttt{0}~\texttt{in} \\
       \texttt{prd}(\texttt{neu}(\texttt{var}(\texttt{1})),~\texttt{neu}(\texttt{var}(\texttt{0})))
     \end{array}}
-    ⊠ [] ∙ \stale{σ ⊗ τ}
+    \andalso{} [] ∙ \stale{σ ⊗ τ}
   }
 }{ % conclusion 1
-  [] ⊢ (σ ⊗ τ) ⊸ (τ ⊗ σ) ∋ \texttt{swap} ⊠ []
+  [] ⊢ (σ ⊗ τ) ⊸ (τ ⊗ σ) ∋ \texttt{swap} \andalso{} []
 }
 
 \and
@@ -58,25 +58,25 @@
          \inferrule
           { % premise 5
          }{ % conclusion 5
-           [] ∙ \stale{σ ⊗ τ} ∙ \fresh{τ} ⊢_v \texttt{0} ∈ τ ⊠ [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ}
+           [] ∙ \stale{σ ⊗ τ} ∙ \fresh{τ} ⊢_v \texttt{0} ∈ τ \andalso{} [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ}
          }
        }{ % conclusion 4
          [] ∙ \stale{σ ⊗ τ} ∙ \fresh{τ} ∙ \fresh{σ} ⊢_v \texttt{1} ∈ τ
-          ⊠ [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \fresh{σ}
+          \andalso{} [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \fresh{σ}
        }
      }{ % conclusion 3
        [] ∙ \stale{σ ⊗ τ} ∙ \fresh{τ} ∙ \fresh{σ} ⊢ \texttt{var}(\texttt{1}) ∈ τ
-       ⊠ [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \fresh{σ}
+       \andalso{} [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \fresh{σ}
      }
    }{ % conclusion 2
      [] ∙ \stale{σ ⊗ τ} ∙ \fresh{τ} ∙ \fresh{σ} ⊢ τ ∋ \texttt{neu}(\texttt{var}(\texttt{1}))
-     ⊠ [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \fresh{σ}
+     \andalso{} [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \fresh{σ}
    }
   \and Π'
  }{ % conclusion 3
    [] ∙ \stale{σ ⊗ τ} ∙ \fresh{τ} ∙ \fresh{σ} ⊢ τ ⊗ σ ∋
    \texttt{prd}(\texttt{neu}(\texttt{var}(\texttt{1})),~\texttt{neu}(\texttt{var}(\texttt{0}))
-   ⊠ [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \stale{σ}
+   \andalso{} [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \stale{σ}
  }
 
 \and
@@ -89,15 +89,15 @@
       { % premise 3
      }{ % conclusion 3
        [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \fresh{σ} ⊢_v \texttt{0} ∈ σ
-       ⊠ [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \stale{σ}
+       \andalso{} [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \stale{σ}
      }
    }{ % conclusion 2
      [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \fresh{σ} ⊢ \texttt{var}(\texttt{0}) ∈ σ
-     ⊠ [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \stale{σ}
+     \andalso{} [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \stale{σ}
    }
  }{ % conclusion 1
    [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \fresh{σ} ⊢ σ ∋ \texttt{neu}(\texttt{var}(\texttt{0}))
-   ⊠ [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \stale{σ}
+   \andalso{} [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \stale{σ}
  }
 
 \end{mathpar}

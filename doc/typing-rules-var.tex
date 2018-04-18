@@ -2,11 +2,11 @@
 \begin{mathpar}
 \inferrule
  {
-}{Γ ∙ \fresh{σ} ⊢_v \varzero ∈ σ ⊠ Γ ∙ \stale{σ}
+}{Γ ∙ \fresh{σ} ⊢_v \varzero ∈ σ \andalso{} Γ ∙ \stale{σ}
 }
 \and \inferrule
- {Γ ⊢_v k ∈ σ ⊠ Δ
-}{Γ ∙ A ⊢_v \varsucc{k} ∈ σ ⊠ Δ ∙ A
+ {Γ ⊢_v k ∈ σ \andalso{} Δ
+}{Γ ∙ A ⊢_v \varsucc{k} ∈ σ \andalso{} Δ ∙ A
 }
 \end{mathpar}
 \caption{Typing rules for \Var{}\label{figure:deBruijn}}

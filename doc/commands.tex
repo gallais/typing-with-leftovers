@@ -5,6 +5,8 @@
 
 \newcommand{\append}{+\!\!\!+}
 
+\newcommand{\andalso}{\,\ensuremath{{\scriptstyle \boxtimes{}}}\,}
+
 \newcommand{\fresh}[1]{\ensuremath{\texttt{f}_{#1}}}
 \newcommand{\stale}[1]{\ensuremath{\texttt{s}_{#1}}}
 
@@ -22,7 +24,7 @@
 \newcommand{\OPE}{\DefinedType{OPE}}
 \newcommand{\Env}{\ensuremath{\DefinedType{Env}}}
 
-\newcommand{\TEnv}[4]{\ensuremath{#1 ⊢_e #2 ∋ #3 ⊠ #4}}
+\newcommand{\TEnv}[4]{\ensuremath{#1 ⊢_e #2 ∋ #3 \andalso{} #4}}
 
 \newcommand{\Set}{\mathcal{\textit{Set}}}
 

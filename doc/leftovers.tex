@@ -397,7 +397,7 @@ in the typechecker will be.
 
 \input{typing-rules}
 
-\begin{remark}The use of ⊠ is meant to suggest that the input Γ
+\begin{remark}The use of \andalso{} is meant to suggest that the input Γ
 get distributed between the type σ of the term and the leftovers
 Δ obtained as an output. Informally $Γ \simeq σ ⊗ Δ$, hence the
 use of a tensor-like symbol.
@@ -413,7 +413,7 @@ In the resulting leftovers, this resource will have turned stale (\stale{σ})
 because it has now been used:
 
 \begin{definition}
-The typing relation for \Var{} is presented in a sequent-style: Γ ⊢$_v$ $k$ ∈ σ ⊠ Δ
+The typing relation for \Var{} is presented in a sequent-style: Γ ⊢$_v$ $k$ ∈ σ \andalso{} Δ
 means that starting from the usage annotation Γ, the de Bruijn index
 $k$ is ascribed type σ with leftovers Δ. It is defined inductively by
 two constructors (cf. Figure~\ref{figure:deBruijn}).
@@ -439,16 +439,16 @@ actually is:
 \inferrule
  {\inferrule
    {
-  }{Γ ∙ \fresh{τ} ⊢ \varzero{} ∈ τ ⊠ Γ ∙ \stale{τ}
+  }{Γ ∙ \fresh{τ} ⊢ \varzero{} ∈ τ \andalso{} Γ ∙ \stale{τ}
   }
-}{Γ ∙ \fresh{τ} ∙ \fresh{σ} ⊢ \varsucc{\varzero} ∈ τ ⊠ Γ ∙ \stale{τ} ∙ \fresh{σ}
+}{Γ ∙ \fresh{τ} ∙ \fresh{σ} ⊢ \varsucc{\varzero} ∈ τ \andalso{} Γ ∙ \stale{τ} ∙ \fresh{σ}
 }
 \end{mathpar}
 Or, as it would be written in Agda, taking advantage of the fact that
 the language constructs and the typing rules about them have been given
 the same names:
 \begin{lstlisting}
-  one : 'Γ' '∙' f 'τ' '∙' f 'σ' ⊢ s z '∈' 'τ' '⊠' 'Γ' '∙' s 'τ' '∙' f 'σ'
+  one : 'Γ' '∙' f 'τ' '∙' f 'σ' ⊢ s z '∈' 'τ' '\andalso{}' 'Γ' '∙' s 'τ' '∙' f 'σ'
   one = s z
 \end{lstlisting}
 \end{example}
@@ -473,7 +473,7 @@ type system which would be interesting in its own right.
 
 \begin{definition}The Typing Relation for \Inferable{} is typeset
 in a fashion similar to the one for \Var{}: in both cases
-the type is inferred. $Γ ⊢ t ∈ σ ⊠ Δ$ means that given Γ a
+the type is inferred. $Γ ⊢ t ∈ σ \andalso{} Δ$ means that given Γ a
 $\Usages{γ}$, and $t$ an \Inferable{}, the type σ is inferred
 together with leftovers Δ, another $\Usages{γ}$. The rules are
 listed in Figure~\ref{figure:infer}.
@@ -481,7 +481,7 @@ listed in Figure~\ref{figure:infer}.
 
 \input{typing-rules-infer}
 
-\begin{definition}For \Checkable{}, the type σ comes first: Γ ⊢ σ ∋ t ⊠ Δ means
+\begin{definition}For \Checkable{}, the type σ comes first: Γ ⊢ σ ∋ t \andalso{} Δ means
 that given Γ a \Usages{γ}, a type σ, the \Checkable{} $t$ can
 be checked to have type σ with leftovers Δ. The rules can be found
 in Figure~\ref{figure:check}.
@@ -519,19 +519,19 @@ at type (σ ⊸ σ) in an empty context:
    {\inferrule
      {\inferrule
        {
-      }{[] ∙ \fresh{σ} ⊢_v \varzero ∈ σ ⊠ [] ∙ \stale{σ}
+      }{[] ∙ \fresh{σ} ⊢_v \varzero ∈ σ \andalso{} [] ∙ \stale{σ}
       }
-    }{[] ∙ \fresh{σ} ⊢ \var{\varzero} ∈ σ ⊠ [] ∙ \stale{σ}
+    }{[] ∙ \fresh{σ} ⊢ \var{\varzero} ∈ σ \andalso{} [] ∙ \stale{σ}
     }
-  }{[] ∙ \fresh{σ} ⊢ σ ∋ \neu{(\var{\varzero})} ⊠ [] ∙ \stale{σ}
+  }{[] ∙ \fresh{σ} ⊢ σ ∋ \neu{(\var{\varzero})} \andalso{} [] ∙ \stale{σ}
   }
-}{[] ⊢ σ ⊸ σ ∋ \lam{(\neu{(\var{\varzero})})} ⊠ []
+}{[] ⊢ σ ⊸ σ ∋ \lam{(\neu{(\var{\varzero})})} \andalso{} []
 }
 \end{mathpar}
 Or, as it would be written in Agda where the typing rules were
 given the same name as their term constructor counterparts:
 \begin{lstlisting}
-  identity : [] '⊢' 'σ' '⊸' 'σ' '∋' lam (neu (var z)) '⊠' []
+  identity : [] '⊢' 'σ' '⊸' 'σ' '∋' lam (neu (var z)) '\andalso{}' []
   identity = lam (neu (var z))
 \end{lstlisting}
 \end{example}
@@ -543,7 +543,7 @@ context. This gives the lengthy derivation included in the appendix
 or the following one in Agda which is quite a lot more readable:
 
 \begin{lstlisting}
-  swapTyped : [] '⊢' ('σ' '⊗' 'τ') '⊸' ('τ' '⊗' 'σ') '∋' swap '⊠' []
+  swapTyped : [] '⊢' ('σ' '⊗' 'τ') '⊸' ('τ' '⊗' 'σ') '∋' swap '\andalso{}' []
   swapTyped = lam (let (v , v) := var z
                    in prd (neu (var (s z))) (neu (var z))
 \end{lstlisting}
@@ -942,7 +942,7 @@ Otherwise, it does not carry anything extra but tracks in its input /
 output usages annotation the fact the variable has been consumed.
 \begin{mathpar}
 \constructor
- {Θ₁ ⊢ t ∈ σ ⊠ Θ₂ \and \TEnv{Θ₂}{Γ}{ρ}{Θ₃}
+ {Θ₁ ⊢ t ∈ σ \andalso{} Θ₂ \and \TEnv{Θ₂}{Γ}{ρ}{Θ₃}
 }{\TEnv{Θ₁}{Γ ∙ \fresh{σ}}{ρ ∙ t}{Θ₃}
 }
 \and \constructor
@@ -1039,9 +1039,9 @@ decidable. In other words, given a \Nat{} $k$, γ a \Context{k} and
 Γ a $\Usages{γ}$,
 \begin{enumerate}
   \item for all \Inferable{k} $t$, we can decide if there is
-        a \Type{} $σ$ and Δ a \Usages{γ} such that $Γ ⊢ t ∈ σ ⊠ Δ$
+        a \Type{} $σ$ and Δ a \Usages{γ} such that $Γ ⊢ t ∈ σ \andalso{} Δ$
   \item for all \Type{} σ and \Checkable{k} t, we can decide if
-        there is Δ a \Usages{γ} such that $Γ ⊢ σ ∋ t ⊠ Δ$.
+        there is Δ a \Usages{γ} such that $Γ ⊢ σ ∋ t \andalso{} Δ$.
 \end{enumerate}
 \end{theorem}
 \begin{proof}
@@ -1203,7 +1203,7 @@ an idea of the proof.
 
 \begin{theorem}[Completeness] Given γ a \List{\Type{}} and σ a type,
 from a proof $γ ⊢ σ$ we can derive an \Inferable{} t and a proof that
-$\fresh{γ} ⊢ t ∈ σ ⊠ \stale{γ}$.
+$\fresh{γ} ⊢ t ∈ σ \andalso{} \stale{γ}$.
 \end{theorem}
 \begin{proof}
 The proof is by induction over the derivation in ILL. The right rules
