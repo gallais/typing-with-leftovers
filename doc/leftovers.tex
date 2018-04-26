@@ -76,7 +76,7 @@ in Agda. Rather than using Agda's syntax, the results are reformulated
 in terms of definitions, lemmas, theorems, and examples. However it is
 important to keep in mind the distinction between various kinds of objects.
 \texttt{Teletype} is used to denote data constructors, \DefinedType{small
-capitals} are characteristic of defined types. A type families' index is
+capitals} are characteristic of defined types. A type family's index is
 written as a subscript e.g. \Var{n}.
 
 We use two kinds of inference rules to describe inductive families: double
@@ -370,7 +370,7 @@ for it.
 \subsection{Typing as Consumption Annotation}
 
 A Typing relation seen as a consumption annotation process describes
-what it means, given a context an its usage annotation, to ascribe a
+what it means, given a context and its usage annotation, to ascribe a
 type to a term whilst crafting another usage annotation containing all
 the leftover resources. Formally:
 
@@ -399,7 +399,7 @@ in the typechecker will be.
 \input{typing-rules}
 
 \begin{remark}The use of \andalso{} is meant to suggest that the input Γ
-get distributed between the type σ of the term and the leftovers
+gets distributed between the type σ of the term and the leftovers
 Δ obtained as an output. Informally $Γ \simeq σ ⊗ Δ$, hence the
 use of a tensor-like symbol.
 \end{remark}
@@ -940,7 +940,7 @@ they have been introduced by going under a binder or not. If it is
 not the case then the typing environment carries around a typing
 derivation for the term $t$ meant to be substituted for this variable.
 Otherwise, it does not carry anything extra but tracks in its input /
-output usages annotation the fact the variable has been consumed.
+output usages annotation the fact that the variable has been consumed.
 \begin{mathpar}
 \constructor
  {Θ₁ ⊢ t ∈ σ \andalso{} Θ₂ \and \TEnv{Θ₂}{Γ}{ρ}{Θ₃}
@@ -1097,7 +1097,7 @@ Wiki~\cite{wiki:linearlogic} whose notations we follow to the letter.
 The interested reader will find more details in for instance Troelstra's
 lectures~\cite{troelstra1991lectures}. In the following figure, γ, δ,
 and θ are context variables while σ, τ , and ν range over types. We
-overload the comma to mean both consing a single type at the front
+overload the comma to mean both consing a single type to the front
 of a list and appending two lists, as is customary.
 
 \input{ill}
@@ -1105,7 +1105,7 @@ of a list and appending two lists, as is customary.
 Our only departure from the traditional presentation is the \textit{mix}
 rule which is an artefact of our encoding multisets as lists. It allows
 the user to pick any interleaving θ of two lists γ and δ. This notion of
-interleaving is formalised by the following three place relation.
+interleaving is formalised by the following three-place relation.
 
 \begin{definition} The \textbf{interleaving} relation is defined by three
 constructors: \textbf{[]} declares that interleaving two empty lists yields
