@@ -377,10 +377,11 @@ for it.
 
 \subsection{Typing as Consumption Annotation}
 
-A Typing relation seen as a consumption annotation process describes
-what it means, given a context and its usage annotation, to ascribe a
-type to a term whilst crafting another usage annotation containing all
-the leftover resources. Formally:
+A Typing relation seen as a consumption annotation process describes what it
+means to analyze a term in a scope of size $n$: given a context of types for
+these $n$ variables, and a usage annotation for that context, it ascribes a
+type to the term whilst crafting another usage annotation containing all the
+leftover resources. Formally:
 
 \begin{definition}
 \label{definition:typing}
@@ -440,7 +441,7 @@ could be seen as either writing a raw term or the typing derivation associated
 to it depending on the author's intent.
 \end{remark}
 
-\begin{example}
+\begin{example}\label{example:debruijn}
 The de Bruijn index 1 has type τ in the context (γ ∙ τ ∙ σ) with
 usage annotation (Γ ∙ \fresh{τ} ∙ \fresh{σ}), no matter what Γ
 actually is:
@@ -463,6 +464,13 @@ the same names:
 \end{example}
 
 \subsubsection{Typing Terms}
+
+We now face compound untyped terms such as \app{f}{t} whose subterms $f$ and $t$
+have been defined in the \emph{same} scope of size $n$. Therefore the typing relation
+for these terms needs to use the \emph{same} context of size $n$ for both premises.
+Trying to cut up a \Context{n} in two just like in Figure~\ref{rule:tensor} would
+not only be cumbersome, it wouldn't be type correct. This is where usage annotations
+shine.
 
 The key idea appearing in all the typing rules for compound
 expressions is to use the input \Usages{} to type one of the
@@ -510,7 +518,7 @@ are threaded from one premise to the other.
 \begin{definition}
 Finally, \Pattern{}s are checked against a type and a context of
 newly bound variables is generated. If the variable pattern always
-succeeds, the pair constructor pattern on the other hand obviously
+succeeds, the pair constructor pattern on the other hand
 only succeeds if the type it attempts to split is a tensor type.
 The context of newly-bound variables is then the collection of the
 contexts associated to the nested patterns. The rules are given in
@@ -590,9 +598,9 @@ Substitution for instance.
 
 \begin{definition}
 \label{definition:differences}
-\textbf{Consumption Equivalence} characterises the pairs of an input and
-an output \Usages{} which have the same consumption pattern. The
-usages annotations for the empty context are trivially related.
+\textbf{Consumption Equivalence} for a given \Context{} γ characterises
+the pairs of an input and an output \Usages{γ} which have the same consumption
+pattern. The usages annotations for the empty context are trivially related.
 If the context is not empty, then there are two cases: if the
 resource is left untouched on one side, then so should it on the other
 side but the two annotations may be different (here denoted $A$ and $B$
@@ -620,6 +628,12 @@ on one side then it has to be on the other side too.
 }
 \end{mathpar}
 \end{definition}
+
+\begin{remark}Two pairs of usages which are consumption equivalent are defined
+over the \emph{same} context (and thus scope). Stability of a typing rule with
+respect to consumption equivalence will not be sufficient to introduce new
+variables. This will be dealth with by defining weakening in Section~\ref{sec:weakening}.
+\end{remark}
 
 \begin{definition}The \textbf{Consumption Partial Order} Γ ⊆ Δ is defined as
 \mbox{Γ ─ Δ ≡ Γ ─ Δ}. It orders \Usages{} from least consumed to maximally consumed.
@@ -649,10 +663,30 @@ So do the ones for \Inferable{} and \Checkable{}.
 \end{theorem}
 \begin{proof}
 The proofs are by structural induction on the typing derivations. They rely on
-the previous lemmas to, when faced with a rule with multiple premisses and leftover
+the previous lemmas to, when faced with a rule with multiple premises and leftover
 threading, generate the inclusion evidence and use it to split up the witness
 of consumption equivalence and distribute it appropriately in the induction hypotheses.
 \end{proof}
+
+
+\begin{example}Coming back to the typing derivation for the de Bruijn index $1$ in
+Example~\ref{example:debruijn}, we can use the Framing theorem to transport the proof
+that \mbox{Γ ∙ \fresh{τ} ∙ \fresh{σ} ⊢ \varsucc{\varzero} ∈ τ \andalso{} Γ ∙ \stale{τ} ∙ \fresh{σ}}
+to a proof that \mbox{Δ ∙ \fresh{τ} ∙ \stale{σ} ⊢ \varsucc{\varzero} ∈ τ \andalso{} Δ ∙ \stale{τ} ∙ \stale{σ}}
+for any Δ. Indeed, we can see that these two pairs of \Usages{} are consumption equivalent
+(\mbox{Γ ─ Γ ≡ Δ ─ Δ} holds by induction):
+\begin{mathpar}
+\inferrule
+ {\inferrule
+   {\inferrule
+     {\vdots
+     }{Γ ─ Γ ≡ Δ ─ Δ}
+  }{Γ ∙ \fresh{τ} ─ Γ ∙ \stale{τ} ≡ Δ ∙ \fresh{τ} ─ Δ ∙ \stale{τ}
+  }
+}{Γ ∙ \fresh{τ} ∙ \fresh{σ} ─ Γ ∙ \stale{τ} ∙ \fresh{σ} ≡ Δ ∙ \fresh{τ} ∙ \stale{σ} ─ Δ ∙ \stale{τ} ∙ \stale{σ}
+ }
+\end{mathpar}
+\end{example}
 
 %%%%%%%%%%%%%%%
 %% WEAKENING %%
@@ -688,20 +722,18 @@ before giving, in Figure~\ref{figure:ope}, the formal definition of OPEs for
 
 In the following example, we prove that the source context $\gamma ∙ \tau$
 can be safely embedded into the target one $\gamma ∙ \sigma ∙ \tau ∙ \nu$,
-written $\gamma ∙ \tau \leq \gamma ∙ \sigma ∙ \tau ∙ \nu$. Because we read
+written $\gamma ∙ \tau \leq \gamma ∙ \sigma ∙ \tau ∙ \nu$. This example proof
+uses all three of the moves the inductive definition of OPEs offers:
+\opeinsert{\alpha} which introduces a new variable of type $\alpha$,
+\opecopy{} which embeds the source context's top variable, and \opedone{}
+which simply copies the source context. Because we read
 strategies left-to-right and it is easier to see how they act if contexts
 are also presented left-to-right, we temporarily switch to \emph{cons}-style
 (i.e. $\sigma , \gamma$) instead of the \emph{snoc}-style (i.e. $\gamma ∙ \sigma$)
 used in the rest of this paper.
 
-This example proof uses all three of the moves the inductive definition of
-OPEs offers: \opeinsert{\alpha} which introduces a new variable of type
-$\alpha$, \opecopy{} which embeds the source context's top variable,
-and \opedone{} which simply copies the source context. To clarify the
-effect of each move on the source context, we write it in \textit{cons}-style
-rather than the \textit{snoc}-style used in the rest of the paper and insert
-extra space to align the source elements and their respective embeddings in
-the target.
+\begin{example} An Order Preserving Embedding proving:
+$\gamma ∙ \tau \leq \gamma ∙ \sigma ∙ \tau ∙ \nu$
 
 \begin{figure}[ht]\centering
 \begin{tabular}{l|ccccccc}
@@ -718,11 +750,9 @@ the target.
                 & $\sigma$ & ,
                 & $\gamma$ \\
 \end{tabular}
-\caption{Example of an Order Preserving Embedding proving:
-         $\gamma ∙ \tau
-          \leq
-          \gamma ∙ \sigma ∙ \tau ∙ \nu$\label{figure:exampleOpe}}
+\label{figure:exampleOpe}
 \end{figure}
+\end{example}
 
 Now that we have seen an example, we can focus on the formal definition.
 We give the definition of \OPE{} for \Nat{}, \Context{} and \Usages{} all
@@ -792,7 +822,7 @@ source to target. The corresponding cases for \Context{}s and
 $\Usages{}$ are purely structural: no additional content is required
 to be able to perform a \texttt{copy} move.
 
-\item Last but not least, the third row describes the move \texttt{insert}
+\item The third row describes the move \texttt{insert}
 which introduces an extra variable in the target set. This is the
 move used to extend an existing context, i.e. to weaken it. In this
 case, it is paramount that the OPE for \Context{}s should take a
@@ -844,7 +874,7 @@ binders.
 \end{proof}
 
 Unlike the framing property, this theorem is not purely about the
-type system: the term is indeed modified between the premisse and
+type system: the term is indeed modified between the premise and
 the conclusion. Now that we know that weakening is compatible with
 the typing relations, let us study substitution.
 
@@ -855,7 +885,7 @@ the typing relations, let us study substitution.
 \section{Substituting}\label{sec:substitution}
 
 Stability of the typing relations under substitution guarantees
-that the evaluation of programs will yield results which have
+that the untyped evaluation of programs will yield results which have
 the same type as well as preserve the linearity constraints.
 The notion of leftovers naturally extends to substitutions: the
 terms meant to be substituted for the variables in context which
@@ -923,8 +953,7 @@ the auxiliary function looking up a value in $ρ$ given a $\Var{k}$.
 Relations are stable under substitution follow closely the ones
 for raw terms. \TEnv{Θ₁}{Γ}{ρ}{Θ₂} is a typing relation with
 input usages $Θ₁$ and output $Θ₂$ for the raw substitution $ρ$
-targeting the fresh variables in $Γ$. Unsurprisingly,
-the typing for the empty environment has the same input and output
+targeting the fresh variables in $Γ$. The typing for the empty environment has the same input and output
 usages annotation. Formally:
 \begin{mathpar}
 \type
@@ -943,7 +972,7 @@ usages annotation. Formally:
 }{\TEnv{Θ₁}{[]}{[]}{Θ₁}
 }
 \end{mathpar}
-For \textbf{f}resh variables in Γ, there are two cases depending whether
+For \textbf{f}resh variables in Γ, there are two cases depending on whether
 they have been introduced by going under a binder or not. If it is
 not the case then the typing environment carries around a typing
 derivation for the term $t$ meant to be substituted for this variable.
@@ -1218,7 +1247,7 @@ $\fresh{γ} ⊢ t ∈ σ \andalso{} \stale{γ}$.
 The proof is by induction over the derivation in ILL. The right rules
 match our introduction rules well enough that they do not pose any
 issue. Weakening lets us extend the \Usages{} of the sequents obtained
-by induction hypothesis in the case of multi-premisses rules. Left rules
+by induction hypothesis in the case of multi-premises rules. Left rules
 are systematically translated as \cut{}s.
 
 Finally, the hardest rule to handle is the \texttt{mix} rule which
