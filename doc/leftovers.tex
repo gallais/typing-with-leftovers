@@ -253,22 +253,25 @@ base types.
 \caption{Grammar of \Type{}}\label{fig:types}
 \end{figure}
 
-A linear type system is characterised by the
-fact that all the resources available in a context have to be
-used exactly once by the term being checked. In traditional
-presentations of linear logic this is achieved by representing
-the context as a multiset and, in each rule, cutting it up and
-distributing its parts among the premises. This is epitomised
-by the introduction rule for tensor (cf. Figure~\ref{rule:tensor}).
+A linear type system is characterised by the fact that all the resources
+available in the context have to be used exactly once by the term being
+checked. In traditional presentations of linear logic this is achieved by
+representing the context as a multiset and, in each rule, cutting it up
+and distributing its parts among the premises. This is epitomised by the
+introduction rule for tensor.
 
 However, multisets are an intrinsically \emph{extensional} notion and
-therefore quite arduous to work with in an \emph{intensional} type
-theory. Various strategies can be applied to tackle this issue;
-most of them rely on using linked lists to represent contexts
-together with either extra inference rules to reorganise the
-context or a side condition to rules splitting the context so
-that it may be re-arranged on the fly. In the following example
-$\_≈\_$ stands for ``bag-equivalence'' of lists.
+therefore quite arduous to work with in an \emph{intensional} type theory.
+Various strategies can be applied to tackle this issue; most of them rely
+on using linked lists to represent contexts together with ways to reorganise
+the context.
+
+In Figure~\ref{rule:tensor} we show two of the most common representations
+of the tensor rule. The first one splits the context into Γ and Δ and dispatches
+them into the subproofs; it relies on the existence of structural rules which
+the user will be able to use to reorganise the context appropriately. The second
+one is a combined rule letting the user re-arrange the context on the fly by using
+the notion of ``bag-equivalence'' for lists denoted $\_≈\_$.
 
 \begin{figure}[ht]
 \begin{mathpar}
@@ -285,10 +288,13 @@ $\_≈\_$ stands for ``bag-equivalence'' of lists.
 \caption{Introduction rules for tensor (left: usual presentation, right: with reordering on the fly)\label{rule:tensor}}
 \end{figure}
 
-Although one can find coping mechanisms to handle such clunky systems
-(for instance using a solver for bag-equivalence~\cite{danielsson2012bag}
+In both of these cases, the user has to explicitly rearrange the context
+either by using structural rules or proving that two distinct contexts are
+bag equivalent. Although one can find coping mechanisms to handle such
+clunky systems (for instance using a solver for bag-equivalence~\cite{danielsson2012bag}
 based on the proof-by-reflection~\cite{boutin1997using} approach to
 automation), we would rather not.
+
 All of these strategies are artefacts of the unfortunate mismatch
 between the ideal mathematical objects one wishes to model and
 their internal representation in the proof assistant. Short of
