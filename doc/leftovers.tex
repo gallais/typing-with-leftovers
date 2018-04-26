@@ -1034,13 +1034,21 @@ in order to adjust the \Usages{} annotations.
 
 \section{Functionality}\label{sec:functional}
 
+In the next section we will prove that type-checking and type-inference are
+decidable. In the cases where the check fails, we have to prove that any
+purported typing derivation would leave to a contradiction. Thse arguments
+all follow a similar pattern: assuming that a typing derivation exist, we
+use inversion lemmas to obtain results in direct contradiction to the
+observations we have made. These inversion lemmas often rely on the fact
+that the typing relations are functional.
+
 Although we did highlight that some of our relations' indices are meant
 to be seen as inputs whilst others are supposed to be outputs, we have
-not yet made this relationship formal. This fact was seldom used in the
-proofs so far but all of these typing relations are indeed functional
-when seen as various (binary or ternary) relations. Which means that if
-two typing derivations exist for some fixed arguments (seen as inputs)
-then the other arguments (seen as outputs) are equal to each other.
+not yet made this relationship formal because this fact was seldom used
+in the proofs so far. Functionality can be expressed by saying that given
+a typing relation, if two typing derivations exist for some fixed arguments
+(seen as inputs) then the other arguments (seen as outputs) are equal to each
+other.
 
 \begin{definition}We say that a relation $R$ of type
 $Π(\mathit{ri} : \mathit{RI}). \mathit{II} → O(ri) → \Set{}$
@@ -1174,7 +1182,7 @@ during the typing derivation then it corresponds to a proof of γ ⊢ σ in ILL.
 This statement needs to be generalised to be proven. Indeed, even if we start
 with a context full of available resources, at the first split we encounter
 (e.g. a tensor introduction or a function application), it won't be the case
-anymore in one of the sub-terms. To formulate this more general formulation,
+anymore in one of the sub-terms. To state this more general formulation,
 we need to introduce a new notion: used assumptions.
 
 \begin{definition}The list of \textbf{used} assumptions in a proof Γ ⊆ Δ in
@@ -1200,9 +1208,9 @@ derivation are computed and the way the ones for its subderivations are obtained
 
 \begin{lemma}Given k a \Nat{}, γ a \Context{k} and Γ, Δ, and θ three \Usages{γ},
 we have:\begin{enumerate}
-\item if p and q are proofs that $Γ ⊆ Δ$ then \used{p} = \used{q}
+\item if p and q are proofs that $Γ ⊆ Δ$ then \used{p} = \used{q}.
 \item if p is a proof that $Γ ⊆ Δ$, q that $Δ ⊆ θ$ and pq that $Γ ⊆ θ$ then \used{pq}
-is an interleaving of \used{p} and \used{q}
+is an interleaving of \used{p} and \used{q}.
 \end{enumerate}
 \end{lemma}
 
@@ -1269,7 +1277,7 @@ Benton, Bierman, de Paiva, and Hyland~\cite{benton1993term} did devise a
 term assignment system for Intuitionistic Linear Logic which was stable
 under substitution. Their system focuses on multiplicative linear logic
 only when ours also encompasses additive connectives \emph{but} it gives
-a thourough treatment of the \textit{!} modality. This is still an open
+a thorough treatment of the \textit{!} modality. This is still an open
 problem for us because we do not want to have the explicit handling of
 \textit{!}'s weakening, contraction, dereliction, and promotion rules
 pollute the raw terms.
@@ -1278,14 +1286,15 @@ Rand, Paykin and Zdancewic's work on modelling quantum circuits in
 Coq~\cite{rand17qwire} necessarily includes a treatment of linearity
 as qbits cannot be duplicated. And because it is mechanised, they have
 to deal with the representation of contexts. Their focus is mostly on
-the quantum aspect and they are happy relying on the Coq's scripting
+the quantum aspect and they are happy relying on Coq's scripting
 capabilities to cope with the extensional presentation.
 
 Bob Atkey and James Wood~\cite{bob:sortingtypes} have been experimenting
 with using a deep embedding of a linear lambda calculus in Agda as a way
 to certify common algorithms. Being able to encode insertion sort as a
 term in this deep embedding is indeed sufficient to conclude that the
-output of the algorithm is a permutation of its input.
+output of the algorithm is a permutation of its input. They use on-the-fly
+re-ordering of contexts via explicit permutation proofs.
 
 Polakow faced with the task of embedding a linear λ-calculus in
 Haskell~\cite{polakow2016embedding} used a typed-tagless
@@ -1379,6 +1388,7 @@ currently an open question.
 
 %% .. or use the thebibliography environment explicitely
 
+\newpage
 \appendix
 
 \section{Fully-expanded Typing Derivation for \texttt{swap}}
