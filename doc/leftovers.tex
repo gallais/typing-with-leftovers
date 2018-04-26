@@ -906,7 +906,6 @@ weakened to fit in the extended context they end up in but that happens
 at the point of use (i.e. when they are being looked up to replace a
 variable) instead of when pushing the substitution under a binder.
 
-
 \begin{definition}The environment \Env{} used to define substitution
 for raw terms is indexed by two \Nat{}s $k$ and $l$ where $k$ is the
 source's scope and $l$ is the target's scope. There are three constructors:
@@ -938,15 +937,38 @@ without any issue. We now state the substitution lemma on untyped terms
 because it is, unlike the one for weakening, non-standard by way of our
 definition of environments.
 
+\begin{lemma}Given a \Var{k} $v$ and an \Env{}(k, l) $\rho$, we can look up
+the \Inferable{l} associated to $v$ in $\rho$.
+\end{lemma}
+\begin{proof} The proof goes by induction on $v$ and case analysis on $\rho$.
+If the variable we look up has been introduced by a binder we went under using
+the constructor \envextend{} then we return it immediately. Otherwise we get
+our hands on a term which we may need to weaken. This corresponds to the following
+functional specification (the practical implementation can be distinct to avoid
+retraversing the term once for every single binder we went under):
+\begin{figure}[ht]\centering
+\begin{tabular}{l@{~[}l@{]\,=\,}l}
+  \var{\varzero}      & \ensuremath{\rho \envextend{}} & \varzero{} \\
+  \var{\varzero}      & \ensuremath{\rho ∙ t}          & \ensuremath{t} \\
+  \var{(\varsucc{v})} & \ensuremath{\rho \envextend{}} & \texttt{lift}(\subst{\var{v}}{\rho}) \\
+  \var{(\varsucc{v})} & \ensuremath{\rho ∙ t}          & \subst{\var{v}}{\rho} \\
+\end{tabular}
+\end{figure}
+
+where \texttt{lift} is an instance of weakening defined in the previous
+section which takes a term in a scope of size $k$ and returns the same
+term in scope \natsucc{k}.
+\end{proof}
+
 \begin{lemma}Raw terms are stable under substitutions: for all $k$ and
 $l$, given $t$ a term $\Inferable{k}$ (resp. $\Checkable{k}$) and $ρ$
 an environment $\Env{}(k,l)$, we can apply the substitution $ρ$ to $t$
 and obtain an $\Inferable{l}$ (resp. $\Checkable{l}$).
 \end{lemma}
-\begin{proof}By mutual induction on the raw terms, using the \envextend{}
-\Env{} constructor when going under a binder. The need for weakening or
-crafting fresh variables has not disappeared, it has been transferred to
-the auxiliary function looking up a value in $ρ$ given a $\Var{k}$.
+\begin{proof}By mutual induction on the raw terms. The traversals are purely
+structural except when going under binders where the constructor \envextend{} is
+used to extend the \Env{} appropriately. The prototypical case of a binder is
+the \lam{} one, and its functional specification is: \mbox{\subst{(\lam{t})}{\rho} = \lam{(\subst{t}{\rho \envextend{}})}}.
 \end{proof}
 
 \begin{definition}The \textbf{environments} used when proving that Typing
