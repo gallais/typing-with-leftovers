@@ -70,13 +70,14 @@ mutual
 
   substCheck : Substituting Infer Check
   substCheck ρ (`lam b)            = `lam substCheck (v∷ ρ) b
-  substCheck ρ (`let p ∷= t `in u) = `let p ∷= substInfer ρ t `in substCheck (withFreshVars (patternSize p) ρ) u
+  substCheck ρ (`let p ∷= t `in u) = `let p ∷= substInfer ρ t
+                                     `in substCheck (withFreshVars (patternSize p) ρ) u
   substCheck ρ `unit               = `unit
   substCheck ρ (`prd a b)          = `prd (substCheck ρ a) (substCheck ρ b)
   substCheck ρ (`inl t)            = `inl substCheck ρ t
   substCheck ρ (`inr t)            = `inr substCheck ρ t
   substCheck ρ (`neu t)            = `neu substInfer ρ t
-  
+
   substInfer : Substituting Infer Infer
   substInfer ρ (`var k)                     = substFin fresheyInfer ρ k
   substInfer ρ (`app i u)                   = `app (substInfer ρ i) (substCheck ρ u)
