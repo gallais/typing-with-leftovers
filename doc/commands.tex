@@ -1,9 +1,11 @@
+\usepackage[bb=boondox]{mathalfa}
 \renewcommand{\textsc}[1]{{\footnotesize \uppercase{#1}}}
 \newcommand{\DefinedType}[1]{\text{\textsc{#1}}}
-
+\newcommand{\Zeta}{Z}
 \newcommand{\TR}[1]{\ensuremath{\mathcal{T}_{#1}}}
 
 \newcommand{\append}{+\!\!\!+}
+\newcommand{\listcons}{:\!\!\!:}
 
 \newcommand{\andalso}{\,\ensuremath{{\scriptstyle \boxtimes{}}}\,}
 
@@ -24,7 +26,7 @@
 \newcommand{\OPE}{\DefinedType{OPE}}
 \newcommand{\Env}{\ensuremath{\DefinedType{Env}}}
 
-\newcommand{\TEnv}[4]{\ensuremath{#1 ⊢_e #2 ∋ #3 \andalso{} #4}}
+\newcommand{\TEnv}[4]{\ensuremath{#1 \ensuremath{\vdash}_e #2 \ensuremath{\ni} #3 \andalso{} #4}}
 
 \newcommand{\Set}{\mathcal{\textit{Set}}}
 
@@ -38,7 +40,7 @@
 \newcommand{\opecopy}{\ensuremath{\texttt{copy}}}
 \newcommand{\opedone}{\ensuremath{\texttt{done}}}
 
-\newcommand{\envextend}{\ensuremath{\texttt{∙\!v}}}
+\newcommand{\envextend}{\ensuremath{\mathbin{\vcenter{\hbox{\scalebox{.6}{$\bullet$}}}}}\!\texttt{v}}
 
 %% LANGUAGE
 \newcommand{\varzero}{\texttt{z}}
@@ -63,11 +65,11 @@
 \newcommand{\subst}[2]{\ensuremath{#1~[\,#2\,]}}
 
 %% TYPES
-\newcommand{\Base}[1]{κ\, #1}
-\newcommand{\Lolli}[2]{#1 \,⊸\, #2}
-\newcommand{\Tensor}[2]{#1 \,⊗\, #2}
+\newcommand{\Base}[1]{\ensuremath{\kappa}\, #1}
+\newcommand{\Lolli}[2]{#1 \,\ensuremath{\multimap}\, #2}
+\newcommand{\Tensor}[2]{#1 \,\ensuremath{\otimes}\, #2}
 \newcommand{\Unit}{\ensuremath{\mathbb{1}}}
-\newcommand{\Sum}[2]{#1 \,⊕\, #2}
+\newcommand{\Sum}[2]{#1 \,\ensuremath{\oplus}\, #2}
 \newcommand{\With}[2]{#1 \,\&\, #2}
 \newcommand{\Zero}{\ensuremath{\mathbb{0}}}
 

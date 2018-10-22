@@ -1,10 +1,9 @@
-
 \begin{document}
 
 \maketitle
 
 \begin{abstract}
-We start from an untyped, well-scoped λ-calculus and introduce a bidirectional
+We start from an untyped, well-scoped \ensuremath{\lambda}-calculus and introduce a bidirectional
 typing relation corresponding to a Multiplicative-Additive Intuitionistic Linear
 Logic. We depart from
 typical presentations to adopt one that is well-suited to the intensional setting
@@ -57,7 +56,7 @@ In order to be able to use type theory to formally study the meta-theory
 of the programming languages whose type system includes notions of linearity,
 we need to have a good representation of such constraints.
 
-Section~\ref{sec:rawterms} introduces the well-scoped untyped λ-calculus
+Section~\ref{sec:rawterms} introduces the well-scoped untyped \ensuremath{\lambda}-calculus
 we are going to use as our language of raw terms. Section~\ref{sec:typingrules}
 defines the linear typing rules for this language as relations which
 record the resources consumed by a program. The next sections are dedicated
@@ -112,7 +111,7 @@ This technique, sometimes dubbed ``type-level de Bruijn indices'',
 makes it possible to keep track, in the index of the family, of the
 free variables currently in scope. As is nowadays folklore, instead of
 using a set-indexed presentation where a closed terms is indexed by
-the empty set $⊥$ and fresh variables are introduced by wrapping
+the empty set $\ensuremath{\bot}$ and fresh variables are introduced by wrapping
 the index in a \texttt{Maybe} type constructor\footnote{The value
 \texttt{nothing} represents the fresh variable whilst the constructor
 \texttt{just} lifts the other ones in the new scope.}, we index
@@ -145,7 +144,7 @@ computations (which we call \Inferable{}). Each type is indexed by a scope:
 \end{mathpar}
 
 On top of the constructors one would expect for a usual definition of
-the untyped λ-calculus (\var{\cdot}, \app{\cdot}{\cdot}, and \lam{\cdot})
+the untyped \ensuremath{\lambda}-calculus (\var{\cdot}, \app{\cdot}{\cdot}, and \lam{\cdot})
 we have constructors and eliminators for sums (\inl{\cdot}, \inr{\cdot},
 \cas{\cdot}{\cdot}{\cdot}{\cdot}), products (\prd{\cdot}, \letin{\cdot}{\cdot}{\cdot},
 \prl{\cdot}, \prr{\cdot}), unit (\uni{}, \letin{\cdot}{\cdot}{\cdot})
@@ -158,19 +157,19 @@ change of direction between inferring and checking.
 
 \begin{figure}[H]\centering
 \begin{tabular}{lcl}
-⟨\Inferable{n}⟩ & ::= & \var{⟨\Var{n}⟩} \\
-                   &  |  & \app{⟨\Inferable{n}⟩}{⟨\Checkable{n}⟩} \\
-                   &  |  & \cas{⟨\Inferable{n}⟩}{⟨\Type{}⟩}{⟨\Checkable{\natsucc{n}}⟩}{⟨\Checkable{\natsucc{n}}⟩} \\
-                   &  |  & \prl{⟨\Inferable{n}⟩} ~|~ \prr{⟨\Inferable{n}⟩} \\
-                   &  |  & \exf{⟨\Type{}⟩}{⟨\Inferable{n}⟩} \\
-                   &  |  & \cut{⟨\Checkable{n}⟩}{⟨\Type{}⟩} \\ \\
+\ensuremath{\langle}\Inferable{n}\ensuremath{\rangle} & ::= & \var{\ensuremath{\langle}\Var{n}\ensuremath{\rangle}} \\
+                   &  |  & \app{\ensuremath{\langle}\Inferable{n}\ensuremath{\rangle}}{\ensuremath{\langle}\Checkable{n}\ensuremath{\rangle}} \\
+                   &  |  & \cas{\ensuremath{\langle}\Inferable{n}\ensuremath{\rangle}}{\ensuremath{\langle}\Type{}\ensuremath{\rangle}}{\ensuremath{\langle}\Checkable{\natsucc{n}}\ensuremath{\rangle}}{\ensuremath{\langle}\Checkable{\natsucc{n}}\ensuremath{\rangle}} \\
+                   &  |  & \prl{\ensuremath{\langle}\Inferable{n}\ensuremath{\rangle}} ~|~ \prr{\ensuremath{\langle}\Inferable{n}\ensuremath{\rangle}} \\
+                   &  |  & \exf{\ensuremath{\langle}\Type{}\ensuremath{\rangle}}{\ensuremath{\langle}\Inferable{n}\ensuremath{\rangle}} \\
+                   &  |  & \cut{\ensuremath{\langle}\Checkable{n}\ensuremath{\rangle}}{\ensuremath{\langle}\Type{}\ensuremath{\rangle}} \\ \\
 
-⟨\Checkable{n}⟩ & ::= & \lam{⟨\Checkable{\natsucc{n}}⟩} \\
-                   &  |  & \letin{⟨\Pattern{m}⟩}{⟨\Inferable{n}⟩}{⟨\Checkable{m + n}⟩} \\
+\ensuremath{\langle}\Checkable{n}\ensuremath{\rangle} & ::= & \lam{\ensuremath{\langle}\Checkable{\natsucc{n}}\ensuremath{\rangle}} \\
+                   &  |  & \letin{\ensuremath{\langle}\Pattern{m}\ensuremath{\rangle}}{\ensuremath{\langle}\Inferable{n}\ensuremath{\rangle}}{\ensuremath{\langle}\Checkable{m + n}\ensuremath{\rangle}} \\
                    &  |  & \uni{} \\
-                   &  |  & \inl{⟨\Checkable{n}⟩} ~|~ \inr{⟨\Checkable{n}⟩} \\
-                   &  |  & \prd{⟨\Checkable{n}⟩}{⟨\Checkable{n}⟩} \\
-                   &  |  & \neu{⟨\Inferable{n}⟩} \\
+                   &  |  & \inl{\ensuremath{\langle}\Checkable{n}\ensuremath{\rangle}} ~|~ \inr{\ensuremath{\langle}\Checkable{n}\ensuremath{\rangle}} \\
+                   &  |  & \prd{\ensuremath{\langle}\Checkable{n}\ensuremath{\rangle}}{\ensuremath{\langle}\Checkable{n}\ensuremath{\rangle}} \\
+                   &  |  & \neu{\ensuremath{\langle}\Inferable{n}\ensuremath{\rangle}} \\
 \end{tabular}
 \caption{Grammar of the Language of Raw Terms}
 \end{figure}
@@ -186,7 +185,7 @@ lets. This is achieved thanks to a rather simple piece of kit: the
 irrefutable pattern binding $n$ variables. Because variables are
 represented as de Bruijn indices, the base pattern does not need to
 be associated with a name, it simply is a constructor \texttt{v}
-binding exactly one variable. The brackets pattern \texttt{⟨⟩} matches
+binding exactly one variable. The brackets pattern \texttt{\ensuremath{\langle}\ensuremath{\rangle}} matches
 unit values and binds nothing. The comma pattern constructor takes
 two nested patterns respectively binding $m$ and $n$ variables and
 uses them to deeply match a pair thus binding $(m + n)$ variables.
@@ -194,7 +193,7 @@ uses them to deeply match a pair thus binding $(m + n)$ variables.
 \begin{mathpar}
 \type{n : \Nat{}}{\Pattern{n} : \Set{}}
 \and \constructor{ }{\texttt{v} : \Pattern{1}}
-\and \constructor{ }{\texttt{⟨\!⟩} : \Pattern{0}}
+\and \constructor{ }{\texttt{\ensuremath{\langle}\!\ensuremath{\rangle}} : \Pattern{0}}
 \and \constructor{p : \Pattern{m} \and q : \Pattern{n}}{p \texttt{,} q : \Pattern{m + n}}
 \end{mathpar}
 
@@ -218,7 +217,7 @@ function $(x, y) \mapsto (y, x)$.
 ill-typed: the let-binding it uses tries to break down a function as
 if it were a pair.
 \begin{lstlisting}
-  illTyped = let (v , v) := cut (lam (neu (var z))) (a ⊸ a)
+  illTyped = let (v , v) := cut (lam (neu (var z))) (a '\ensuremath{\multimap}' a)
              in prd (neu (var z)) (neu (var (s z)))
 \end{lstlisting}
 \end{example}
@@ -244,13 +243,13 @@ base types.
 
 \begin{figure}[ht]\centering
 \begin{tabular}{lcl}
-⟨\Type{}⟩ & ::= & \Base{⟨$\mathbb{N}$⟩}
+\ensuremath{\langle}\Type{}\ensuremath{\rangle} & ::= & \Base{\ensuremath{\langle}$\mathbb{N}$\ensuremath{\rangle}}
              ~|~    \Zero{}
              ~|~    \Unit{} \\
-            & |   & \Lolli{⟨\Type{}⟩}{⟨\Type{}⟩}
-             ~|~    \Tensor{⟨\Type{}⟩}{⟨\Type{}⟩} \\
-            & |   & \Sum{⟨\Type{}⟩}{⟨\Type{}⟩}
-             ~|~    \With{⟨\Type{}⟩}{⟨\Type{}⟩}
+            & |   & \Lolli{\ensuremath{\langle}\Type{}\ensuremath{\rangle}}{\ensuremath{\langle}\Type{}\ensuremath{\rangle}}
+             ~|~    \Tensor{\ensuremath{\langle}\Type{}\ensuremath{\rangle}}{\ensuremath{\langle}\Type{}\ensuremath{\rangle}} \\
+            & |   & \Sum{\ensuremath{\langle}\Type{}\ensuremath{\rangle}}{\ensuremath{\langle}\Type{}\ensuremath{\rangle}}
+             ~|~    \With{\ensuremath{\langle}\Type{}\ensuremath{\rangle}}{\ensuremath{\langle}\Type{}\ensuremath{\rangle}}
 \end{tabular}
 \caption{Grammar of \Type{}}\label{fig:types}
 \end{figure}
@@ -269,23 +268,23 @@ on using linked lists to represent contexts together with ways to reorganise
 the context.
 
 In Figure~\ref{rule:tensor} we show two of the most common representations
-of the tensor rule. The first one splits the context into Γ and Δ and dispatches
+of the tensor rule. The first one splits the context into \ensuremath{\Gamma} and \ensuremath{\Delta} and dispatches
 them into the subproofs; it relies on the existence of structural rules which
 the user will be able to use to reorganise the context appropriately. The second
 one is a combined rule letting the user re-arrange the context on the fly by using
-the notion of ``bag-equivalence'' for lists denoted $\_≈\_$.
+the notion of ``bag-equivalence'' for lists denoted \ensuremath{\cdot\simeq\cdot}.
 
 \begin{figure}[ht]
 \begin{mathpar}
 \inferrule
- {Γ ⊢ σ \and Δ ⊢ τ
-}{Γ, Δ ⊢ σ ⊗ τ
-}{⊗_i}
+ {\ensuremath{\Gamma} \ensuremath{\vdash} \ensuremath{\sigma} \and \ensuremath{\Delta} \ensuremath{\vdash} \ensuremath{\tau}
+}{\ensuremath{\Gamma}, \ensuremath{\Delta} \ensuremath{\vdash} \ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}
+}{\ensuremath{\otimes}_i}
 
 \and \inferrule
- {Γ ⊢ σ \and Δ ⊢ τ \and Γ, Δ ≈ Θ
-}{Θ ⊢ σ ⊗ τ
-}{⊗_i}
+ {\ensuremath{\Gamma} \ensuremath{\vdash} \ensuremath{\sigma} \and \ensuremath{\Delta} \ensuremath{\vdash} \ensuremath{\tau} \and \ensuremath{\Gamma}, \ensuremath{\Delta} \ensuremath{\simeq} \ensuremath{\Theta}
+}{\ensuremath{\Theta} \ensuremath{\vdash} \ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}
+}{\ensuremath{\otimes}_i}
 \end{mathpar}
 \caption{Introduction rules for tensor (left: usual presentation, right: with reordering on the fly)\label{rule:tensor}}
 \end{figure}
@@ -329,14 +328,14 @@ be formally described by the following inference rules:
 \begin{mathpar}
 \type{n : \Nat{}}{\Context{n} : \Set{}}
 \and \constructor{ }{[] : \Context{0}}
-\and \constructor{γ : \Context{n} \and σ : \Type{}}{γ ∙ σ : \Context{\natsucc{n}}}
+\and \constructor{\ensuremath{\gamma} : \Context{n} \and \ensuremath{\sigma} : \Type{}}{\ensuremath{\gamma} \ensuremath{\cdot} \ensuremath{\sigma} : \Context{\natsucc{n}}}
 \end{mathpar}
 \end{definition}
 
 
 \begin{definition}
 \label{definition:usage}
-A \textbf{\Usage{}} is a predicate on a type $σ$ describing whether the
+A \textbf{\Usage{}} is a predicate on a type $\ensuremath{\sigma}$ describing whether the
 resource associated to it is available or not. We name the
 constructors describing these two states \fresh{} (for \textbf{fresh})
 and \stale{} (for \textbf{stale}) respectively.
@@ -347,30 +346,30 @@ for it.
 
 \begin{mathpar}
 \type
- {σ : \Type{}
-}{\Usage{σ} : \Set{}
+ {\ensuremath{\sigma} : \Type{}
+}{\Usage{\ensuremath{\sigma}} : \Set{}
 }
 \and\constructor
  {
-}{\fresh{σ} : \Usage{σ}
+}{\fresh{\ensuremath{\sigma}} : \Usage{\ensuremath{\sigma}}
 }
 \and\constructor
  {
-}{\stale{σ} : \Usage{σ}
+}{\stale{\ensuremath{\sigma}} : \Usage{\ensuremath{\sigma}}
 }
 \end{mathpar}
 \begin{mathpar}
 \type
- { γ : \Context{n}
-}{\Usages{γ} : \Set{}
+ { \ensuremath{\gamma} : \Context{n}
+}{\Usages{\ensuremath{\gamma}} : \Set{}
 }
 \and\constructor
  {
 }{[] : \Usages{[]}
 }
 \and\constructor
- {Γ : \Usages{γ} \and S : \Usage{σ}
-}{Γ ∙ S : \Usages{γ ∙ σ}
+ {\ensuremath{\Gamma} : \Usages{\ensuremath{\gamma}} \and S : \Usage{\ensuremath{\sigma}}
+}{\ensuremath{\Gamma} \ensuremath{\cdot} S : \Usages{\ensuremath{\gamma} \ensuremath{\cdot} \ensuremath{\sigma}}
 }
 \end{mathpar}
 \end{definition}
@@ -389,8 +388,8 @@ A \textbf{Typing Relation} for $T$ a \Nat{}-indexed inductive family is
 an indexed relation \TR{n} such that:
 \begin{mathpar}
 \type
- {n : \Nat{} \and γ : \Context{n} \and Γ, Δ : \Usages{γ} \and t : T_n \and σ : \Type{}
-}{\text{\TR{n}}(Γ, t, σ, Δ) : \Set{}
+ {n : \Nat{} \and \ensuremath{\gamma} : \Context{n} \and \ensuremath{\Gamma}, \ensuremath{\Delta} : \Usages{\ensuremath{\gamma}} \and t : T_n \and \ensuremath{\sigma} : \Type{}
+}{\text{\TR{n}}(\ensuremath{\Gamma}, t, \ensuremath{\sigma}, \ensuremath{\Delta}) : \Set{}
 }
 \end{mathpar}
 \end{definition}
@@ -407,9 +406,9 @@ in the typechecker will be.
 
 \input{typing-rules}
 
-\begin{remark}The use of \andalso{} is meant to suggest that the input Γ
-gets distributed between the type σ of the term and the leftovers
-Δ obtained as an output. Informally $Γ \simeq σ ⊗ Δ$, hence the
+\begin{remark}The use of \andalso{} is meant to suggest that the input \ensuremath{\Gamma}
+gets distributed between the type \ensuremath{\sigma} of the term and the leftovers
+\ensuremath{\Delta} obtained as an output. Informally $\ensuremath{\Gamma} \simeq \ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\Delta}$, hence the
 use of a tensor-like symbol.
 \end{remark}
 
@@ -417,15 +416,15 @@ use of a tensor-like symbol.
 
 The simplest instance of a Typing Relation is the one for de Bruijn
 indices: given an index $k$ and a usage annotation, it successfully
-associates a type $σ$ to that index if and only if the $k$th resource
-in context is of type $σ$ and fresh (i.e. its \Usage{σ} is \fresh{σ}).
-In the resulting leftovers, this resource will have turned stale (\stale{σ})
+associates a type $\ensuremath{\sigma}$ to that index if and only if the $k$th resource
+in context is of type $\ensuremath{\sigma}$ and fresh (i.e. its \Usage{\ensuremath{\sigma}} is \fresh{\ensuremath{\sigma}}).
+In the resulting leftovers, this resource will have turned stale (\stale{\ensuremath{\sigma}})
 because it has now been used:
 
 \begin{definition}
-The typing relation for \Var{} is presented in a sequent-style: Γ ⊢$_v$ $k$ ∈ σ \andalso{} Δ
-means that starting from the usage annotation Γ, the de Bruijn index
-$k$ is ascribed type σ with leftovers Δ. It is defined inductively by
+The typing relation for \Var{} is presented in a sequent-style: \ensuremath{\Gamma} \ensuremath{\vdash}$_v$ $k$ \ensuremath{\in} \ensuremath{\sigma} \andalso{} \ensuremath{\Delta}
+means that starting from the usage annotation \ensuremath{\Gamma}, the de Bruijn index
+$k$ is ascribed type \ensuremath{\sigma} with leftovers \ensuremath{\Delta}. It is defined inductively by
 two constructors (cf. Figure~\ref{figure:deBruijn}).
 \end{definition}
 
@@ -442,23 +441,23 @@ to it depending on the author's intent.
 \end{remark}
 
 \begin{example}\label{example:debruijn}
-The de Bruijn index 1 has type τ in the context (γ ∙ τ ∙ σ) with
-usage annotation (Γ ∙ \fresh{τ} ∙ \fresh{σ}), no matter what Γ
+The de Bruijn index 1 has type \ensuremath{\tau} in the context (\ensuremath{\gamma} \ensuremath{\cdot} \ensuremath{\tau} \ensuremath{\cdot} \ensuremath{\sigma}) with
+usage annotation (\ensuremath{\Gamma} \ensuremath{\cdot} \fresh{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}}), no matter what \ensuremath{\Gamma}
 actually is:
 \begin{mathpar}
 \inferrule
  {\inferrule
    {
-  }{Γ ∙ \fresh{τ} ⊢ \varzero{} ∈ τ \andalso{} Γ ∙ \stale{τ}
+  }{\ensuremath{\Gamma} \ensuremath{\cdot} \fresh{\ensuremath{\tau}} \ensuremath{\vdash} \varzero{} \ensuremath{\in} \ensuremath{\tau} \andalso{} \ensuremath{\Gamma} \ensuremath{\cdot} \stale{\ensuremath{\tau}}
   }
-}{Γ ∙ \fresh{τ} ∙ \fresh{σ} ⊢ \varsucc{\varzero} ∈ τ \andalso{} Γ ∙ \stale{τ} ∙ \fresh{σ}
+}{\ensuremath{\Gamma} \ensuremath{\cdot} \fresh{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}} \ensuremath{\vdash} \varsucc{\varzero} \ensuremath{\in} \ensuremath{\tau} \andalso{} \ensuremath{\Gamma} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}}
 }
 \end{mathpar}
 Or, as it would be written in Agda, taking advantage of the fact that
 the language constructs and the typing rules about them have been given
 the same names:
 \begin{lstlisting}
-  one : 'Γ' '∙' f 'τ' '∙' f 'σ' ⊢ s z '∈' 'τ' '\andalso{}' 'Γ' '∙' s 'τ' '∙' f 'σ'
+  one : '\ensuremath{\Gamma}' '\ensuremath{\cdot}' f '\ensuremath{\tau}' '\ensuremath{\cdot}' f '\ensuremath{\sigma}' '\ensuremath{\vdash}' s z '\ensuremath{\in}' '\ensuremath{\tau}' '\andalso{}' '\ensuremath{\Gamma}' '\ensuremath{\cdot}' s '\ensuremath{\tau}' '\ensuremath{\cdot}' f '\ensuremath{\sigma}'
   one = s z
 \end{lstlisting}
 \end{example}
@@ -479,7 +478,7 @@ derivation and use them as the new input \Usages{} when typing
 the next sub-expression.
 
 Another common pattern can be seen across all the rules involving
-binders, be they λ-abstractions, let-bindings or branches of a
+binders, be they \ensuremath{\lambda}-abstractions, let-bindings or branches of a
 case. Typechecking the body of a binder involves extending the
 input \Usages{} with fresh variables and observing that they have
 become stale in the output one. This guarantees that these bound
@@ -490,23 +489,23 @@ type system which would be interesting in its own right.
 
 \begin{definition}The Typing Relation for \Inferable{} is typeset
 in a fashion similar to the one for \Var{}: in both cases
-the type is inferred. $Γ ⊢ t ∈ σ \andalso{} Δ$ means that given Γ a
-$\Usages{γ}$, and $t$ an \Inferable{}, the type σ is inferred
-together with leftovers Δ, another $\Usages{γ}$. The rules are
+the type is inferred. $\ensuremath{\Gamma} \ensuremath{\vdash} t \ensuremath{\in} \ensuremath{\sigma} \andalso{} \ensuremath{\Delta}$ means that given \ensuremath{\Gamma} a
+$\Usages{\ensuremath{\gamma}}$, and $t$ an \Inferable{}, the type \ensuremath{\sigma} is inferred
+together with leftovers \ensuremath{\Delta}, another $\Usages{\ensuremath{\gamma}}$. The rules are
 listed in Figure~\ref{figure:infer}.
 \end{definition}
 
 \input{typing-rules-infer}
 
-\begin{definition}For \Checkable{}, the type σ comes first: Γ ⊢ σ ∋ t \andalso{} Δ means
-that given Γ a \Usages{γ}, a type σ, the \Checkable{} $t$ can
-be checked to have type σ with leftovers Δ. The rules can be found
+\begin{definition}For \Checkable{}, the type \ensuremath{\sigma} comes first: \ensuremath{\Gamma} \ensuremath{\vdash} \ensuremath{\sigma} \ensuremath{\ni} t \andalso{} \ensuremath{\Delta} means
+that given \ensuremath{\Gamma} a \Usages{\ensuremath{\gamma}}, a type \ensuremath{\sigma}, the \Checkable{} $t$ can
+be checked to have type \ensuremath{\sigma} with leftovers \ensuremath{\Delta}. The rules can be found
 in Figure~\ref{figure:check}.
 \end{definition}
 
 \input{typing-rules-check}
 
-We can see that both variants of a product type --tensor (⊗) and
+We can see that both variants of a product type --tensor (\ensuremath{\otimes}) and
 with (\&)-- use the same surface language constructor but are
 disambiguated in a type-directed manner in the checking relation.
 The premises are naturally widely different: With lets its user
@@ -529,38 +528,38 @@ Figure~\ref{figure:pattern}.
 
 \begin{example}
 Given these rules, we see that the identity function can be checked
-at type (σ ⊸ σ) in an empty context:
+at type (\ensuremath{\sigma} \ensuremath{\multimap} \ensuremath{\sigma}) in an empty context:
 \begin{mathpar}
 \inferrule
  {\inferrule
    {\inferrule
      {\inferrule
        {
-      }{[] ∙ \fresh{σ} ⊢_v \varzero ∈ σ \andalso{} [] ∙ \stale{σ}
+      }{[] \ensuremath{\cdot} \fresh{\ensuremath{\sigma}} \ensuremath{\vdash}_v \varzero \ensuremath{\in} \ensuremath{\sigma} \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma}}
       }
-    }{[] ∙ \fresh{σ} ⊢ \var{\varzero} ∈ σ \andalso{} [] ∙ \stale{σ}
+    }{[] \ensuremath{\cdot} \fresh{\ensuremath{\sigma}} \ensuremath{\vdash} \var{\varzero} \ensuremath{\in} \ensuremath{\sigma} \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma}}
     }
-  }{[] ∙ \fresh{σ} ⊢ σ ∋ \neu{(\var{\varzero})} \andalso{} [] ∙ \stale{σ}
+  }{[] \ensuremath{\cdot} \fresh{\ensuremath{\sigma}} \ensuremath{\vdash} \ensuremath{\sigma} \ensuremath{\ni} \neu{(\var{\varzero})} \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma}}
   }
-}{[] ⊢ σ ⊸ σ ∋ \lam{(\neu{(\var{\varzero})})} \andalso{} []
+}{[] \ensuremath{\vdash} \ensuremath{\sigma} \ensuremath{\multimap} \ensuremath{\sigma} \ensuremath{\ni} \lam{(\neu{(\var{\varzero})})} \andalso{} []
 }
 \end{mathpar}
 Or, as it would be written in Agda where the typing rules were
 given the same name as their term constructor counterparts:
 \begin{lstlisting}
-  identity : [] '⊢' 'σ' '⊸' 'σ' '∋' lam (neu (var z)) '\andalso{}' []
+  identity : [] '\ensuremath{\vdash}' '\ensuremath{\sigma}' '\ensuremath{\multimap}' '\ensuremath{\sigma}' '\ensuremath{\ni}' lam (neu (var z)) '\andalso{}' []
   identity = lam (neu (var z))
 \end{lstlisting}
 \end{example}
 
 \begin{example}\label{example:swapTyped}
 It is also possible to revisit Example \ref{example:swap} to prove
-that \texttt{swap} can be checked against type (σ ⊗ τ) ⊸ (τ ⊗ σ) in an empty
+that \texttt{swap} can be checked against type (\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}) \ensuremath{\multimap} (\ensuremath{\tau} \ensuremath{\otimes} \ensuremath{\sigma}) in an empty
 context. This gives the lengthy derivation included in the appendix
 or the following one in Agda which is quite a lot more readable:
 
 \begin{lstlisting}
-  swapTyped : [] '⊢' ('σ' '⊗' 'τ') '⊸' ('τ' '⊗' 'σ') '∋' swap '\andalso{}' []
+  swapTyped : [] '\ensuremath{\vdash}' ('\ensuremath{\sigma}' '\ensuremath{\otimes}' '\ensuremath{\tau}') '\ensuremath{\multimap}' ('\ensuremath{\tau}' '\ensuremath{\otimes}' '\ensuremath{\sigma}') '\ensuremath{\ni}' swap '\andalso{}' []
   swapTyped = lam (let (v , v) := var z
                    in prd (neu (var (s z))) (neu (var z))
 \end{lstlisting}
@@ -580,13 +579,13 @@ separation logic. This can be reformulated as the fact that as
 long as two pairs of an input and an output \Usages{} exhibit the
 same consumption pattern then if a derivation uses one of these,
 it can use the other one instead. Formally (postponing the
-definition of $Γ - Δ ≡ Θ - Ξ$):
+definition of $\ensuremath{\Gamma} \ensuremath{-} \ensuremath{\Delta} \ensuremath{\equiv} \ensuremath{\Theta} \ensuremath{-} \ensuremath{\Xi}$):
 
 \begin{definition}A Typing Relation \TR{\cdot{}} for a \Nat{}-indexed
 family $T$ has the \textbf{Framing Property} if for all $k$ a \Nat{},
-γ a \Context{k}, Γ, Δ, Θ, Ξ four \Usages{γ}, $t$ an element
-of $T_k$ and σ a Type, if \mbox{Γ ─ Δ ≡ Θ ─ Ξ} and \TR{k}(Γ, t, σ, Δ)
-then \TR{k}(Θ, t, σ, Ξ) also holds.
+\ensuremath{\gamma} a \Context{k}, \ensuremath{\Gamma}, \ensuremath{\Delta}, \ensuremath{\Theta}, \ensuremath{\Xi} four \Usages{\ensuremath{\gamma}}, $t$ an element
+of $T_k$ and \ensuremath{\sigma} a Type, if \mbox{\ensuremath{\Gamma} \ensuremath{-} \ensuremath{\Delta} \ensuremath{\equiv} \ensuremath{\Theta} \ensuremath{-} \ensuremath{\Xi}} and \TR{k}(\ensuremath{\Gamma}, t, \ensuremath{\sigma}, \ensuremath{\Delta})
+then \TR{k}(\ensuremath{\Theta}, t, \ensuremath{\sigma}, \ensuremath{\Xi}) also holds.
 \end{definition}
 
 \begin{remark}This is purely a property of the type system as
@@ -598,8 +597,8 @@ Substitution for instance.
 
 \begin{definition}
 \label{definition:differences}
-\textbf{Consumption Equivalence} for a given \Context{} γ characterises
-the pairs of an input and an output \Usages{γ} which have the same consumption
+\textbf{Consumption Equivalence} for a given \Context{} \ensuremath{\gamma} characterises
+the pairs of an input and an output \Usages{\ensuremath{\gamma}} which have the same consumption
 pattern. The usages annotations for the empty context are trivially related.
 If the context is not empty, then there are two cases: if the
 resource is left untouched on one side, then so should it on the other
@@ -608,22 +607,22 @@ respectively). On the other hand, if the resource has been consumed
 on one side then it has to be on the other side too.
 \begin{mathpar}
 \type
- {Γ, Δ, Θ, Ξ : \Usages{γ}
-}{Γ ─ Δ ≡ Θ ─ Ξ : \Set{}
+ {\ensuremath{\Gamma}, \ensuremath{\Delta}, \ensuremath{\Theta}, \ensuremath{\Xi} : \Usages{\ensuremath{\gamma}}
+}{\ensuremath{\Gamma} \ensuremath{-} \ensuremath{\Delta} \ensuremath{\equiv} \ensuremath{\Theta} \ensuremath{-} \ensuremath{\Xi} : \Set{}
 }
 \and \constructor
  {
-}{[] ─ [] ≡ [] ─ []
+}{[] \ensuremath{-} [] \ensuremath{\equiv} [] \ensuremath{-} []
 }{
 }
 \\ \constructor
- {Γ ─ Δ ≡ Θ ─ Ξ
-}{(Γ ∙ A) ─ (Δ ∙ A) ≡ (Θ ∙ B) ─ (Ξ ∙ B)
+ {\ensuremath{\Gamma} \ensuremath{-} \ensuremath{\Delta} \ensuremath{\equiv} \ensuremath{\Theta} \ensuremath{-} \ensuremath{\Xi}
+}{(\ensuremath{\Gamma} \ensuremath{\cdot} A) \ensuremath{-} (\ensuremath{\Delta} \ensuremath{\cdot} A) \ensuremath{\equiv} (\ensuremath{\Theta} \ensuremath{\cdot} B) \ensuremath{-} (\ensuremath{\Xi} \ensuremath{\cdot} B)
 }{
 }
 \and \constructor
- {Γ ─ Δ ≡ Θ ─ Ξ
-}{(Γ ∙ \fresh{σ}) ─ (Δ ∙ \stale{σ}) ≡ (Θ ∙ \fresh{σ}) ─ (Ξ ∙ \stale{σ})
+ {\ensuremath{\Gamma} \ensuremath{-} \ensuremath{\Delta} \ensuremath{\equiv} \ensuremath{\Theta} \ensuremath{-} \ensuremath{\Xi}
+}{(\ensuremath{\Gamma} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}}) \ensuremath{-} (\ensuremath{\Delta} \ensuremath{\cdot} \stale{\ensuremath{\sigma}}) \ensuremath{\equiv} (\ensuremath{\Theta} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}}) \ensuremath{-} (\ensuremath{\Xi} \ensuremath{\cdot} \stale{\ensuremath{\sigma}})
 }{
 }
 \end{mathpar}
@@ -635,25 +634,25 @@ respect to consumption equivalence will not be sufficient to introduce new
 variables. This will be dealth with by defining weakening in Section~\ref{sec:weakening}.
 \end{remark}
 
-\begin{definition}The \textbf{Consumption Partial Order} Γ ⊆ Δ is defined as
-\mbox{Γ ─ Δ ≡ Γ ─ Δ}. It orders \Usages{} from least consumed to maximally consumed.
+\begin{definition}The \textbf{Consumption Partial Order} \ensuremath{\Gamma} \ensuremath{\subseteq} \ensuremath{\Delta} is defined as
+\mbox{\ensuremath{\Gamma} \ensuremath{-} \ensuremath{\Delta} \ensuremath{\equiv} \ensuremath{\Gamma} \ensuremath{-} \ensuremath{\Delta}}. It orders \Usages{} from least consumed to maximally consumed.
 \end{definition}
 
 \begin{lemma} The following properties on the Consumption relations hold:
 \begin{enumerate}
   \item The consumption equivalence is a partial equivalence~\cite{mitchell1996foundations}.
   \item The consumption partial order is a partial order.
-  \item If there is a \Usages{} Χ ``in between'' two others Γ and Δ according to
-        the consumption partial order (i.e. $Γ ⊆ Χ$ and $Χ ⊆ Δ$), then any pair
-        of \Usages{} Θ, Ξ consumption equal to Γ and Δ (i.e. \mbox{$Γ ─ Δ ≡ Θ ─ Ξ$})
-        can be split in a manner compatible with Χ. In other words: one can find
-        Ζ such that \mbox{$Γ ─ Χ ≡ Θ ─ Ζ$} and \mbox{$Χ ─ Δ ≡ Ζ ─ Ξ$}.
+  \item If there is a \Usages{} \ensuremath{\Xi} ``in between'' two others \ensuremath{\Gamma} and \ensuremath{\Delta} according to
+        the consumption partial order (i.e. $\ensuremath{\Gamma} \ensuremath{\subseteq} \ensuremath{\Xi}$ and $\ensuremath{\Xi} \ensuremath{\subseteq} \ensuremath{\Delta}$), then any pair
+        of \Usages{} \ensuremath{\Theta}, \ensuremath{\Xi} consumption equal to \ensuremath{\Gamma} and \ensuremath{\Delta} (i.e. \mbox{$\ensuremath{\Gamma} \ensuremath{-} \ensuremath{\Delta} \ensuremath{\equiv} \ensuremath{\Theta} \ensuremath{-} \ensuremath{\Xi}$})
+        can be split in a manner compatible with \ensuremath{\Xi}. In other words: one can find
+        \ensuremath{\Zeta} such that \mbox{$\ensuremath{\Gamma} \ensuremath{-} \ensuremath{\Xi} \ensuremath{\equiv} \ensuremath{\Theta} \ensuremath{-} \ensuremath{\Zeta}$} and \mbox{$\ensuremath{\Xi} \ensuremath{-} \ensuremath{\Delta} \ensuremath{\equiv} \ensuremath{\Zeta} \ensuremath{-} \ensuremath{\Xi}$}.
 \end{enumerate}
 \end{lemma}
 
 \begin{lemma}[Consumption]The Typing Relations for \Var{}, \Inferable{}
 and \Checkable{} all imply that if a typing derivation exists with input
-\Usages{} annotation Γ and output \Usages{} annotation Δ then $Γ ⊆ Δ$.\label{lemma:consumption}
+\Usages{} annotation \ensuremath{\Gamma} and output \Usages{} annotation \ensuremath{\Delta} then $\ensuremath{\Gamma} \ensuremath{\subseteq} \ensuremath{\Delta}$.\label{lemma:consumption}
 \end{lemma}
 
 \begin{theorem}
@@ -671,19 +670,19 @@ of consumption equivalence and distribute it appropriately in the induction hypo
 
 \begin{example}Coming back to the typing derivation for the de Bruijn index $1$ in
 Example~\ref{example:debruijn}, we can use the Framing theorem to transport the proof
-that \mbox{Γ ∙ \fresh{τ} ∙ \fresh{σ} ⊢ \varsucc{\varzero} ∈ τ \andalso{} Γ ∙ \stale{τ} ∙ \fresh{σ}}
-to a proof that \mbox{Δ ∙ \fresh{τ} ∙ \stale{σ} ⊢ \varsucc{\varzero} ∈ τ \andalso{} Δ ∙ \stale{τ} ∙ \stale{σ}}
-for any Δ. Indeed, we can see that these two pairs of \Usages{} are consumption equivalent
-(\mbox{Γ ─ Γ ≡ Δ ─ Δ} holds by induction):
+that \mbox{\ensuremath{\Gamma} \ensuremath{\cdot} \fresh{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}} \ensuremath{\vdash} \varsucc{\varzero} \ensuremath{\in} \ensuremath{\tau} \andalso{} \ensuremath{\Gamma} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}}}
+to a proof that \mbox{\ensuremath{\Delta} \ensuremath{\cdot} \fresh{\ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\sigma}} \ensuremath{\vdash} \varsucc{\varzero} \ensuremath{\in} \ensuremath{\tau} \andalso{} \ensuremath{\Delta} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\sigma}}}
+for any \ensuremath{\Delta}. Indeed, we can see that these two pairs of \Usages{} are consumption equivalent
+(\mbox{\ensuremath{\Gamma} \ensuremath{-} \ensuremath{\Gamma} \ensuremath{\equiv} \ensuremath{\Delta} \ensuremath{-} \ensuremath{\Delta}} holds by induction):
 \begin{mathpar}
 \inferrule
  {\inferrule
    {\inferrule
      {\vdots
-     }{Γ ─ Γ ≡ Δ ─ Δ}
-  }{Γ ∙ \fresh{τ} ─ Γ ∙ \stale{τ} ≡ Δ ∙ \fresh{τ} ─ Δ ∙ \stale{τ}
+     }{\ensuremath{\Gamma} \ensuremath{-} \ensuremath{\Gamma} \ensuremath{\equiv} \ensuremath{\Delta} \ensuremath{-} \ensuremath{\Delta}}
+  }{\ensuremath{\Gamma} \ensuremath{\cdot} \fresh{\ensuremath{\tau}} \ensuremath{-} \ensuremath{\Gamma} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\equiv} \ensuremath{\Delta} \ensuremath{\cdot} \fresh{\ensuremath{\tau}} \ensuremath{-} \ensuremath{\Delta} \ensuremath{\cdot} \stale{\ensuremath{\tau}}
   }
-}{Γ ∙ \fresh{τ} ∙ \fresh{σ} ─ Γ ∙ \stale{τ} ∙ \fresh{σ} ≡ Δ ∙ \fresh{τ} ∙ \stale{σ} ─ Δ ∙ \stale{τ} ∙ \stale{σ}
+}{\ensuremath{\Gamma} \ensuremath{\cdot} \fresh{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}} \ensuremath{-} \ensuremath{\Gamma} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}} \ensuremath{\equiv} \ensuremath{\Delta} \ensuremath{\cdot} \fresh{\ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\sigma}} \ensuremath{-} \ensuremath{\Delta} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\sigma}}
  }
 \end{mathpar}
 \end{example}
@@ -720,20 +719,20 @@ before giving, in Figure~\ref{figure:ope}, the formal definition of OPEs for
 \Nat{}, \Context{} and \Usages{}.
 \end{definition}
 
-In the following example, we prove that the source context $\gamma ∙ \tau$
-can be safely embedded into the target one $\gamma ∙ \sigma ∙ \tau ∙ \nu$,
-written $\gamma ∙ \tau \leq \gamma ∙ \sigma ∙ \tau ∙ \nu$. This example proof
+In the following example, we prove that the source context $\gamma \ensuremath{\cdot} \tau$
+can be safely embedded into the target one $\gamma \ensuremath{\cdot} \sigma \ensuremath{\cdot} \tau \ensuremath{\cdot} \nu$,
+written $\gamma \ensuremath{\cdot} \tau \leq \gamma \ensuremath{\cdot} \sigma \ensuremath{\cdot} \tau \ensuremath{\cdot} \nu$. This example proof
 uses all three of the moves the inductive definition of OPEs offers:
 \opeinsert{\alpha} which introduces a new variable of type $\alpha$,
 \opecopy{} which embeds the source context's top variable, and \opedone{}
 which simply copies the source context. Because we read
 strategies left-to-right and it is easier to see how they act if contexts
 are also presented left-to-right, we temporarily switch to \emph{cons}-style
-(i.e. $\sigma , \gamma$) instead of the \emph{snoc}-style (i.e. $\gamma ∙ \sigma$)
+(i.e. $\sigma , \gamma$) instead of the \emph{snoc}-style (i.e. $\gamma \ensuremath{\cdot} \sigma$)
 used in the rest of this paper.
 
 \begin{example} An Order Preserving Embedding proving:
-$\gamma ∙ \tau \leq \gamma ∙ \sigma ∙ \tau ∙ \nu$
+$\gamma \ensuremath{\cdot} \tau \leq \gamma \ensuremath{\cdot} \sigma \ensuremath{\cdot} \tau \ensuremath{\cdot} \nu$
 
 \begin{figure}[ht]\centering
 \begin{tabular}{l|ccccccc}
@@ -771,40 +770,40 @@ additional information.
 \texttt{done}
 & \constructor
  {
-}{k ≤ k
+}{k \ensuremath{\leq} k
 }
 & \constructor
  {
-}{\gamma ≤ \gamma
+}{\gamma \ensuremath{\leq} \gamma
 }
 & \constructor
  {
-}{\Gamma ≤ \Gamma
+}{\Gamma \ensuremath{\leq} \Gamma
 }\\ & & \\
 \texttt{copy}
 & \constructor
- {k ≤ l
-}{\natsucc{k} ≤ \natsucc{l}
+ {k \ensuremath{\leq} l
+}{\natsucc{k} \ensuremath{\leq} \natsucc{l}
 }
 & \constructor
- {\gamma ≤ \delta
-}{\gamma ∙ \sigma ≤ \delta ∙ \sigma
+ {\gamma \ensuremath{\leq} \delta
+}{\gamma \ensuremath{\cdot} \sigma \ensuremath{\leq} \delta \ensuremath{\cdot} \sigma
 }
 & \constructor
- {\Gamma ≤ \Delta  \and S : \Usages{\sigma}
-}{\Gamma ∙ S ≤ \Delta ∙ S
+ {\Gamma \ensuremath{\leq} \Delta  \and S : \Usages{\sigma}
+}{\Gamma \ensuremath{\cdot} S \ensuremath{\leq} \Delta \ensuremath{\cdot} S
 }\\ & & \\
 \texttt{insert}
 & \constructor
- {k ≤ l
-}{k ≤ \natsucc{l}
+ {k \ensuremath{\leq} l
+}{k \ensuremath{\leq} \natsucc{l}
 }
 & \constructor
- {\gamma ≤ \delta
-}{\gamma ≤ \delta ∙ \sigma
+ {\gamma \ensuremath{\leq} \delta
+}{\gamma \ensuremath{\leq} \delta \ensuremath{\cdot} \sigma
 } & \constructor
-  {\Gamma ≤ \Delta \and S : \Usages{\sigma}
-}{\Gamma ≤ \Delta ∙ S
+  {\Gamma \ensuremath{\leq} \Delta \and S : \Usages{\sigma}
+}{\Gamma \ensuremath{\leq} \Delta \ensuremath{\cdot} S
 }
 \end{tabular}
 \caption{Order Preserving Embeddings for \Nat{}, \Context{} and $\Usages{}$\label{figure:ope}}
@@ -826,9 +825,9 @@ to be able to perform a \texttt{copy} move.
 which introduces an extra variable in the target set. This is the
 move used to extend an existing context, i.e. to weaken it. In this
 case, it is paramount that the OPE for \Context{}s should take a
-type σ as an extra argument (it will be the type of the newly introduced
-variable) whilst the OPE for $\Usages{}$ takes a $\Usage{σ}$ (it will
-be the usage associated to that newly introduced variable of type σ).
+type \ensuremath{\sigma} as an extra argument (it will be the type of the newly introduced
+variable) whilst the OPE for $\Usages{}$ takes a $\Usage{\ensuremath{\sigma}}$ (it will
+be the usage associated to that newly introduced variable of type \ensuremath{\sigma}).
 \end{itemize}
 
 Now that the structure of these OPEs is clear, we have to introduce a caveat
@@ -847,19 +846,19 @@ information stored into the proof object and $\delta$ / $\Delta$ the output.
 \end{definition}
 
 We leave out the definition of weakening for raw terms which is the standard
-definition for the untyped λ-calculus. It proves that given $k \leq l$ we can
+definition for the untyped \ensuremath{\lambda}-calculus. It proves that given $k \leq l$ we can
 turn an \Inferable{k} (respectively \Checkable{k}) into an \Inferable{l}
 (respectively \Checkable{l}). It is given by a simple structural induction on
 the terms themselves, using \opecopy{} to go under binders.
 
 \begin{definition}A Typing Relation \TR{\cdot} for a \Nat{}-indexed family $T$
 such that we have a function $\texttt{weak}_T$ transporting proofs that
-$k ≤ l$ to functions $T_k → T_l$ is said to have the \textbf{Weakening Property}
-if for all $k, l$ in \Nat{}, $o$ a proof that $k ≤ l$, $O$ a proof that
-$\OPE{}(o)$ and $𝓞$ a proof that $\OPE{}(O)$ then for all γ a $\Context{k}$,
-Γ and Δ two $\Usages{γ}$, $t$ an element of $T_k$ and σ a \Type{}, if
-\TR{k}$(Γ, t, σ, Δ)$ holds true then we also have
-\TR{l}$(\ope{𝓞, Γ}, \texttt{weak}_T(o, t), σ, \ope{𝓞, Δ})$.
+$k \ensuremath{\leq} l$ to functions $T_k → T_l$ is said to have the \textbf{Weakening Property}
+if for all $k, l$ in \Nat{}, $o$ a proof that $k \ensuremath{\leq} l$, $O$ a proof that
+$\OPE{}(o)$ and $\ensuremath{\mathcal{O}}$ a proof that $\OPE{}(O)$ then for all \ensuremath{\gamma} a $\Context{k}$,
+\ensuremath{\Gamma} and \ensuremath{\Delta} two $\Usages{\ensuremath{\gamma}}$, $t$ an element of $T_k$ and \ensuremath{\sigma} a \Type{}, if
+\TR{k}$(\ensuremath{\Gamma}, t, \ensuremath{\sigma}, \ensuremath{\Delta})$ holds true then we also have
+\TR{l}$(\ope{\ensuremath{\mathcal{O}}, \ensuremath{\Gamma}}, \texttt{weak}_T(o, t), \ensuremath{\sigma}, \ope{\ensuremath{\mathcal{O}}, \ensuremath{\Delta}})$.
 \end{definition}
 
 \begin{theorem}The Typing Relation for \Var{} has the Weakening Property.
@@ -921,12 +920,12 @@ and one to extend an environment with an $\Inferable{l}$.
 }{[] : \Env{}(0, l)
 }
 \and \constructor
- {ρ : \Env{}(k, l)
-}{ρ \envextend{} : \Env{}(\natsucc{k}, \natsucc{l})
+ {\ensuremath{\rho} : \Env{}(k, l)
+}{\ensuremath{\rho} \envextend{} : \Env{}(\natsucc{k}, \natsucc{l})
 }
 \and \constructor
- {ρ : \Env{}(k, l) \and t : \Inferable{l}
-}{ρ ∙ t : \Env{} (\natsucc{k}, l)
+ {\ensuremath{\rho} : \Env{}(k, l) \and t : \Inferable{l}
+}{\ensuremath{\rho} \ensuremath{\cdot} t : \Env{} (\natsucc{k}, l)
 }
 \end{mathpar}
 \end{definition}
@@ -945,24 +944,23 @@ If the variable we look up has been introduced by a binder we went under using
 the constructor \envextend{} then we return it immediately. Otherwise we get
 our hands on a term which we may need to weaken. This corresponds to the following
 functional specification (the practical implementation can be distinct to avoid
-retraversing the term once for every single binder we went under):
+retraversing the term once for every single binder we went under).
 \begin{figure}[ht]\centering
 \begin{tabular}{l@{~[}l@{]\,=\,}l}
   \var{\varzero}      & \ensuremath{\rho \envextend{}} & \varzero{} \\
-  \var{\varzero}      & \ensuremath{\rho ∙ t}          & \ensuremath{t} \\
+  \var{\varzero}      & \ensuremath{\rho \ensuremath{\cdot} t}          & \ensuremath{t} \\
   \var{(\varsucc{v})} & \ensuremath{\rho \envextend{}} & \texttt{lift}(\subst{\var{v}}{\rho}) \\
-  \var{(\varsucc{v})} & \ensuremath{\rho ∙ t}          & \subst{\var{v}}{\rho} \\
+  \var{(\varsucc{v})} & \ensuremath{\rho \ensuremath{\cdot} t}          & \subst{\var{v}}{\rho} \\
 \end{tabular}
 \end{figure}
-
-where \texttt{lift} is an instance of weakening defined in the previous
+We assume that \texttt{lift} is an instance of weakening defined in the previous
 section which takes a term in a scope of size $k$ and returns the same
 term in scope \natsucc{k}.
 \end{proof}
 
 \begin{lemma}Raw terms are stable under substitutions: for all $k$ and
-$l$, given $t$ a term $\Inferable{k}$ (resp. $\Checkable{k}$) and $ρ$
-an environment $\Env{}(k,l)$, we can apply the substitution $ρ$ to $t$
+$l$, given $t$ a term $\Inferable{k}$ (resp. $\Checkable{k}$) and $\ensuremath{\rho}$
+an environment $\Env{}(k,l)$, we can apply the substitution $\ensuremath{\rho}$ to $t$
 and obtain an $\Inferable{l}$ (resp. $\Checkable{l}$).
 \end{lemma}
 \begin{proof}By mutual induction on the raw terms. The traversals are purely
@@ -973,28 +971,28 @@ the \lam{} one, and its functional specification is: \mbox{\subst{(\lam{t})}{\rh
 
 \begin{definition}The \textbf{environments} used when proving that Typing
 Relations are stable under substitution follow closely the ones
-for raw terms. \TEnv{Θ₁}{Γ}{ρ}{Θ₂} is a typing relation with
-input usages $Θ₁$ and output $Θ₂$ for the raw substitution $ρ$
-targeting the fresh variables in $Γ$. The typing for the empty environment has the same input and output
+for raw terms. \TEnv{\ensuremath{\Theta}\ensuremath{_1}}{\ensuremath{\Gamma}}{\ensuremath{\rho}}{\ensuremath{\Theta}\ensuremath{_2}} is a typing relation with
+input usages $\ensuremath{\Theta}\ensuremath{_1}$ and output $\ensuremath{\Theta}\ensuremath{_2}$ for the raw substitution $\ensuremath{\rho}$
+targeting the fresh variables in $\ensuremath{\Gamma}$. The typing for the empty environment has the same input and output
 usages annotation. Formally:
 \begin{mathpar}
 \type
 {{\begin{array}{l}
-   θ : \Context{l} \\
-   Θ₁ : \Usages{θ} \\
-   γ : \Context{k} \\
-   Γ : \Usages{γ} \\ \\
+   \ensuremath{\theta} : \Context{l} \\
+   \ensuremath{\Theta}\ensuremath{_1} : \Usages{\ensuremath{\theta}} \\
+   \ensuremath{\gamma} : \Context{k} \\
+   \ensuremath{\Gamma} : \Usages{\ensuremath{\gamma}} \\ \\
   \end{array}}
- \and ρ : \Env{}(k,l)
- \and Θ₂ : \Usages{θ}
-}{\TEnv{Θ₁}{Γ}{ρ}{Θ₂} : \Set{}
+ \and \ensuremath{\rho} : \Env{}(k,l)
+ \and \ensuremath{\Theta}\ensuremath{_2} : \Usages{\ensuremath{\theta}}
+}{\TEnv{\ensuremath{\Theta}\ensuremath{_1}}{\ensuremath{\Gamma}}{\ensuremath{\rho}}{\ensuremath{\Theta}\ensuremath{_2}} : \Set{}
 }
 \and \constructor
  {
-}{\TEnv{Θ₁}{[]}{[]}{Θ₁}
+}{\TEnv{\ensuremath{\Theta}\ensuremath{_1}}{[]}{[]}{\ensuremath{\Theta}\ensuremath{_1}}
 }
 \end{mathpar}
-For \textbf{f}resh variables in Γ, there are two cases depending on whether
+For \textbf{f}resh variables in \ensuremath{\Gamma}, there are two cases depending on whether
 they have been introduced by going under a binder or not. If it is
 not the case then the typing environment carries around a typing
 derivation for the term $t$ meant to be substituted for this variable.
@@ -1002,12 +1000,12 @@ Otherwise, it does not carry anything extra but tracks in its input /
 output usages annotation the fact that the variable has been consumed.
 \begin{mathpar}
 \constructor
- {Θ₁ ⊢ t ∈ σ \andalso{} Θ₂ \and \TEnv{Θ₂}{Γ}{ρ}{Θ₃}
-}{\TEnv{Θ₁}{Γ ∙ \fresh{σ}}{ρ ∙ t}{Θ₃}
+ {\ensuremath{\Theta}\ensuremath{_1} \ensuremath{\vdash} t \ensuremath{\in} \ensuremath{\sigma} \andalso{} \ensuremath{\Theta}\ensuremath{_2} \and \TEnv{\ensuremath{\Theta}\ensuremath{_2}}{\ensuremath{\Gamma}}{\ensuremath{\rho}}{\ensuremath{\Theta}\ensuremath{_3}}
+}{\TEnv{\ensuremath{\Theta}\ensuremath{_1}}{\ensuremath{\Gamma} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}}}{\ensuremath{\rho} \ensuremath{\cdot} t}{\ensuremath{\Theta}\ensuremath{_3}}
 }
 \and \constructor
- {\TEnv{Θ₁}{Γ}{ρ}{Θ₂}
-}{\TEnv{Θ₁ ∙ \fresh{σ}}{Γ ∙ \fresh{σ}}{ρ \envextend{}}{Θ₂ ∙ \stale{σ}}
+ {\TEnv{\ensuremath{\Theta}\ensuremath{_1}}{\ensuremath{\Gamma}}{\ensuremath{\rho}}{\ensuremath{\Theta}\ensuremath{_2}}
+}{\TEnv{\ensuremath{\Theta}\ensuremath{_1} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}}}{\ensuremath{\Gamma} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}}}{\ensuremath{\rho} \envextend{}}{\ensuremath{\Theta}\ensuremath{_2} \ensuremath{\cdot} \stale{\ensuremath{\sigma}}}
 }
 \end{mathpar}
 For \textbf{s}tale variables, there are two cases too. They are however
@@ -1018,12 +1016,12 @@ enriched with an extra (now consumed) variable whereas it is not the case
 for the normal environment extension.
 \begin{mathpar}
 \constructor
- {\TEnv{Θ₁}{Γ}{ρ}{Θ₂}
-}{\TEnv{Θ₁}{Γ∙ \stale{σ}}{ρ ∙ t}{Θ₂}
+ {\TEnv{\ensuremath{\Theta}\ensuremath{_1}}{\ensuremath{\Gamma}}{\ensuremath{\rho}}{\ensuremath{\Theta}\ensuremath{_2}}
+}{\TEnv{\ensuremath{\Theta}\ensuremath{_1}}{\ensuremath{\Gamma}\ensuremath{\cdot} \stale{\ensuremath{\sigma}}}{\ensuremath{\rho} \ensuremath{\cdot} t}{\ensuremath{\Theta}\ensuremath{_2}}
 }
 \and \constructor
- {\TEnv{Θ₁}{Γ}{ρ}{Θ₂}
-}{\TEnv{Θ₁ ∙ \stale{σ}}{Γ ∙ \stale{σ}}{ρ \envextend{}}{Θ₂ ∙ \stale{σ}}
+ {\TEnv{\ensuremath{\Theta}\ensuremath{_1}}{\ensuremath{\Gamma}}{\ensuremath{\rho}}{\ensuremath{\Theta}\ensuremath{_2}}
+}{\TEnv{\ensuremath{\Theta}\ensuremath{_1} \ensuremath{\cdot} \stale{\ensuremath{\sigma}}}{\ensuremath{\Gamma} \ensuremath{\cdot} \stale{\ensuremath{\sigma}}}{\ensuremath{\rho} \envextend{}}{\ensuremath{\Theta}\ensuremath{_2} \ensuremath{\cdot} \stale{\ensuremath{\sigma}}}
 }
 \end{mathpar}
 \end{definition}
@@ -1032,12 +1030,12 @@ for the normal environment extension.
 A Typing Relation \TR{\cdot} for a \Nat{}-indexed family $T$ equipped with
 a function $\texttt{subst}_T$ which for all \Nat{}s $k, l$, given an
 element $T_k$ and an $\Env{}(k,l)$ returns an element $T_l$ is said to
-be \textbf{stable under substitution} if for all \Nat{}s $k$ and $l$, γ a $\Context{k}$,
-Γ and Δ two $\Usages{γ}$, $t$ an element of $T_k$, σ a Type, ρ an $\Env{}(k,l)$,
-$θ$ a $\Context{l}$ and $Θ₁$ and $Θ₃$ two $\Usages{θ}$ such that
-\TR{k}$(Γ, t, σ, Δ)$ and \TEnv{Θ₁}{Γ}{ρ}{Θ₃} holds then there exists a $Θ₂$
-of type $\Usages{θ}$ such that \TR{l}$(Θ₁, \texttt{subst}_T(t, ρ), σ, Θ₂)$ and
-\TEnv{Θ₂}{Δ}{ρ}{Θ₃}.
+be \textbf{stable under substitution} if for all \Nat{}s $k$ and $l$, \ensuremath{\gamma} a $\Context{k}$,
+\ensuremath{\Gamma} and \ensuremath{\Delta} two $\Usages{\ensuremath{\gamma}}$, $t$ an element of $T_k$, \ensuremath{\sigma} a Type, \ensuremath{\rho} an $\Env{}(k,l)$,
+$\ensuremath{\theta}$ a $\Context{l}$ and $\ensuremath{\Theta}\ensuremath{_1}$ and $\ensuremath{\Theta}\ensuremath{_3}$ two $\Usages{\ensuremath{\theta}}$ such that
+\TR{k}$(\ensuremath{\Gamma}, t, \ensuremath{\sigma}, \ensuremath{\Delta})$ and \TEnv{\ensuremath{\Theta}\ensuremath{_1}}{\ensuremath{\Gamma}}{\ensuremath{\rho}}{\ensuremath{\Theta}\ensuremath{_3}} holds then there exists a $\ensuremath{\Theta}\ensuremath{_2}$
+of type $\Usages{\ensuremath{\theta}}$ such that \TR{l}$(\ensuremath{\Theta}\ensuremath{_1}, \texttt{subst}_T(t, \ensuremath{\rho}), \ensuremath{\sigma}, \ensuremath{\Theta}\ensuremath{_2})$ and
+\TEnv{\ensuremath{\Theta}\ensuremath{_2}}{\ensuremath{\Delta}}{\ensuremath{\rho}}{\ensuremath{\Theta}\ensuremath{_3}}.
 \end{definition}
 
 \begin{theorem}\label{theorem:substituting}
@@ -1073,11 +1071,11 @@ a typing relation, if two typing derivations exist for some fixed arguments
 other.
 
 \begin{definition}We say that a relation $R$ of type
-$Π(\mathit{ri} : \mathit{RI}). \mathit{II} → O(ri) → \Set{}$
+$\ensuremath{Pi}(\mathit{ri} : \mathit{RI}). \mathit{II} → O(ri) → \Set{}$
 is \textbf{functional} if for all \emph{r}elevant \emph{i}nputs $\mathit{ri}$, all pairs of
-\emph{i}rrelevant \emph{i}nputs $\mathit{ii₁}$ and $\mathit{ii₂}$ and for all pairs
-of \emph{o}utputs $o₁$ and $o₂$, if both $R(\mathit{ri}, \mathit{ii₁}, o₁)$
-and $R(\mathit{ri}, \mathit{ii₂}, o₂)$ hold then $o₁ ≡ o₂$.
+\emph{i}rrelevant \emph{i}nputs $\mathit{ii\ensuremath{_1}}$ and $\mathit{ii\ensuremath{_2}}$ and for all pairs
+of \emph{o}utputs $o\ensuremath{_1}$ and $o\ensuremath{_2}$, if both $R(\mathit{ri}, \mathit{ii\ensuremath{_1}}, o\ensuremath{_1})$
+and $R(\mathit{ri}, \mathit{ii\ensuremath{_2}}, o\ensuremath{_2})$ hold then $o\ensuremath{_1} \ensuremath{\equiv} o\ensuremath{_2}$.
 \end{definition}
 
 \begin{lemma}The Typing Relations for \Var{} and \Inferable{} are functional
@@ -1103,13 +1101,13 @@ is uniquely determined.
 \begin{theorem}[Decidability of Typechecking]
 \label{theorem:typechecking}
 \textbf{Type-inference} for \Inferable{} and \textbf{Type-checking} for \Checkable{} are
-decidable. In other words, given a \Nat{} $k$, γ a \Context{k} and
-Γ a $\Usages{γ}$,
+decidable. In other words, given a \Nat{} $k$, \ensuremath{\gamma} a \Context{k} and
+\ensuremath{\Gamma} a $\Usages{\ensuremath{\gamma}}$,
 \begin{enumerate}
   \item for all \Inferable{k} $t$, we can decide if there is
-        a \Type{} $σ$ and Δ a \Usages{γ} such that $Γ ⊢ t ∈ σ \andalso{} Δ$
-  \item for all \Type{} σ and \Checkable{k} t, we can decide if
-        there is Δ a \Usages{γ} such that $Γ ⊢ σ ∋ t \andalso{} Δ$.
+        a \Type{} $\ensuremath{\sigma}$ and \ensuremath{\Delta} a \Usages{\ensuremath{\gamma}} such that $\ensuremath{\Gamma} \ensuremath{\vdash} t \ensuremath{\in} \ensuremath{\sigma} \andalso{} \ensuremath{\Delta}$
+  \item for all \Type{} \ensuremath{\sigma} and \Checkable{k} t, we can decide if
+        there is \ensuremath{\Delta} a \Usages{\ensuremath{\gamma}} such that $\ensuremath{\Gamma} \ensuremath{\vdash} \ensuremath{\sigma} \ensuremath{\ni} t \andalso{} \ensuremath{\Delta}$.
 \end{enumerate}
 \end{theorem}
 \begin{proof}
@@ -1125,15 +1123,15 @@ is a decision procedure.
 
 \begin{example}We can for instance check that the search procedure
 succeeds in finding the \texttt{swapTyped} derivation we had written down
-as Example~\ref{example:swapTyped}. Because σ and τ are abstract in the
-following snippet, the equality test checking that σ is equal to itself
-and so is τ does not reduce and we need to rewrite by the proof
+as Example~\ref{example:swapTyped}. Because \ensuremath{\sigma} and \ensuremath{\tau} are abstract in the
+following snippet, the equality test checking that \ensuremath{\sigma} is equal to itself
+and so is \ensuremath{\tau} does not reduce and we need to rewrite by the proof
 \texttt{eq-diag} that the equality test always succeeds in this kind of
 situation:
 \begin{lstlisting}
-  swapChecked : '∀' 'σ' 'τ' '→' check [] (('σ ⊗ τ') '⊸' ('τ ⊗ σ')) swap
-                      '≡' yes ([] , swapTyped)
-  swapChecked 'σ' 'τ' rewrite eq-diag 'τ' | eq-diag 'σ' = refl
+  swapChecked : '\ensuremath{\forall}' '\ensuremath{\sigma}' '\ensuremath{\tau}' '→' check [] (('\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}') '\ensuremath{\multimap}' ('\ensuremath{\tau} \ensuremath{\otimes} \ensuremath{\sigma}')) swap
+                      '\ensuremath{\equiv}' yes ([] , swapTyped)
+  swapChecked '\ensuremath{\sigma}' '\ensuremath{\tau}' rewrite eq-diag '\ensuremath{\tau}' | eq-diag '\ensuremath{\sigma}' = refl
 \end{lstlisting}
 \end{example}
 
@@ -1148,7 +1146,7 @@ We have now demonstrated that the $\Usages{}$-based formulation of
 linear logic as a type system is amenable to mechanisation without
 putting an unreasonable burden on the user. Indeed, the system's
 important properties can all be dealt with by structural induction
-and the user still retains the ability to write simple $λ$-terms
+and the user still retains the ability to write simple $\ensuremath{\lambda}$-terms
 which are not cluttered with structural rules.
 
 However this presentation departs quite a lot from more traditional
@@ -1162,8 +1160,8 @@ representing the multiset of assumptions as a list.
 The definition of this calculus is directly taken from the Linear Logic
 Wiki~\cite{wiki:linearlogic} whose notations we follow to the letter.
 The interested reader will find more details in for instance Troelstra's
-lectures~\cite{troelstra1991lectures}. In the following figure, γ, δ,
-and θ are context variables while σ, τ , and ν range over types. We
+lectures~\cite{troelstra1991lectures}. In the following figure, \ensuremath{\gamma}, \ensuremath{\delta},
+and \ensuremath{\theta} are context variables while \ensuremath{\sigma}, \ensuremath{\tau} , and \ensuremath{\nu} range over types. We
 overload the comma to mean both consing a single type to the front
 of a list and appending two lists, as is customary.
 
@@ -1171,7 +1169,7 @@ of a list and appending two lists, as is customary.
 
 Our only departure from the traditional presentation is the \textit{mix}
 rule which is an artefact of our encoding multisets as lists. It allows
-the user to pick any interleaving θ of two lists γ and δ. This notion of
+the user to pick any interleaving \ensuremath{\theta} of two lists \ensuremath{\gamma} and \ensuremath{\delta}. This notion of
 interleaving is formalised by the following three-place relation.
 
 \begin{definition} The \textbf{interleaving} relation is defined by three
@@ -1182,10 +1180,10 @@ as the head of the interleaving and the tail as the result of interleaving
 the rest.
 
 \begin{mathpar}
-\type{γ, δ, θ : \List{a}}{γ, δ ≅ θ : \Set{}}
-\and \constructor{ }{[] : [], [] ≅ []}
-\and \constructor{p : γ, δ ≅ θ}{σ ,_{l} p : (σ, γ), δ ≅ (σ, θ)}
-\and \constructor{p : γ, δ ≅ θ}{σ ,_{r} p : γ, (σ, δ) ≅ (σ, θ)}
+\type{\ensuremath{\gamma}, \ensuremath{\delta}, \ensuremath{\theta} : \List{a}}{\ensuremath{\gamma}, \ensuremath{\delta} \ensuremath{\cong} \ensuremath{\theta} : \Set{}}
+\and \constructor{ }{[] : [], [] \ensuremath{\cong} []}
+\and \constructor{p : \ensuremath{\gamma}, \ensuremath{\delta} \ensuremath{\cong} \ensuremath{\theta}}{\ensuremath{\sigma} ,_{l} p : (\ensuremath{\sigma}, \ensuremath{\gamma}), \ensuremath{\delta} \ensuremath{\cong} (\ensuremath{\sigma}, \ensuremath{\theta})}
+\and \constructor{p : \ensuremath{\gamma}, \ensuremath{\delta} \ensuremath{\cong} \ensuremath{\theta}}{\ensuremath{\sigma} ,_{r} p : \ensuremath{\gamma}, (\ensuremath{\sigma}, \ensuremath{\delta}) \ensuremath{\cong} (\ensuremath{\sigma}, \ensuremath{\theta})}
 \end{mathpar}
 \end{definition}
 
@@ -1197,9 +1195,9 @@ we have defined is both sound and complete with respect to that logic.
 
 We start with the easiest part of the proof: soundness. This means that from
 a typing derivation, we can derive a proof in ILL of what is essentially the
-same statement. That is to say that if a term is said to have type σ in a fully
-fresh context γ and proceeds to consume all of the resources in that context
-during the typing derivation then it corresponds to a proof of γ ⊢ σ in ILL.
+same statement. That is to say that if a term is said to have type \ensuremath{\sigma} in a fully
+fresh context \ensuremath{\gamma} and proceeds to consume all of the resources in that context
+during the typing derivation then it corresponds to a proof of \ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\sigma} in ILL.
 
 This statement needs to be generalised to be proven. Indeed, even if we start
 with a context full of available resources, at the first split we encounter
@@ -1207,20 +1205,20 @@ with a context full of available resources, at the first split we encounter
 anymore in one of the sub-terms. To state this more general formulation,
 we need to introduce a new notion: used assumptions.
 
-\begin{definition}The list of \textbf{used} assumptions in a proof Γ ⊆ Δ in
+\begin{definition}The list of \textbf{used} assumptions in a proof \ensuremath{\Gamma} \ensuremath{\subseteq} \ensuremath{\Delta} in
 the consumption partial order is the list of types which have turned from
-fresh in Γ to stale in Δ. The \used{\cdot} function is defined by recursion
-over the proof that Γ ⊆ Δ.
+fresh in \ensuremath{\Gamma} to stale in \ensuremath{\Delta}. The \used{\cdot} function is defined by recursion
+over the proof that \ensuremath{\Gamma} \ensuremath{\subseteq} \ensuremath{\Delta}.
 \end{definition}
 
 \begin{definition}A Typing Relation \TR{} for terms $T$ is said to be \textbf{sound}
-with respect to ILL if, for $k$ a \Nat{}, γ a \Context{k}, Γ and Δ two \Usages{γ},
-t a term $T_k$ and σ a type, from the typing derivation \TR{}(Γ, t, σ, Δ) and p a
-proof that Γ ⊆ Δ we can derive $\used{p} ⊢ σ$.
+with respect to ILL if, for $k$ a \Nat{}, \ensuremath{\gamma} a \Context{k}, \ensuremath{\Gamma} and \ensuremath{\Delta} two \Usages{\ensuremath{\gamma}},
+t a term $T_k$ and \ensuremath{\sigma} a type, from the typing derivation \TR{}(\ensuremath{\Gamma}, t, \ensuremath{\sigma}, \ensuremath{\Delta}) and p a
+proof that \ensuremath{\Gamma} \ensuremath{\subseteq} \ensuremath{\Delta} we can derive $\used{p} \ensuremath{\vdash} \ensuremath{\sigma}$.
 \end{definition}
 
 \begin{remark}The consumption lemma~\ref{lemma:consumption} guarantees that such
-a proof Γ ⊆ Δ always exists whenever the typing relation is either the one for
+a proof \ensuremath{\Gamma} \ensuremath{\subseteq} \ensuremath{\Delta} always exists whenever the typing relation is either the one for
 \Var{}, \Inferable{} or \Checkable{}.
 \end{remark}
 
@@ -1228,23 +1226,23 @@ Before we can prove the soudness theorem, we need two auxiliary lemmas allowing
 us to handle the mismatch we may have between the way the used assumptions of a
 derivation are computed and the way the ones for its subderivations are obtained.
 
-\begin{lemma}Given k a \Nat{}, γ a \Context{k} and Γ, Δ, and θ three \Usages{γ},
+\begin{lemma}Given k a \Nat{}, \ensuremath{\gamma} a \Context{k} and \ensuremath{\Gamma}, \ensuremath{\Delta}, and \ensuremath{\theta} three \Usages{\ensuremath{\gamma}},
 we have:\begin{enumerate}
-\item if p and q are proofs that $Γ ⊆ Δ$ then \used{p} = \used{q}.
-\item if p is a proof that $Γ ⊆ Δ$, q that $Δ ⊆ θ$ and pq that $Γ ⊆ θ$ then \used{pq}
+\item if p and q are proofs that $\ensuremath{\Gamma} \ensuremath{\subseteq} \ensuremath{\Delta}$ then \used{p} = \used{q}.
+\item if p is a proof that $\ensuremath{\Gamma} \ensuremath{\subseteq} \ensuremath{\Delta}$, q that $\ensuremath{\Delta} \ensuremath{\subseteq} \ensuremath{\theta}$ and pq that $\ensuremath{\Gamma} \ensuremath{\subseteq} \ensuremath{\theta}$ then \used{pq}
 is an interleaving of \used{p} and \used{q}.
 \end{enumerate}
 \end{lemma}
 
 The relation validating patterns is not a typing relation and as such it needs
 to be handled separately. This can be done by defining a procedure elaborating
-patterns away by showing that whenever $σ ∋ p \leadsto{} γ$, it is morally
-acceptable to replace σ on the left by γ. Which gives us the following \textit{cut}-like
+patterns away by showing that whenever $\ensuremath{\sigma} \ensuremath{\ni} p \leadsto{} \ensuremath{\gamma}$, it is morally
+acceptable to replace \ensuremath{\sigma} on the left by \ensuremath{\gamma}. Which gives us the following \textit{cut}-like
 admissible rule:
 
 \begin{lemma}[Elaboration of Let-bindings] Provided k a \Nat{}, p a \Pattern{k},
-σ a \Type{} and γ a \Context{k} such that $σ ∋ p \leadsto{} γ$, we have that for
-all δ and θ two \List{\Type} and τ a \Type{}, if $δ ⊢ σ$ and $γ , θ ⊢ τ$ then $δ , θ ⊢ τ$.
+\ensuremath{\sigma} a \Type{} and \ensuremath{\gamma} a \Context{k} such that $\ensuremath{\sigma} \ensuremath{\ni} p \leadsto{} \ensuremath{\gamma}$, we have that for
+all \ensuremath{\delta} and \ensuremath{\theta} two \List{\Type} and \ensuremath{\tau} a \Type{}, if $\ensuremath{\delta} \ensuremath{\vdash} \ensuremath{\sigma}$ and $\ensuremath{\gamma} , \ensuremath{\theta} \ensuremath{\vdash} \ensuremath{\tau}$ then $\ensuremath{\delta} , \ensuremath{\theta} \ensuremath{\vdash} \ensuremath{\tau}$.
 \end{lemma}
 
 We now have all the pieces to prove the soundness of our typing relations.
@@ -1269,9 +1267,9 @@ it does not give us any insight as to what the meaning of \Usages{}
 and typing derivations is. So we only state the result and give
 an idea of the proof.
 
-\begin{theorem}[Completeness] Given γ a \List{\Type{}} and σ a type,
-from a proof $γ ⊢ σ$ we can derive an \Inferable{} t and a proof that
-$\fresh{γ} ⊢ t ∈ σ \andalso{} \stale{γ}$.
+\begin{theorem}[Completeness] Given \ensuremath{\gamma} a \List{\Type{}} and \ensuremath{\sigma} a type,
+from a proof $\ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\sigma}$ we can derive an \Inferable{} t and a proof that
+$\fresh{\ensuremath{\gamma}} \ensuremath{\vdash} t \ensuremath{\in} \ensuremath{\sigma} \andalso{} \stale{\ensuremath{\gamma}}$.
 \end{theorem}
 \begin{proof}
 The proof is by induction over the derivation in ILL. The right rules
@@ -1318,7 +1316,7 @@ term in this deep embedding is indeed sufficient to conclude that the
 output of the algorithm is a permutation of its input. They use on-the-fly
 re-ordering of contexts via explicit permutation proofs.
 
-Polakow faced with the task of embedding a linear λ-calculus in
+Polakow faced with the task of embedding a linear \ensuremath{\lambda}-calculus in
 Haskell~\cite{polakow2016embedding} used a typed-tagless
 approach~\cite{kiselyov2012typed} and tried to get as much automation
 from typeclass resolution as possible. Seeing Haskell's typeclass
@@ -1347,7 +1345,7 @@ crucial to retain the ability to talk about a resource even if it
 has already been consumed. E.g. a function taking a boolean and
 deciding whether it is equal to \texttt{tt} or \texttt{ff} will
 have a type mentioning the function's argument twice. But in a
-lawful manner: $(x : \DefinedType{Bool}) ⊸ (x ≡ \texttt{tt}) ∨ (x ≡ \texttt{ff})$.
+lawful manner: $(x : \DefinedType{Bool}) \ensuremath{\multimap} (x \ensuremath{\equiv} \texttt{tt}) \ensuremath{\vee} (x \ensuremath{\equiv} \texttt{ff})$.
 This leads to the need for a context \emph{shared} across all
 subterms and consumption annotations ensuring that the linear
 resources are never used more than once.

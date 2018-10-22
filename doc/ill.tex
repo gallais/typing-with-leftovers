@@ -1,21 +1,21 @@
 \begin{figure}[H]
 \begin{mathpar}
-\inferrule{ }{σ ⊢ σ}{ax}
-\and \inferrule{γ ⊢ σ \and σ , δ ⊢ τ}{γ , δ ⊢ τ}{cut}
-\and \inferrule{γ ⊢ σ \and δ ⊢ τ}{γ , δ ⊢ σ ⊗ τ}{⊗^R}
-\and \inferrule{τ , σ , γ ⊢ ν} {σ ⊗ τ , γ ⊢}{⊗^L}
-\and \inferrule{ }{⊢ 𝟙}{1^R}
-\and \inferrule{γ ⊢ σ}{𝟙 , γ ⊢ σ}{1^L}
-\and \inferrule{ }{𝟘 , γ ⊢ σ}{0^L}
-\and \inferrule{σ , γ ⊢ τ}{γ ⊢ σ ⊸ τ}{⊸^R}
-\and \inferrule{γ ⊢ σ \and τ , δ ⊢ ν}{(σ ⊸ τ) , γ , δ ⊢ ν}{⊸^L}
-\and \inferrule{γ ⊢ σ \and γ ⊢ τ}{γ ⊢ σ \& τ}{\&^R}
-\and \inferrule{σ , γ ⊢ ν}{σ \& τ , γ ⊢ ν}{\&_1^L}
-\and \inferrule{τ , γ ⊢ ν}{σ \& τ , γ ⊢ ν}{\&_2^L}
-\and \inferrule{γ ⊢ σ}{γ ⊢ σ ⊕ τ}{⊕_1^R}
-\and \inferrule{γ ⊢ τ}{γ ⊢ σ ⊕ τ}{⊕_2^R}
-\and \inferrule{σ , γ ⊢ ν \and τ , γ ⊢ ν}{σ ⊕ τ , γ ⊢ ν}{⊕^L}
-\and \inferrule{γ , δ ⊢ σ \and γ , δ ≅ θ}{θ ⊢ σ}{mix}
+\inferrule{ }{\ensuremath{\sigma} \ensuremath{\vdash} \ensuremath{\sigma}}{ax}
+\and \inferrule{\ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\sigma} \and \ensuremath{\sigma} , \ensuremath{\delta} \ensuremath{\vdash} \ensuremath{\tau}}{\ensuremath{\gamma} , \ensuremath{\delta} \ensuremath{\vdash} \ensuremath{\tau}}{cut}
+\and \inferrule{\ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\sigma} \and \ensuremath{\delta} \ensuremath{\vdash} \ensuremath{\tau}}{\ensuremath{\gamma} , \ensuremath{\delta} \ensuremath{\vdash} \ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}}{\ensuremath{\otimes}^R}
+\and \inferrule{\ensuremath{\tau} , \ensuremath{\sigma} , \ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\nu}} {\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau} , \ensuremath{\gamma} \ensuremath{\vdash}}{\ensuremath{\otimes}^L}
+\and \inferrule{ }{\ensuremath{\vdash} \ensuremath{\mathbb{1}}}{1^R}
+\and \inferrule{\ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\sigma}}{\ensuremath{\mathbb{1}} , \ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\sigma}}{1^L}
+\and \inferrule{ }{\ensuremath{\mathbb{0}} , \ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\sigma}}{0^L}
+\and \inferrule{\ensuremath{\sigma} , \ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\tau}}{\ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\sigma} \ensuremath{\multimap} \ensuremath{\tau}}{\ensuremath{\multimap}^R}
+\and \inferrule{\ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\sigma} \and \ensuremath{\tau} , \ensuremath{\delta} \ensuremath{\vdash} \ensuremath{\nu}}{(\ensuremath{\sigma} \ensuremath{\multimap} \ensuremath{\tau}) , \ensuremath{\gamma} , \ensuremath{\delta} \ensuremath{\vdash} \ensuremath{\nu}}{\ensuremath{\multimap}^L}
+\and \inferrule{\ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\sigma} \and \ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\tau}}{\ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\sigma} \& \ensuremath{\tau}}{\&^R}
+\and \inferrule{\ensuremath{\sigma} , \ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\nu}}{\ensuremath{\sigma} \& \ensuremath{\tau} , \ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\nu}}{\&_1^L}
+\and \inferrule{\ensuremath{\tau} , \ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\nu}}{\ensuremath{\sigma} \& \ensuremath{\tau} , \ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\nu}}{\&_2^L}
+\and \inferrule{\ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\sigma}}{\ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\sigma} \ensuremath{\oplus} \ensuremath{\tau}}{\ensuremath{\oplus}_1^R}
+\and \inferrule{\ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\tau}}{\ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\sigma} \ensuremath{\oplus} \ensuremath{\tau}}{\ensuremath{\oplus}_2^R}
+\and \inferrule{\ensuremath{\sigma} , \ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\nu} \and \ensuremath{\tau} , \ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\nu}}{\ensuremath{\sigma} \ensuremath{\oplus} \ensuremath{\tau} , \ensuremath{\gamma} \ensuremath{\vdash} \ensuremath{\nu}}{\ensuremath{\oplus}^L}
+\and \inferrule{\ensuremath{\gamma} , \ensuremath{\delta} \ensuremath{\vdash} \ensuremath{\sigma} \and \ensuremath{\gamma} , \ensuremath{\delta} \ensuremath{\cong} \ensuremath{\theta}}{\ensuremath{\theta} \ensuremath{\vdash} \ensuremath{\sigma}}{mix}
 \end{mathpar}
 \caption{Sequent Calculus for Intuitionistic Linear Logic}\label{sequent:ill}
 \end{figure}

@@ -9,10 +9,10 @@
       \inferrule
        { % premise 4
       }{ % conclusion 4
-        [] ∙ \fresh{σ ⊗ τ} ⊢_v \texttt{0} ∈ σ ⊗ τ \andalso{} [] ∙ \stale{σ ⊗ τ}
+        [] \ensuremath{\cdot} \fresh{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\vdash}_v \texttt{0} \ensuremath{\in} \ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau} \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}}
       }
     }{ % conclusion 3
-       [] ∙ \fresh{σ ⊗ τ} ⊢ \texttt{var}(\texttt{0}) ∈ σ ⊗ τ \andalso{} [] ∙ \stale{σ ⊗ τ}
+       [] \ensuremath{\cdot} \fresh{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\vdash} \texttt{var}(\texttt{0}) \ensuremath{\in} \ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau} \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}}
      }
    \and % premise 2
     \inferrule
@@ -20,34 +20,34 @@
       \inferrule
        { % premise 4
       }{ % conclusion 4
-        σ ∋ \texttt{v} \leadsto{} [] ∙ σ
+        \ensuremath{\sigma} \ensuremath{\ni} \texttt{v} \leadsto{} [] \ensuremath{\cdot} \ensuremath{\sigma}
        }
      \and % premise 3
       \inferrule
        { % premise 4
       }{ % conclusion 4
-        τ ∋ \texttt{v} \leadsto{} [] ∙ τ
+        \ensuremath{\tau} \ensuremath{\ni} \texttt{v} \leadsto{} [] \ensuremath{\cdot} \ensuremath{\tau}
       }
     }{ % conclusion 3
-      σ ⊗ τ ∋ (\texttt{v, v}) \leadsto{} [] ∙ τ ∙ σ
+      \ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau} \ensuremath{\ni} (\texttt{v, v}) \leadsto{} [] \ensuremath{\cdot} \ensuremath{\tau} \ensuremath{\cdot} \ensuremath{\sigma}
     }
    \and % premise 2
-    Π
+    \ensuremath{Pi}
   }{ % conslusion 2
-    [] ∙ \fresh{σ ⊗ τ} ⊢ τ ⊗ σ ∋
+    [] \ensuremath{\cdot} \fresh{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\vdash} \ensuremath{\tau} \ensuremath{\otimes} \ensuremath{\sigma} \ensuremath{\ni}
     {\begin{array}{l}
-      \texttt{let}~(\texttt{v, v})~∷=~\texttt{var}~\texttt{0}~\texttt{in} \\
+      \texttt{let}~(\texttt{v, v})~\ensuremath{\listcons}=~\texttt{var}~\texttt{0}~\texttt{in} \\
       \texttt{prd}(\texttt{neu}(\texttt{var}(\texttt{1})),~\texttt{neu}(\texttt{var}(\texttt{0})))
     \end{array}}
-    \andalso{} [] ∙ \stale{σ ⊗ τ}
+    \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}}
   }
 }{ % conclusion 1
-  [] ⊢ (σ ⊗ τ) ⊸ (τ ⊗ σ) ∋ \texttt{swap} \andalso{} []
+  [] \ensuremath{\vdash} (\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}) \ensuremath{\multimap} (\ensuremath{\tau} \ensuremath{\otimes} \ensuremath{\sigma}) \ensuremath{\ni} \texttt{swap} \andalso{} []
 }
 
 \and
 
-Π = \inferrule
+\ensuremath{Pi} = \inferrule
   { % premise 1
    \inferrule
     { % premise 2
@@ -58,46 +58,46 @@
          \inferrule
           { % premise 5
          }{ % conclusion 5
-           [] ∙ \stale{σ ⊗ τ} ∙ \fresh{τ} ⊢_v \texttt{0} ∈ τ \andalso{} [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ}
+           [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\tau}} \ensuremath{\vdash}_v \texttt{0} \ensuremath{\in} \ensuremath{\tau} \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\tau}}
          }
        }{ % conclusion 4
-         [] ∙ \stale{σ ⊗ τ} ∙ \fresh{τ} ∙ \fresh{σ} ⊢_v \texttt{1} ∈ τ
-          \andalso{} [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \fresh{σ}
+         [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}} \ensuremath{\vdash}_v \texttt{1} \ensuremath{\in} \ensuremath{\tau}
+          \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}}
        }
      }{ % conclusion 3
-       [] ∙ \stale{σ ⊗ τ} ∙ \fresh{τ} ∙ \fresh{σ} ⊢ \texttt{var}(\texttt{1}) ∈ τ
-       \andalso{} [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \fresh{σ}
+       [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}} \ensuremath{\vdash} \texttt{var}(\texttt{1}) \ensuremath{\in} \ensuremath{\tau}
+       \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}}
      }
    }{ % conclusion 2
-     [] ∙ \stale{σ ⊗ τ} ∙ \fresh{τ} ∙ \fresh{σ} ⊢ τ ∋ \texttt{neu}(\texttt{var}(\texttt{1}))
-     \andalso{} [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \fresh{σ}
+     [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}} \ensuremath{\vdash} \ensuremath{\tau} \ensuremath{\ni} \texttt{neu}(\texttt{var}(\texttt{1}))
+     \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}}
    }
-  \and Π'
+  \and \ensuremath{Pi}'
  }{ % conclusion 3
-   [] ∙ \stale{σ ⊗ τ} ∙ \fresh{τ} ∙ \fresh{σ} ⊢ τ ⊗ σ ∋
+   [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}} \ensuremath{\vdash} \ensuremath{\tau} \ensuremath{\otimes} \ensuremath{\sigma} \ensuremath{\ni}
    \texttt{prd}(\texttt{neu}(\texttt{var}(\texttt{1})),~\texttt{neu}(\texttt{var}(\texttt{0}))
-   \andalso{} [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \stale{σ}
+   \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\sigma}}
  }
 
 \and
 
-Π' =  \inferrule
+\ensuremath{Pi}' =  \inferrule
   { % premise 1
    \inferrule
     { % premise 2
      \inferrule
       { % premise 3
      }{ % conclusion 3
-       [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \fresh{σ} ⊢_v \texttt{0} ∈ σ
-       \andalso{} [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \stale{σ}
+       [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}} \ensuremath{\vdash}_v \texttt{0} \ensuremath{\in} \ensuremath{\sigma}
+       \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\sigma}}
      }
    }{ % conclusion 2
-     [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \fresh{σ} ⊢ \texttt{var}(\texttt{0}) ∈ σ
-     \andalso{} [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \stale{σ}
+     [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}} \ensuremath{\vdash} \texttt{var}(\texttt{0}) \ensuremath{\in} \ensuremath{\sigma}
+     \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\sigma}}
    }
  }{ % conclusion 1
-   [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \fresh{σ} ⊢ σ ∋ \texttt{neu}(\texttt{var}(\texttt{0}))
-   \andalso{} [] ∙ \stale{σ ⊗ τ} ∙ \stale{τ} ∙ \stale{σ}
+   [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}} \ensuremath{\vdash} \ensuremath{\sigma} \ensuremath{\ni} \texttt{neu}(\texttt{var}(\texttt{0}))
+   \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\sigma}}
  }
 
 \end{mathpar}

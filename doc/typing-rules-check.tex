@@ -1,38 +1,38 @@
 \begin{figure}[H]
 \begin{mathpar}
 \inferrule
- {Γ ∙ \fresh{σ} ⊢ τ ∋ b \andalso{} Δ ∙ \stale{σ}
-}{Γ ⊢ σ ⊸ τ ∋ \lam{b} \andalso{} Δ
+ {\ensuremath{\Gamma} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}} \ensuremath{\vdash} \ensuremath{\tau} \ensuremath{\ni} b \andalso{} \ensuremath{\Delta} \ensuremath{\cdot} \stale{\ensuremath{\sigma}}
+}{\ensuremath{\Gamma} \ensuremath{\vdash} \ensuremath{\sigma} \ensuremath{\multimap} \ensuremath{\tau} \ensuremath{\ni} \lam{b} \andalso{} \ensuremath{\Delta}
 }
 \and \inferrule
- {Γ ⊢ σ ∋ a \andalso{} Δ \and Δ ⊢ τ ∋ b \andalso{} Θ
-}{Γ ⊢ σ ⊗ τ ∋ \prd{a}{b} \andalso{} Θ
+ {\ensuremath{\Gamma} \ensuremath{\vdash} \ensuremath{\sigma} \ensuremath{\ni} a \andalso{} \ensuremath{\Delta} \and \ensuremath{\Delta} \ensuremath{\vdash} \ensuremath{\tau} \ensuremath{\ni} b \andalso{} \ensuremath{\Theta}
+}{\ensuremath{\Gamma} \ensuremath{\vdash} \ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau} \ensuremath{\ni} \prd{a}{b} \andalso{} \ensuremath{\Theta}
 }
 \\
 \and \inferrule
- {Γ ⊢ σ ∋ t \andalso{} Δ
-}{Γ ⊢ σ ⊕ τ ∋ \inl{t} \andalso{} Δ
+ {\ensuremath{\Gamma} \ensuremath{\vdash} \ensuremath{\sigma} \ensuremath{\ni} t \andalso{} \ensuremath{\Delta}
+}{\ensuremath{\Gamma} \ensuremath{\vdash} \ensuremath{\sigma} \ensuremath{\oplus} \ensuremath{\tau} \ensuremath{\ni} \inl{t} \andalso{} \ensuremath{\Delta}
 }
 \and \inferrule
- {Γ ⊢ τ ∋ t \andalso{} Δ
-}{Γ ⊢ σ ⊕ τ ∋ \inr{t} \andalso{} Δ
+ {\ensuremath{\Gamma} \ensuremath{\vdash} \ensuremath{\tau} \ensuremath{\ni} t \andalso{} \ensuremath{\Delta}
+}{\ensuremath{\Gamma} \ensuremath{\vdash} \ensuremath{\sigma} \ensuremath{\oplus} \ensuremath{\tau} \ensuremath{\ni} \inr{t} \andalso{} \ensuremath{\Delta}
 }
 \and \inferrule
- {Γ ⊢ σ ∋ a \andalso{} Δ \and Γ ⊢ τ ∋ b \andalso{} Δ
-}{Γ ⊢ σ \& τ ∋ \prd{a}{b} \andalso{} Δ
+ {\ensuremath{\Gamma} \ensuremath{\vdash} \ensuremath{\sigma} \ensuremath{\ni} a \andalso{} \ensuremath{\Delta} \and \ensuremath{\Gamma} \ensuremath{\vdash} \ensuremath{\tau} \ensuremath{\ni} b \andalso{} \ensuremath{\Delta}
+}{\ensuremath{\Gamma} \ensuremath{\vdash} \ensuremath{\sigma} \& \ensuremath{\tau} \ensuremath{\ni} \prd{a}{b} \andalso{} \ensuremath{\Delta}
 }
 \\
 \and \inferrule
  {
-}{Γ ⊢ \Unit ∋ \uni \andalso{} Γ
+}{\ensuremath{\Gamma} \ensuremath{\vdash} \Unit \ensuremath{\ni} \uni \andalso{} \ensuremath{\Gamma}
 } \and \inferrule
- {Γ ⊢ t ∈ σ \andalso{} Δ \and σ ∋ p \leadsto{} δ
-  \\\\ Δ \append{} \fresh{δ} ⊢ τ ∋ u \andalso{} Θ \append{} \stale{δ}
-}{Γ ⊢ τ ∋ \letin{p}{t}{u} \andalso{} Θ
+ {\ensuremath{\Gamma} \ensuremath{\vdash} t \ensuremath{\in} \ensuremath{\sigma} \andalso{} \ensuremath{\Delta} \and \ensuremath{\sigma} \ensuremath{\ni} p \leadsto{} \ensuremath{\delta}
+  \\\\ \ensuremath{\Delta} \append{} \fresh{\ensuremath{\delta}} \ensuremath{\vdash} \ensuremath{\tau} \ensuremath{\ni} u \andalso{} \ensuremath{\Theta} \append{} \stale{\ensuremath{\delta}}
+}{\ensuremath{\Gamma} \ensuremath{\vdash} \ensuremath{\tau} \ensuremath{\ni} \letin{p}{t}{u} \andalso{} \ensuremath{\Theta}
 }
 \and \inferrule
- {Γ ⊢ t ∈ σ \andalso{} Δ
-}{Γ ⊢ σ ∋ \neu{t} \andalso{} Δ
+ {\ensuremath{\Gamma} \ensuremath{\vdash} t \ensuremath{\in} \ensuremath{\sigma} \andalso{} \ensuremath{\Delta}
+}{\ensuremath{\Gamma} \ensuremath{\vdash} \ensuremath{\sigma} \ensuremath{\ni} \neu{t} \andalso{} \ensuremath{\Delta}
 }
 \end{mathpar}
 \caption{Typing rules for \Checkable{}\label{figure:check}}

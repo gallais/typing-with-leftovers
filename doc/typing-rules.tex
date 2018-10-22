@@ -2,43 +2,43 @@
 \begin{mathpar}
 \type[\Var{}]
  {{\begin{array}{l}
-    γ : \Context{n} \\
-    Γ : \Usages{γ} \\ \\
+    \ensuremath{\gamma} : \Context{n} \\
+    \ensuremath{\Gamma} : \Usages{\ensuremath{\gamma}} \\ \\
   \end{array}}
   \and k : \Var{n}
   \and {\begin{array}{l}
-    σ : \Type{}    \\
-    Δ : \Usages{γ} \\ \\
+    \ensuremath{\sigma} : \Type{}    \\
+    \ensuremath{\Delta} : \Usages{\ensuremath{\gamma}} \\ \\
   \end{array}}
-}{Γ ⊢_v k ∈ σ \andalso{} Δ : \Set{}
+}{\ensuremath{\Gamma} \ensuremath{\vdash}_v k \ensuremath{\in} \ensuremath{\sigma} \andalso{} \ensuremath{\Delta} : \Set{}
 }
 \and \type[\Inferable{}]
  {{\begin{array}{l}
-    γ : \Context{n} \\
-    Γ : \Usages{γ} \\ \\
+    \ensuremath{\gamma} : \Context{n} \\
+    \ensuremath{\Gamma} : \Usages{\ensuremath{\gamma}} \\ \\
   \end{array}}
   \and t : \Inferable{n}
   \and {\begin{array}{l}
-    σ : \Type{}    \\
-    Δ : \Usages{γ} \\ \\
+    \ensuremath{\sigma} : \Type{}    \\
+    \ensuremath{\Delta} : \Usages{\ensuremath{\gamma}} \\ \\
   \end{array}}
-}{Γ ⊢ t ∈ σ \andalso{} Δ : \Set{}
+}{\ensuremath{\Gamma} \ensuremath{\vdash} t \ensuremath{\in} \ensuremath{\sigma} \andalso{} \ensuremath{\Delta} : \Set{}
 }
 \and \type[\Checkable{}]
  {{\begin{array}{l}
-    γ : \Context{n} \\
-    Γ : \Usages{γ} \\
-    σ : \Type{} \\ \\
+    \ensuremath{\gamma} : \Context{n} \\
+    \ensuremath{\Gamma} : \Usages{\ensuremath{\gamma}} \\
+    \ensuremath{\sigma} : \Type{} \\ \\
    \end{array}}
   \and t : \Checkable{n}
-  \and Δ : \Usages{γ}
-}{Γ ⊢ σ  ∋ t \andalso{} Δ : \Set{}
+  \and \ensuremath{\Delta} : \Usages{\ensuremath{\gamma}}
+}{\ensuremath{\Gamma} \ensuremath{\vdash} \ensuremath{\sigma}  \ensuremath{\ni} t \andalso{} \ensuremath{\Delta} : \Set{}
 }
 \and \type[\Pattern{}]
-{ σ : \Type{}
+{ \ensuremath{\sigma} : \Type{}
   \and p : \Pattern{n}
-  \and γ : \Context{n}
-}{σ ∋ p \leadsto{} γ : \Set{}
+  \and \ensuremath{\gamma} : \Context{n}
+}{\ensuremath{\sigma} \ensuremath{\ni} p \leadsto{} \ensuremath{\gamma} : \Set{}
 }
 \end{mathpar}
 \caption{Typing relations for \Var{}, \Inferable{}, \Checkable{} and \Pattern{}}

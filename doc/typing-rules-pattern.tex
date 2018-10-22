@@ -1,9 +1,9 @@
 \begin{figure}[H]
 \begin{mathpar}
-\inferrule{ }{σ ∋ \texttt{v} \leadsto{} [] ∙ σ}
-\and \inferrule{ }{\Unit{} ∋ \texttt{⟨\!⟩} \leadsto{} []}
-\and \inferrule{σ ∋ p \leadsto{} γ \and τ ∋ q \leadsto{} δ
-}{σ ⊗ τ ∋ (p \texttt{,} q) \leadsto{} δ \append{} γ
+\inferrule{ }{\ensuremath{\sigma} \ensuremath{\ni} \texttt{v} \leadsto{} [] \ensuremath{\cdot} \ensuremath{\sigma}}
+\and \inferrule{ }{\Unit{} \ensuremath{\ni} \texttt{\ensuremath{\langle}\!\ensuremath{\rangle}} \leadsto{} []}
+\and \inferrule{\ensuremath{\sigma} \ensuremath{\ni} p \leadsto{} \ensuremath{\gamma} \and \ensuremath{\tau} \ensuremath{\ni} q \leadsto{} \ensuremath{\delta}
+}{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau} \ensuremath{\ni} (p \texttt{,} q) \leadsto{} \ensuremath{\delta} \append{} \ensuremath{\gamma}
 }
 \end{mathpar}
 \caption{Typing rules for \Pattern{}\label{figure:pattern}}
