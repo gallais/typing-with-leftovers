@@ -27,7 +27,9 @@
 }{\ensuremath{\Gamma} \ensuremath{\vdash} \Unit \ensuremath{\ni} \uni \andalso{} \ensuremath{\Gamma}
 } \and \inferrule
  {\ensuremath{\Gamma} \ensuremath{\vdash} t \ensuremath{\in} \ensuremath{\sigma} \andalso{} \ensuremath{\Delta} \and \ensuremath{\sigma} \ensuremath{\ni} p \leadsto{} \ensuremath{\delta}
-  \\\\ \ensuremath{\Delta} \append{} \fresh{\ensuremath{\delta}} \ensuremath{\vdash} \ensuremath{\tau} \ensuremath{\ni} u \andalso{} \ensuremath{\Theta} \append{} \stale{\ensuremath{\delta}}
+   \\\\ \append{\Delta}{\fresh{\delta}}
+        \ensuremath{\vdash} \ensuremath{\tau} \ensuremath{\ni} u \andalso{}
+        \append{\Theta}{\stale{\delta}}
 }{\ensuremath{\Gamma} \ensuremath{\vdash} \ensuremath{\tau} \ensuremath{\ni} \letin{p}{t}{u} \andalso{} \ensuremath{\Theta}
 }
 \and \inferrule

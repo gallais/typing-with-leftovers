@@ -4,52 +4,66 @@
  { % premise 1
   \inferrule
    { % premise 2
-    \inferrule
-     { % premise 3
-      \inferrule
-       { % premise 4
-      }{ % conclusion 4
-        [] \ensuremath{\cdot} \fresh{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\vdash}_v \texttt{0} \ensuremath{\in} \ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau} \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}}
-      }
-    }{ % conclusion 3
-       [] \ensuremath{\cdot} \fresh{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\vdash} \texttt{var}(\texttt{0}) \ensuremath{\in} \ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau} \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}}
-     }
-   \and % premise 2
-    \inferrule
-     { % premise 3
-      \inferrule
-       { % premise 4
-      }{ % conclusion 4
-        \ensuremath{\sigma} \ensuremath{\ni} \texttt{v} \leadsto{} [] \ensuremath{\cdot} \ensuremath{\sigma}
-       }
-     \and % premise 3
-      \inferrule
-       { % premise 4
-      }{ % conclusion 4
-        \ensuremath{\tau} \ensuremath{\ni} \texttt{v} \leadsto{} [] \ensuremath{\cdot} \ensuremath{\tau}
-      }
-    }{ % conclusion 3
-      \ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau} \ensuremath{\ni} (\texttt{v, v}) \leadsto{} [] \ensuremath{\cdot} \ensuremath{\tau} \ensuremath{\cdot} \ensuremath{\sigma}
-    }
-   \and % premise 2
-    \ensuremath{Pi}
+        \ensuremath{\mathcal{E}}   % expression
+   \and \ensuremath{\mathcal{P}}   % pattern
+   \and \inferrule
+         { % premise 3
+          \ensuremath{\mathcal{L} \and \mathcal{R}}
+        }{ % conclusion 1 
+           \ensuremath{[] \cdot \stale{\sigma \otimes \tau} \cdot \fresh{\tau} \cdot \fresh{\sigma}
+                       \vdash \tau \otimes \sigma \ni \prd{(\neu{(\var{(\varsucc{\varzero})})})}{(\neu{(\var{\varzero})})}
+                       \andalso{} [] \cdot \stale{\sigma \otimes \tau} \cdot \stale{\tau} \cdot \stale{\sigma}}
+        }
   }{ % conslusion 2
-    [] \ensuremath{\cdot} \fresh{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\vdash} \ensuremath{\tau} \ensuremath{\otimes} \ensuremath{\sigma} \ensuremath{\ni}
+     \ensuremath{[] \cdot \fresh{\sigma \otimes \tau}
+                 \vdash \tau \otimes \sigma \ni
     {\begin{array}{l}
-      \texttt{let}~(\texttt{v, v})~\ensuremath{\listcons}=~\texttt{var}~\texttt{0}~\texttt{in} \\
-      \texttt{prd}(\texttt{neu}(\texttt{var}(\texttt{1})),~\texttt{neu}(\texttt{var}(\texttt{0})))
+      \letinsplit{\prdpattern{\varpattern{}}{\varpattern{}}}{\var{\varzero}}{\prd{(\neu{(\var{(\varsucc{\varzero})})})}{(\neu{(\var{\varzero})}})}
     \end{array}}
-    \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}}
+    \andalso{} [] \cdot \stale{\sigma \otimes \tau}}
   }
 }{ % conclusion 1
   [] \ensuremath{\vdash} (\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}) \ensuremath{\multimap} (\ensuremath{\tau} \ensuremath{\otimes} \ensuremath{\sigma}) \ensuremath{\ni} \texttt{swap} \andalso{} []
 }
 
+\and \ensuremath{\mathcal{E}} = \inferrule
+     { % premise 3
+      \inferrule
+       { % premise 4
+      }{ % conclusion 4
+         \ensuremath{[] \cdot \fresh{\sigma \otimes \tau}
+                     \vdash_v \varzero \in \sigma \otimes \tau
+                     \andalso{} [] \cdot \stale{\sigma \otimes \tau}}
+      }
+    }{ % conclusion 3
+       \ensuremath{[] \cdot \fresh{\sigma \otimes \tau}
+                   \vdash \var{\varzero} \in \sigma \otimes \tau
+                   \andalso{} [] \cdot \stale{\sigma \otimes\tau}}
+     }
+
+ \and
+
+\ensuremath{\mathcal{P}} =  % premise 2
+    \inferrule
+     { % premise 3
+      \inferrule
+       { % premise 4
+      }{ % conclusion 4
+        \ensuremath{\sigma \ni \varpattern{} \leadsto{} [] \cdot \sigma}
+       }
+     \and % premise 3
+      \inferrule
+       { % premise 4
+      }{ % conclusion 4
+        \ensuremath{\tau \ni \varpattern{} \leadsto{} [] \cdot \tau}
+      }
+    }{ % conclusion 3
+      \ensuremath{\sigma \otimes \tau \ni \prdpattern{\varpattern{}}{\varpattern{}} \leadsto{} [] \cdot \tau \cdot \sigma}
+    }
+
 \and
 
-\ensuremath{Pi} = \inferrule
-  { % premise 1
-   \inferrule
+\ensuremath{\mathcal{L}} = \inferrule
     { % premise 2
      \inferrule
       { % premise 3
@@ -58,46 +72,52 @@
          \inferrule
           { % premise 5
          }{ % conclusion 5
-           [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\tau}} \ensuremath{\vdash}_v \texttt{0} \ensuremath{\in} \ensuremath{\tau} \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\tau}}
+            \ensuremath{[] \cdot \stale{\sigma \otimes \tau} \cdot \fresh{\tau}
+                        \vdash_v \varzero \in \tau
+                        \andalso{} [] \cdot \stale{\sigma \otimes \tau} \cdot \stale{\tau}}
          }
        }{ % conclusion 4
-         [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}} \ensuremath{\vdash}_v \texttt{1} \ensuremath{\in} \ensuremath{\tau}
-          \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}}
+          \ensuremath{[] \cdot \stale{\sigma \otimes \tau} \cdot \fresh{\tau} \cdot \fresh{\sigma}
+                      \vdash_v \varsucc{\varzero} \in \tau
+                      \andalso{} [] \cdot \stale{\sigma \otimes \tau} \cdot \stale{\tau} \cdot \fresh{\sigma}}
        }
      }{ % conclusion 3
-       [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}} \ensuremath{\vdash} \texttt{var}(\texttt{1}) \ensuremath{\in} \ensuremath{\tau}
-       \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}}
+        \ensuremath{[] \cdot \stale{\sigma \otimes \tau} \cdot \fresh{\tau} \cdot \fresh{\sigma}
+                   \vdash \var{(\varsucc{\varzero})} \in \tau
+                   \andalso{} [] \cdot \stale{\sigma \otimes \tau} \cdot \stale{\tau} \cdot \fresh{\sigma}}
      }
    }{ % conclusion 2
-     [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}} \ensuremath{\vdash} \ensuremath{\tau} \ensuremath{\ni} \texttt{neu}(\texttt{var}(\texttt{1}))
-     \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}}
+      \ensuremath{[] \cdot \stale{\sigma \otimes \tau} \cdot \fresh{\tau} \cdot \fresh{\sigma}
+                  \vdash \tau \ni \neu{(\var{(\varsucc{\varzero})})}
+                  \andalso{} [] \cdot \stale{\sigma \otimes \tau} \cdot \stale{\tau} \cdot \fresh{\sigma}}
    }
-  \and \ensuremath{Pi}'
- }{ % conclusion 3
-   [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}} \ensuremath{\vdash} \ensuremath{\tau} \ensuremath{\otimes} \ensuremath{\sigma} \ensuremath{\ni}
-   \texttt{prd}(\texttt{neu}(\texttt{var}(\texttt{1})),~\texttt{neu}(\texttt{var}(\texttt{0}))
-   \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\sigma}}
- }
 
 \and
 
-\ensuremath{Pi}' =  \inferrule
+
+
+\and
+
+\ensuremath{\mathcal{R}} =  \inferrule
   { % premise 1
    \inferrule
     { % premise 2
      \inferrule
       { % premise 3
      }{ % conclusion 3
-       [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}} \ensuremath{\vdash}_v \texttt{0} \ensuremath{\in} \ensuremath{\sigma}
-       \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\sigma}}
+        \ensuremath{[] \cdot \stale{\sigma \otimes \tau} \cdot \stale{\tau} \cdot \fresh{\sigma}
+                    \vdash_v \varzero \in \sigma
+                   \andalso{} [] \cdot \stale{\sigma \otimes \tau} \cdot \stale{\tau} \cdot \stale{\sigma}}
      }
    }{ % conclusion 2
-     [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}} \ensuremath{\vdash} \texttt{var}(\texttt{0}) \ensuremath{\in} \ensuremath{\sigma}
-     \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\sigma}}
+      \ensuremath{[] \cdot \stale{\sigma \otimes \tau} \cdot \stale{\tau} \cdot \fresh{\sigma}
+                  \vdash \var{\varzero} \in \sigma
+                  \andalso{} [] \cdot \stale{\sigma \otimes \tau} \cdot \stale{\tau} \cdot \stale{\sigma}}
    }
  }{ % conclusion 1
-   [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}} \ensuremath{\vdash} \ensuremath{\sigma} \ensuremath{\ni} \texttt{neu}(\texttt{var}(\texttt{0}))
-   \andalso{} [] \ensuremath{\cdot} \stale{\ensuremath{\sigma} \ensuremath{\otimes} \ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\sigma}}
+    \ensuremath{[] \cdot \stale{\sigma \otimes \tau} \cdot \stale{\tau} \cdot \fresh{\sigma}
+                \vdash \sigma \ni \neu{(\var{\varzero})}
+                \andalso{} [] \cdot \stale{\sigma \otimes \tau} \cdot \stale{\tau} \cdot \stale{\sigma}}
  }
 
 \end{mathpar}

@@ -4,7 +4,7 @@
 \newcommand{\Zeta}{Z}
 \newcommand{\TR}[1]{\ensuremath{\mathcal{T}_{#1}}}
 
-\newcommand{\append}{+\!\!\!+}
+\newcommand{\append}[2]{(#1\,+\!\!\!+\,#2)}
 \newcommand{\listcons}{:\!\!\!:}
 
 \newcommand{\andalso}{\,\ensuremath{{\scriptstyle \boxtimes{}}}\,}
@@ -53,13 +53,19 @@
 \newcommand{\cut}[2]{\ensuremath{\texttt{cut}~#1~#2}}
 \newcommand{\lam}[1]{\ensuremath{\texttt{lam}~#1}}
 \newcommand{\letin}[3]{\ensuremath{\texttt{let}~#1 \texttt{:=}\, #2 \texttt{in}\, #3}}
+\newcommand{\letinsplit}[3]{\ensuremath{\texttt{let}~#1 ~\texttt{:=}~ #2 ~\texttt{in}\\#3}}
 \newcommand{\uni}{\texttt{unit}}
 \newcommand{\inl}[1]{\ensuremath{\texttt{inl}~#1}}
 \newcommand{\inr}[1]{\ensuremath{\texttt{inr}~#1}}
 \newcommand{\prd}[2]{\ensuremath{\texttt{prd}~#1~#2}}
+\newcommand{\prdsplit}[2]{\texttt{prd}&\ensuremath{#1}\\&\ensuremath{#2}}
 \newcommand{\neu}[1]{\ensuremath{\texttt{neu}~#1}}
 \newcommand{\prl}[1]{\ensuremath{\texttt{prj$_1$}~#1}}
 \newcommand{\prr}[1]{\ensuremath{\texttt{prj$_2$}~#1}}
+
+\newcommand{\varpattern}{\texttt{v}}
+\newcommand{\unitpattern}{\texttt{\ensuremath{\langle\rangle}}}
+\newcommand{\prdpattern}[2]{\ensuremath{(#1~\texttt{,}~#2)}}
 
 \newcommand{\weaken}[2]{\ensuremath{\texttt{weak}~#2~#1}}
 \newcommand{\subst}[2]{\ensuremath{#1~[\,#2\,]}}

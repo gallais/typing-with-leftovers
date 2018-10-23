@@ -184,17 +184,17 @@ lets. This is achieved thanks to a rather simple piece of kit: the
 \Pattern{} type family. A value of type $\Pattern{n}$ represents an
 irrefutable pattern binding $n$ variables. Because variables are
 represented as de Bruijn indices, the base pattern does not need to
-be associated with a name, it simply is a constructor \texttt{v}
-binding exactly one variable. The brackets pattern \texttt{\ensuremath{\langle}\ensuremath{\rangle}} matches
-unit values and binds nothing. The comma pattern constructor takes
-two nested patterns respectively binding $m$ and $n$ variables and
+be associated with a name, it simply is a constructor \varpattern{}
+binding exactly one variable. The brackets pattern \unitpattern{} matches
+unit values and binds nothing. The comma pattern constructor \prdpattern{\cdot}{\cdot}
+takes two nested patterns respectively binding $m$ and $n$ variables and
 uses them to deeply match a pair thus binding $(m + n)$ variables.
 
 \begin{mathpar}
 \type{n : \Nat{}}{\Pattern{n} : \Set{}}
-\and \constructor{ }{\texttt{v} : \Pattern{1}}
-\and \constructor{ }{\texttt{\ensuremath{\langle}\!\ensuremath{\rangle}} : \Pattern{0}}
-\and \constructor{p : \Pattern{m} \and q : \Pattern{n}}{p \texttt{,} q : \Pattern{m + n}}
+\and \constructor{ }{\varpattern{} : \Pattern{1}}
+\and \constructor{ }{\unitpattern{} : \Pattern{0}}
+\and \constructor{p : \Pattern{m} \and q : \Pattern{n}}{\prdpattern{p}{q} : \Pattern{m + n}}
 \end{mathpar}
 
 The grammar of raw terms only guarantees that all expressions are
@@ -422,7 +422,7 @@ In the resulting leftovers, this resource will have turned stale (\stale{\ensure
 because it has now been used:
 
 \begin{definition}
-The typing relation for \Var{} is presented in a sequent-style: \ensuremath{\Gamma} \ensuremath{\vdash}$_v$ $k$ \ensuremath{\in} \ensuremath{\sigma} \andalso{} \ensuremath{\Delta}
+The typing relation for \Var{} is presented in a sequent-style: \ensuremath{\Gamma \vdash_v k \in \sigma \andalso{} \Delta}
 means that starting from the usage annotation \ensuremath{\Gamma}, the de Bruijn index
 $k$ is ascribed type \ensuremath{\sigma} with leftovers \ensuremath{\Delta}. It is defined inductively by
 two constructors (cf. Figure~\ref{figure:deBruijn}).
@@ -638,21 +638,24 @@ variables. This will be dealth with by defining weakening in Section~\ref{sec:we
 \mbox{\ensuremath{\Gamma} \ensuremath{-} \ensuremath{\Delta} \ensuremath{\equiv} \ensuremath{\Gamma} \ensuremath{-} \ensuremath{\Delta}}. It orders \Usages{} from least consumed to maximally consumed.
 \end{definition}
 
-\begin{lemma} The following properties on the Consumption relations hold:
+\begin{lemma} The following properties on the Consumption relations hold:\label{lemma:consumptionPO}
 \begin{enumerate}
   \item The consumption equivalence is a partial equivalence~\cite{mitchell1996foundations}.
   \item The consumption partial order is a partial order.
   \item If there is a \Usages{} \ensuremath{\Xi} ``in between'' two others \ensuremath{\Gamma} and \ensuremath{\Delta} according to
-        the consumption partial order (i.e. $\ensuremath{\Gamma} \ensuremath{\subseteq} \ensuremath{\Xi}$ and $\ensuremath{\Xi} \ensuremath{\subseteq} \ensuremath{\Delta}$), then any pair
-        of \Usages{} \ensuremath{\Theta}, \ensuremath{\Xi} consumption equal to \ensuremath{\Gamma} and \ensuremath{\Delta} (i.e. \mbox{$\ensuremath{\Gamma} \ensuremath{-} \ensuremath{\Delta} \ensuremath{\equiv} \ensuremath{\Theta} \ensuremath{-} \ensuremath{\Xi}$})
+        the consumption partial order (i.e. \ensuremath{\Gamma \subseteq \Xi} and \ensuremath{\Xi \subseteq \Delta}), then any pair
+        of \Usages{} \ensuremath{\Theta}, \ensuremath{\Omega} consumption equal to \ensuremath{\Gamma} and \ensuremath{\Delta}
+        (i.e. \mbox{\ensuremath{\Gamma - \Delta \equiv \Theta - \Omega}})
         can be split in a manner compatible with \ensuremath{\Xi}. In other words: one can find
-        \ensuremath{\Zeta} such that \mbox{$\ensuremath{\Gamma} \ensuremath{-} \ensuremath{\Xi} \ensuremath{\equiv} \ensuremath{\Theta} \ensuremath{-} \ensuremath{\Zeta}$} and \mbox{$\ensuremath{\Xi} \ensuremath{-} \ensuremath{\Delta} \ensuremath{\equiv} \ensuremath{\Zeta} \ensuremath{-} \ensuremath{\Xi}$}.
+        \ensuremath{\Zeta} such that \mbox{\ensuremath{\Gamma - \Xi \equiv \Theta - \Zeta}}
+        and \mbox{\ensuremath{\Xi - \Delta \equiv \Zeta -\Omega}}.\label{lemma:split}
 \end{enumerate}
 \end{lemma}
 
 \begin{lemma}[Consumption]The Typing Relations for \Var{}, \Inferable{}
 and \Checkable{} all imply that if a typing derivation exists with input
-\Usages{} annotation \ensuremath{\Gamma} and output \Usages{} annotation \ensuremath{\Delta} then $\ensuremath{\Gamma} \ensuremath{\subseteq} \ensuremath{\Delta}$.\label{lemma:consumption}
+\Usages{} annotation \ensuremath{\Gamma} and output \Usages{} annotation \ensuremath{\Delta}
+then \ensuremath{\Gamma \subseteq \Delta}.\label{lemma:consumption}
 \end{lemma}
 
 \begin{theorem}
@@ -663,15 +666,15 @@ So do the ones for \Inferable{} and \Checkable{}.
 \begin{proof}
 The proofs are by structural induction on the typing derivations. They rely on
 the previous lemmas to, when faced with a rule with multiple premises and leftover
-threading, generate the inclusion evidence and use it to split up the witness
-of consumption equivalence and distribute it appropriately in the induction hypotheses.
+threading, generate the inclusion evidence (Lemma~\ref{lemma:consumption}) and use it to split up the witness
+of consumption equivalence (Lemma~\ref{lemma:consumptionPO}:\ref{lemma:split}) and distribute it appropriately in the induction hypotheses.
 \end{proof}
 
 
 \begin{example}Coming back to the typing derivation for the de Bruijn index $1$ in
 Example~\ref{example:debruijn}, we can use the Framing theorem to transport the proof
-that \mbox{\ensuremath{\Gamma} \ensuremath{\cdot} \fresh{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}} \ensuremath{\vdash} \varsucc{\varzero} \ensuremath{\in} \ensuremath{\tau} \andalso{} \ensuremath{\Gamma} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \fresh{\ensuremath{\sigma}}}
-to a proof that \mbox{\ensuremath{\Delta} \ensuremath{\cdot} \fresh{\ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\sigma}} \ensuremath{\vdash} \varsucc{\varzero} \ensuremath{\in} \ensuremath{\tau} \andalso{} \ensuremath{\Delta} \ensuremath{\cdot} \stale{\ensuremath{\tau}} \ensuremath{\cdot} \stale{\ensuremath{\sigma}}}
+that \mbox{\ensuremath{\Gamma \cdot \fresh{\tau} \cdot \fresh{\sigma} \vdash_v \varsucc{\varzero} \in \tau \andalso{} \Gamma \cdot \stale{\tau} \cdot \fresh{\sigma}}}
+to a proof that \mbox{\ensuremath{\Delta \cdot \fresh{\tau} \cdot \stale{\sigma} \vdash_v \varsucc{\varzero} \in \tau \andalso{} \Delta \cdot \stale{\tau} \cdot \stale{\sigma}}}
 for any \ensuremath{\Delta}. Indeed, we can see that these two pairs of \Usages{} are consumption equivalent
 (\mbox{\ensuremath{\Gamma} \ensuremath{-} \ensuremath{\Gamma} \ensuremath{\equiv} \ensuremath{\Delta} \ensuremath{-} \ensuremath{\Delta}} holds by induction):
 \begin{mathpar}
@@ -704,7 +707,7 @@ the term.
 
 Weakening arises from a notion of inclusion. The appropriate type
 theoretical structure to describe these inclusions is well-known
-and called an Order Preserving Embeddding~\cite{chapman2009thesis,altenkirch1995categorical}.
+and called an Order Preserving Embedding~\cite{chapman2009thesis,altenkirch1995categorical}.
 Unlike a simple function witnessing the inclusion of its domain
 into its codomain, the restriction brought by order preserving
 embeddings guarantees that contraction is simply not possible which
@@ -731,8 +734,7 @@ are also presented left-to-right, we temporarily switch to \emph{cons}-style
 (i.e. $\sigma , \gamma$) instead of the \emph{snoc}-style (i.e. $\gamma \ensuremath{\cdot} \sigma$)
 used in the rest of this paper.
 
-\begin{example} An Order Preserving Embedding proving:
-$\gamma \ensuremath{\cdot} \tau \leq \gamma \ensuremath{\cdot} \sigma \ensuremath{\cdot} \tau \ensuremath{\cdot} \nu$
+\begin{example} An Order Preserving Embedding.
 
 \begin{figure}[ht]\centering
 \begin{tabular}{l|ccccccc}
@@ -749,7 +751,7 @@ $\gamma \ensuremath{\cdot} \tau \leq \gamma \ensuremath{\cdot} \sigma \ensuremat
                 & $\sigma$ & ,
                 & $\gamma$ \\
 \end{tabular}
-\label{figure:exampleOpe}
+\caption{Example: proof that \ensuremath{\gamma \cdot \tau \leq \gamma \cdot \sigma \cdot \tau \cdot \nu}}\label{figure:exampleOpe}
 \end{figure}
 \end{example}
 
@@ -853,8 +855,8 @@ the terms themselves, using \opecopy{} to go under binders.
 
 \begin{definition}A Typing Relation \TR{\cdot} for a \Nat{}-indexed family $T$
 such that we have a function $\texttt{weak}_T$ transporting proofs that
-$k \ensuremath{\leq} l$ to functions $T_k → T_l$ is said to have the \textbf{Weakening Property}
-if for all $k, l$ in \Nat{}, $o$ a proof that $k \ensuremath{\leq} l$, $O$ a proof that
+\ensuremath{k \leq l} to functions \ensuremath{T_k \rightarrow T_l} is said to have the \textbf{Weakening Property}
+if for all $k, l$ in \Nat{}, $o$ a proof that \ensuremath{k \leq l}, $O$ a proof that
 $\OPE{}(o)$ and $\ensuremath{\mathcal{O}}$ a proof that $\OPE{}(O)$ then for all \ensuremath{\gamma} a $\Context{k}$,
 \ensuremath{\Gamma} and \ensuremath{\Delta} two $\Usages{\ensuremath{\gamma}}$, $t$ an element of $T_k$ and \ensuremath{\sigma} a \Type{}, if
 \TR{k}$(\ensuremath{\Gamma}, t, \ensuremath{\sigma}, \ensuremath{\Delta})$ holds true then we also have
@@ -908,7 +910,8 @@ variable) instead of when pushing the substitution under a binder.
 \begin{definition}The environment \Env{} used to define substitution
 for raw terms is indexed by two \Nat{}s $k$ and $l$ where $k$ is the
 source's scope and $l$ is the target's scope. There are three constructors:
-one for the empty environment ([]), one for going under a binder (\envextend{})
+one for the empty environment ([]), one for going under a binder
+(\ensuremath{\cdot\envextend{}})
 and one to extend an environment with an $\Inferable{l}$.
 \begin{mathpar}
 \type
@@ -941,7 +944,7 @@ the \Inferable{l} associated to $v$ in $\rho$.
 \end{lemma}
 \begin{proof} The proof goes by induction on $v$ and case analysis on $\rho$.
 If the variable we look up has been introduced by a binder we went under using
-the constructor \envextend{} then we return it immediately. Otherwise we get
+the constructor \ensuremath{\cdot \envextend{}} then we return it immediately. Otherwise we get
 our hands on a term which we may need to weaken. This corresponds to the following
 functional specification (the practical implementation can be distinct to avoid
 retraversing the term once for every single binder we went under).
@@ -964,7 +967,7 @@ an environment $\Env{}(k,l)$, we can apply the substitution $\ensuremath{\rho}$ 
 and obtain an $\Inferable{l}$ (resp. $\Checkable{l}$).
 \end{lemma}
 \begin{proof}By mutual induction on the raw terms. The traversals are purely
-structural except when going under binders where the constructor \envextend{} is
+structural except when going under binders where the constructor (\ensuremath{\cdot \envextend{}}) is
 used to extend the \Env{} appropriately. The prototypical case of a binder is
 the \lam{} one, and its functional specification is: \mbox{\subst{(\lam{t})}{\rho} = \lam{(\subst{t}{\rho \envextend{}})}}.
 \end{proof}
@@ -1056,8 +1059,8 @@ in order to adjust the \Usages{} annotations.
 
 In the next section we will prove that type-checking and type-inference are
 decidable. In the cases where the check fails, we have to prove that any
-purported typing derivation would leave to a contradiction. Thse arguments
-all follow a similar pattern: assuming that a typing derivation exist, we
+purported typing derivation would lead to a contradiction. These arguments
+all follow a similar pattern: assuming that a typing derivation exists, we
 use inversion lemmas to obtain results in direct contradiction to the
 observations we have made. These inversion lemmas often rely on the fact
 that the typing relations are functional.
@@ -1071,11 +1074,11 @@ a typing relation, if two typing derivations exist for some fixed arguments
 other.
 
 \begin{definition}We say that a relation $R$ of type
-$\ensuremath{Pi}(\mathit{ri} : \mathit{RI}). \mathit{II} → O(ri) → \Set{}$
+\ensuremath{\prod (\mathit{ri} : \mathit{RI}). \mathit{II} \rightarrow O(ri) \rightarrow \Set{}}
 is \textbf{functional} if for all \emph{r}elevant \emph{i}nputs $\mathit{ri}$, all pairs of
-\emph{i}rrelevant \emph{i}nputs $\mathit{ii\ensuremath{_1}}$ and $\mathit{ii\ensuremath{_2}}$ and for all pairs
-of \emph{o}utputs $o\ensuremath{_1}$ and $o\ensuremath{_2}$, if both $R(\mathit{ri}, \mathit{ii\ensuremath{_1}}, o\ensuremath{_1})$
-and $R(\mathit{ri}, \mathit{ii\ensuremath{_2}}, o\ensuremath{_2})$ hold then $o\ensuremath{_1} \ensuremath{\equiv} o\ensuremath{_2}$.
+\emph{i}rrelevant \emph{i}nputs \ensuremath{\mathit{ii_1}} and \ensuremath{\mathit{ii_2}} and for all pairs
+of \emph{o}utputs \ensuremath{o_1} and \ensuremath{o_2}, if both \ensuremath{R(\mathit{ri}, \mathit{ii_1}, o_1)}
+and \ensuremath{R(\mathit{ri}, \mathit{ii_2}, o_2)} hold then \ensuremath{o_1 \equiv o_2}.
 \end{definition}
 
 \begin{lemma}The Typing Relations for \Var{} and \Inferable{} are functional
